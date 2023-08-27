@@ -1,27 +1,63 @@
+@import url("https://fonts.googleapis.com/css2?family=Dancing+Script&family=Poppins&family=Staatliches&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@layer base {
+  /* Tabel */
+  table {
+    @apply divide-y divide-black rounded-md;
+  }
+  thead {
+    @apply text-left bg-custom-navy text-custom-yellow tracking-wide;
+  }
+  th {
+    @apply pr-7;
+  }
+  th,
+  td {
+    @apply pl-1;
+  }
+  tbody > tr {
+    @apply odd:bg-gray-200 even:bg-gray-100 border-b border-b-black last:border-b-0;
+  }
+  tbody > td {
+    @apply whitespace-nowrap;
   }
 }
+@layer utilities {
+  /* button kategori */
+  .button_kategori {
+    @apply rounded-full px-3 py-2 border-2 border-custom-yellow capitalize text-custom-yellow font-bold text-xl tracking-wide hover:button_kategori_active transition;
+  }
+  .button_kategori_active {
+    @apply bg-custom-yellow text-black;
+  }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  /* button color */
+  .button_navy_gold {
+    @apply text-custom-gold bg-custom-navy border-2 border-custom-navy hover:bg-transparent transition;
+  }
+  .button_red {
+    @apply border-2 border-red-500 bg-red-500 hover:bg-transparent hover:text-red-500 transition;
+  }
+  .button_green {
+    @apply border-2 border-green-500 bg-green-500 hover:bg-transparent hover:text-green-500 transition;
+  }
+
+  /* button shape */
+  .btn_full {
+    @apply px-2 rounded-full;
+  }
+
+  /* input form */
+  form .input_container {
+    @apply flex flex-col w-[300px];
+  }
+  form .input_label {
+    @apply text-lg font-semibold;
+  }
+  form .input {
+    @apply border-2 border-custom-navy rounded-md px-1;
+  }
 }
