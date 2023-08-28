@@ -13,13 +13,19 @@ import {
 import { firestore, storage } from "./firebase";
 import {
   DocumentData,
+  collection,
   deleteDoc,
   doc,
+  getDoc,
+  getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
-import { idText } from "typescript";
 import { v4 } from "uuid";
+import { User } from "firebase/auth";
+import { data } from "autoprefixer";
 
 //COMPARE FOR DATA SORTER
 export const compare = (query: string, type: "asc" | "desc") => {
@@ -86,6 +92,74 @@ export function checkType<T>(variable: unknown): variable is T {
     Object.keys(variable).length > 0
   );
 }
+
+// DATA UPLOADER
+export const uploadData = async (
+  query: "pesertas" | "officials" | "kontingens",
+  data: DataOfficialState | DataPesertaState | DocumentData,
+
+  toastId: React.MutableRefObject<Id | null>,
+  makeNewToast: boolean = true,
+  succesToast: boolean = true,
+  errorToast: boolean = true
+) => {
+  const messages = [
+    {
+      tipe: "pesertas",
+      new: `Mendaftarkan ${data.namaLengkap} sebagai peserta`,
+      success: `${data.namaLengkap} berhasil didaftarkan sebagai peserta`,
+      error: `${data.namaLengkap} gagal didaftarkan sebagai peserta`,
+    },
+    {
+      tipe: "officials",
+      new: `Mendaftarkan ${data.namaLengkap} sebagai official`,
+      success: `${data.namaLengkap} berhasil didaftarkan sebagai official`,
+      error: `${data.namaLengkap} gagal didaftarkan sebagai official`,
+    },
+    {
+      tipe: "kontingens",
+      new: `Mendaftarkan Kontingen ${data.namaKontingen}`,
+      success: `Kontingen ${data.namaKontingen} berhasil didaftarkan`,
+      error: `Kontingen ${data.namaKontingen} gagal didaftarkan`,
+    },
+  ];
+
+  makeNewToast
+    ? newToast(
+        "loading",
+        toastId,
+        messages[messages.findIndex((message) => message.tipe == query)].new
+      )
+    : updateToast(
+        toastId,
+        "loading",
+        messages[messages.findIndex((message) => message.tipe == query)].new
+      );
+  const newDocRef = doc(collection(firestore, query));
+  return setDoc(newDocRef, {
+    ...data,
+    idOfficial: newDocRef.id,
+    waktuPendaftaran: Date.now(),
+  })
+    .then(() => {
+      succesToast &&
+        updateToast(
+          toastId,
+          "success",
+          messages[messages.findIndex((message) => message.tipe == query)]
+            .success
+        );
+    })
+    .catch((error) => {
+      succesToast &&
+        updateToast(
+          toastId,
+          "error",
+          messages[messages.findIndex((message) => message.tipe == query)].error
+        );
+      return error;
+    });
+};
 
 // IMAGE UPLOADER
 export const uploadImage = async (
@@ -230,12 +304,12 @@ export const movePerson = async (
     ? newToast(
         "loading",
         toastId,
-        messages[messages.findIndex((message) => (message.tipe = actions))].new
+        messages[messages.findIndex((message) => message.tipe == actions)].new
       )
     : updateToast(
         toastId,
         "loading",
-        messages[messages.findIndex((message) => (message.tipe = actions))].new
+        messages[messages.findIndex((message) => message.tipe == actions)].new
       );
 
   actions == "delete"
@@ -253,7 +327,7 @@ export const movePerson = async (
         updateToast(
           toastId,
           "success",
-          messages[messages.findIndex((message) => (message.tipe = actions))]
+          messages[messages.findIndex((message) => message.tipe == actions)]
             .success
         );
     })
@@ -262,7 +336,7 @@ export const movePerson = async (
         updateToast(
           toastId,
           "error",
-          messages[messages.findIndex((message) => (message.tipe = actions))]
+          messages[messages.findIndex((message) => message.tipe == actions)]
             .error
         );
       return error;
@@ -284,11 +358,12 @@ export const updateData = async (
   errorToast: boolean = true
 ) => {
   let nama: string;
-  if (checkType<DataKontingenState>(data)) {
-    nama = data.namaKontingen;
-  } else {
+  if ("namaLengkap" in data) {
     nama = data.namaLengkap;
+  } else {
+    nama = data.namaKontingen;
   }
+
   makeNewToast
     ? newToast("loading", toastId, `Menyimpan perubahan data ${nama}`)
     : updateToast(toastId, "loading", `Menyimpan perubahan data ${nama}`);
@@ -334,4 +409,100 @@ export const deletePerson = async (
       errorToast && updateToast(toastId, "error", `Data ${nama} gagal dihapus`);
       return error;
     });
+};
+
+// SET USER AND KONTINGENS
+export const setUserKontingens = (
+  user: User,
+  kontingens: DataKontingenState[],
+  data: DataOfficialState | DataPesertaState | DocumentData,
+  setData: React.Dispatch<
+    React.SetStateAction<DataOfficialState | DataOfficialState | DocumentData>
+  >
+) => {
+  if (user && kontingens.length == 0) {
+    console.log("setting user");
+    setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
+  }
+  if (user && kontingens.length !== 0) {
+    console.log("setting user and kontingen");
+    setData({
+      ...data,
+      creatorEmail: user.email,
+      creatorUid: user.uid,
+      namaKontingen: kontingens[0].namaKontingen,
+      idKontingen: kontingens[0].idKontingen,
+    });
+  }
+};
+
+// DATA GETTER
+export const getData = async (
+  tipeData: "pesertas" | "officials" | "kontingens",
+  id: string,
+  setData: React.Dispatch<
+    React.SetStateAction<
+      | DataOfficialState[]
+      | DataOfficialState[]
+      | DataKontingenState[]
+      | DocumentData
+    >
+  >
+) => {
+  return getDoc(doc(firestore, tipeData, id))
+    .then((docSnap) => {
+      if (docSnap.exists()) {
+        setData(docSnap.data());
+        return docSnap.data();
+      }
+    })
+    .catch((error) => error);
+};
+
+// DATAS GETTER
+export const getDatas = async (
+  tipeData: "pesertas" | "officials" | "kontingens",
+  user: User
+) => {
+  console.log("getting officials");
+  const container: any[] = [];
+  const q = query(
+    collection(firestore, tipeData),
+    where("creatorUid", "==", user.uid)
+  );
+  return getDocs(q)
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        container.push(doc.data());
+      });
+      return container.sort(compare("waktuPendaftaran", "asc"));
+    })
+    .catch((error) => error);
+};
+
+// IMAGE LIMITER
+export const limitImage = (
+  file: File,
+  inputReseter: () => void,
+  setImageSelected: React.Dispatch<
+    React.SetStateAction<File | null | undefined>
+  >,
+  setImagePreviewSrc: React.Dispatch<React.SetStateAction<string>>
+) => {
+  const maxSize = 1 * 1024 * 1024; //1MB
+  const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+  if (!allowedTypes.includes(file.type)) {
+    inputReseter();
+    alert(
+      "Format file yang ada masukan tidak valid, yang diperbolehkan hanya .jpg, .jpeg, dan .png"
+    );
+    return;
+  }
+  if (file.size > maxSize) {
+    inputReseter();
+    alert("File yang ada masukan terlalu besar, Makismal 1MB");
+    return;
+  }
+  setImageSelected(file);
+  setImagePreviewSrc(URL.createObjectURL(file));
 };
