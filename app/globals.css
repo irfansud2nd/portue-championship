@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 @layer base {
-  /* Tabel */
+  /* TABEL */
   table {
     @apply divide-y divide-black rounded-md;
   }
@@ -26,38 +26,60 @@
   }
 }
 @layer utilities {
-  /* button kategori */
-  .button_kategori {
-    @apply rounded-full px-3 py-2 border-2 border-custom-yellow capitalize text-custom-yellow font-bold text-xl tracking-wide hover:button_kategori_active transition;
+  /* BUTTON  */
+  .btn_kategori {
+    @apply rounded-full px-3 py-2 border-2 border-custom-yellow capitalize text-custom-yellow font-bold text-xl tracking-wide hover:btn_kategori_active transition;
   }
-  .button_kategori_active {
+  .btn_kategori_active {
     @apply bg-custom-yellow text-black;
   }
 
-  /* button color */
-  .button_navy_gold {
-    @apply text-custom-gold bg-custom-navy border-2 border-custom-navy hover:bg-transparent transition;
+  /* BUTTON COLOR */
+  .btn_navy_gold {
+    @apply text-custom-gold bg-custom-navy border-2 border-custom-navy hover:bg-transparent hover:text-custom-navy transition;
   }
-  .button_red {
+  .btn_navy_yellow {
+    @apply text-custom-yellow bg-custom-navy border-2 border-custom-navy hover:bg-transparent hover:text-custom-navy transition;
+  }
+  .btn_red {
     @apply border-2 border-red-500 bg-red-500 hover:bg-transparent hover:text-red-500 transition;
   }
-  .button_green {
+  .btn_green {
     @apply border-2 border-green-500 bg-green-500 hover:bg-transparent hover:text-green-500 transition;
   }
 
-  /* button shape */
+  /* BUTTON SHAPE */
   .btn_full {
     @apply px-2 rounded-full;
   }
 
-  /* input form */
+  /* INPUT FORM */
   form .input_container {
     @apply flex flex-col w-[300px];
+  }
+  form .inputs_container {
+    @apply flex gap-3;
   }
   form .input_label {
     @apply text-lg font-semibold;
   }
   form .input {
     @apply border-2 border-custom-navy rounded-md px-1;
+  }
+
+  /* INPUT FILE */
+  .input_file {
+    @apply px-1 text-sm;
+  }
+  .input_file::-webkit-file-upload-button {
+    @apply my-1 translate-x-5 btn_navy_yellow btn_full;
+  }
+
+  /* INPUT ERROR */
+  .input_error {
+    @apply border-red-500 focus:outline-red-500;
+  }
+  .error_text {
+    @apply text-red-500;
   }
 }

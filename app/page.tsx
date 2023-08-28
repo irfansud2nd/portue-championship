@@ -11,7 +11,7 @@ export default function Home() {
       <div className="w-fit flex flex-col gap-3 -translate-y-5">
         <Image src={logo_portue} alt="logo-portue" />
         <LoginButton />
-        <button className="w-full rounded-full text-lg font-semibold button_navy_gold">
+        <button className="w-full rounded-full text-lg font-semibold btn_navy_gold">
           <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" />
           Download Proposal
         </button>

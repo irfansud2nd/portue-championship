@@ -51,7 +51,7 @@ export type DataOfficialState = {
   jenisKelamin: string;
   jabatan: string;
   namaKontingen: string;
-  kontingenId: string;
+  idKontingen: string;
   fotoUrl: string;
   downloadFotoUrl: string;
 };
@@ -63,7 +63,7 @@ export type DataPesertaState = {
   waktuPerubahan: number | string;
   creatorEmail: string;
   creatorUid: string;
-  namaPeserta: string;
+  namaLengkap: string;
   NIK: string;
   tempatLahir: string;
   tanggalLahir: string;
@@ -76,10 +76,26 @@ export type DataPesertaState = {
   jenisPertandingan: string;
   kategoriPertandingan: string;
   namaKontingen: string;
-  kontingenId: string;
+  idKontingen: string;
   downloadFotoUrl: string;
   fotoUrl: string;
   downloadBuktiPembayaranUrl: string;
   waktuPembayaran: string;
   konfirmasiPembayaran: boolean;
+};
+
+// DELETE INFO
+export type DeleteInfoState = {
+  id: string;
+  pesertas: string[] | [];
+  officials: string[] | [];
+  dibayar: boolean;
+};
+
+export type ErrorValidationMessagesForOfficials = {
+  namaLengkap: string | null;
+  jenisKelamin: string | null;
+  jabatan: string | null;
+  namaKontingen: string | null;
+  pasFoto: string | null;
 };

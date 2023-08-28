@@ -14,8 +14,8 @@ const KategoriPendaftaran = ({
         <div key={kategori} className="w-full flex justify-around items-center">
           <button
             onClick={() => setKategoriPendaftaran(kategori)}
-            className={`button_kategori ${
-              kategori == kategoriPendaftaran && "button_kategori_active"
+            className={`btn_kategori ${
+              kategori == kategoriPendaftaran && "btn_kategori_active"
             }`}
           >
             {kategori}

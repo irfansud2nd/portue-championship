@@ -11,7 +11,7 @@ const Profile = () => {
     }
   };
   return (
-    <div>
+    <div className="max-w-[160px] w-[160px]">
       {user ? (
         <button onClick={handleLogout}>Logout</button>
       ) : (

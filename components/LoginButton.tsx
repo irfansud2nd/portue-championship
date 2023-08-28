@@ -16,13 +16,13 @@ const LoginButton = () => {
       {user ? (
         <Link
           href="/halaman-pendaftaran"
-          className="w-full rounded-full font-semibold text-lg button_navy_gold text-center"
+          className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"
         >
           Halaman Pendaftaran
         </Link>
       ) : (
         <button
-          className="w-full rounded-full font-semibold text-lg button_navy_gold"
+          className="w-full rounded-full font-semibold text-lg btn_navy_gold"
           onClick={handleLogin}
         >
           <BsGoogle className="inline mb-1" /> Login Dengan Google

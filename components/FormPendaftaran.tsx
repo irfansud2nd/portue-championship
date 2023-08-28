@@ -5,6 +5,7 @@ import FormKontingen from "./forms/FormKontingen";
 import FormOfficial from "./forms/FormOfficial";
 import FormPeserta from "./forms/FormPeserta";
 import FormPembayaran from "./forms/FormPembayaran";
+import { compare } from "@/utils/sharedFunctions";
 
 const FormPendaftaran = ({ kategoriPendaftaran }: FormPendaftaranProps) => {
   const [kontingens, setKontingens] = useState<DataKontingenState[]>([]);
@@ -17,7 +18,12 @@ const FormPendaftaran = ({ kategoriPendaftaran }: FormPendaftaranProps) => {
     },
     {
       name: "official",
-      component: <FormOfficial />,
+      component: (
+        <FormOfficial
+          kontingens={kontingens.sort(compare("namaKontingen", "asc"))}
+          setKontingens={setKontingens}
+        />
+      ),
     },
     {
       name: "peserta",

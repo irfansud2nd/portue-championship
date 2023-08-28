@@ -2,7 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import {
   DocumentData,
+  DocumentReference,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -15,16 +17,29 @@ import { compare, newToast, updateToast } from "@/utils/sharedFunctions";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MyContext } from "@/context/Context";
-import { DataKontingenState, FormProps } from "@/utils/types";
-import { dataKontingenInitialValue } from "@/utils/constants";
+import { DataKontingenState, DeleteInfoState, FormProps } from "@/utils/types";
+import {
+  dataKontingenInitialValue,
+  deleteInfoInitialValue,
+} from "@/utils/constants";
 import TabelKontingen from "../tabel/TabelKontingen";
+import Rodal from "rodal";
+import "rodal/lib/rodal.css";
 
 const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
   const [data, setData] = useState<DataKontingenState | DocumentData>(
     dataKontingenInitialValue
   );
-  const [newDataRef, setNewDataRef] = useState<any | null>(null);
+  const [newDataRef, setNewDataRef] = useState<DocumentReference<
+    DocumentData,
+    DocumentData
+  > | null>(null);
   const [updating, setUpdating] = useState(false);
+  const [deleteInfo, setDeleteInfo] = useState<DeleteInfoState>(
+    deleteInfoInitialValue
+  );
+  const [modalVisible, setModalVisible] = useState(false);
+
   const { user } = MyContext();
 
   const toastId = useRef(null);
@@ -49,10 +64,9 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
       );
   };
 
-  // GET ONE KONTIGENS
+  // GET ONE KONTINGEN
   const getKontingen = (id: string) => {
     console.log("getKontingen");
-    let container = {};
     getDoc(doc(firestore, "kontingens", id))
       .then((docSnap) => {
         if (docSnap.exists()) {
@@ -62,7 +76,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
       .catch((error) => console.log(error));
   };
 
-  // SUBMIT HANDLER
+  // SUBMIT HANDLER - UPDATE OR NEW DATA
   const saveKontingen = (e: React.FormEvent) => {
     e.preventDefault();
     if (updating) {
@@ -72,7 +86,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
     }
   };
 
-  // SEND NEW DATA - START
+  // SEND NEW DATA - STEP 1
   const sendNewData = () => {
     newToast("loading", toastId, "Mendaftarkan Kontingen");
     if (data.namaKontingen !== "") {
@@ -88,10 +102,9 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
     }
   };
 
-  // SEND NEW DATA - IF HAVE ID
+  // SEND NEW DATA - STEP 2 - IF HAVE ID
   useEffect(() => {
-    console.log(data.idKontingen, newDataRef, data.waktuPendaftaran);
-    if (data.idKontingen && newDataRef) {
+    if (data.idKontingen && data.waktuPendaftaran && newDataRef) {
       setDoc(newDataRef, data)
         .then(() => {
           updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
@@ -125,7 +138,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
     setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
   }, [user]);
 
-  // CEK KONTINGENS ON DID MOUNT
+  // GET KONTINGENS ON DID MOUNT
   useEffect(() => {
     getKontingens();
   }, []);
@@ -147,7 +160,122 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
     setUpdating(false);
   };
 
-  const handleDelete = (id: string) => {};
+  // DELETE CANCELER
+  const cancelDelete = () => {
+    setModalVisible(false);
+    setDeleteInfo(deleteInfoInitialValue);
+  };
+
+  // DELETE HANDLER
+  const handleDelete = (
+    id: string,
+    pesertas: string[] | [],
+    officials: string[] | [],
+    dibayar: boolean
+  ) => {
+    console.log(id, pesertas, officials, dibayar);
+    setModalVisible(true);
+    setDeleteInfo({ id, pesertas, officials, dibayar });
+  };
+
+  // DELETING DATA - START
+  // DELETE CONTROLLER
+  const deleteData = () => {
+    setModalVisible(false);
+    if (deleteInfo.pesertas.length) {
+      deletePesertas();
+    } else if (deleteInfo.officials.length) {
+      deleteOfficials();
+    } else {
+      deleteKontingen();
+    }
+  };
+
+  //DELETE ALL PESERTA
+  const deletePesertas = () => {
+    newToast("loading", toastId, "Menghapus Peserta");
+    const jumlahPeserta = deleteInfo.pesertas.length;
+    let pesertaDeleted = 0;
+    while (pesertaDeleted <= jumlahPeserta) {
+      if (pesertaDeleted < jumlahPeserta) {
+        deleteDoc(
+          doc(firestore, "pesertas", deleteInfo.pesertas[pesertaDeleted])
+        )
+          .then(() => (pesertaDeleted += 1))
+          .catch((error) => {
+            console.log(error);
+            updateToast(
+              toastId,
+              "error",
+              "Gagal mengapus semua peserta dari kontingen"
+            );
+            pesertaDeleted = jumlahPeserta;
+            getKontingens();
+            cancelDelete();
+          });
+      } else {
+        updateToast(
+          toastId,
+          "success",
+          "Berhasil menghapus semua official dari kontingen"
+        );
+        deleteOfficials();
+      }
+    }
+  };
+
+  // DELETE ALL OFFICIAL
+  const deleteOfficials = () => {
+    newToast("loading", toastId, "Menghapus Official");
+    const jumlahOfficial = deleteInfo.officials.length;
+    let officialDeleted = 0;
+    while (officialDeleted <= jumlahOfficial) {
+      if (officialDeleted < jumlahOfficial) {
+        deleteDoc(
+          doc(firestore, "officials", deleteInfo.officials[officialDeleted])
+        )
+          .then(() => (officialDeleted += 1))
+          .catch((error) => {
+            console.log(error);
+            updateToast(
+              toastId,
+              "error",
+              "Gagal mengapus semua official dari kontingen"
+            );
+            officialDeleted = jumlahOfficial;
+            cancelDelete();
+            getKontingens();
+          });
+      } else {
+        updateToast(
+          toastId,
+          "success",
+          "Berhasil menghapus semua official dari kontingen"
+        );
+        deleteKontingen();
+      }
+    }
+  };
+
+  // DELETE KONTINGEN
+  const deleteKontingen = () => {
+    newToast("loading", toastId, "Menghapus Kontingen");
+    deleteDoc(doc(firestore, "kontingens", deleteInfo.id))
+      .then(() => updateToast(toastId, "success", "Kontingen berhasil dihapus"))
+      .catch((error) => {
+        console.log(error);
+        updateToast(
+          toastId,
+          "error",
+          "Gagal mengapus semua official dari kontingen"
+        );
+      })
+      .finally(() => {
+        getKontingens();
+        cancelDelete();
+      });
+  };
+  // DELETING DATA - END
 
   return (
     <div className="flex flex-col gap-2">
@@ -164,6 +292,63 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
         </p>
       )}
       <form onSubmit={(e) => saveKontingen(e)}>
+        <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
+          <div className="h-full w-full">
+            {deleteInfo.dibayar ? (
+              <div className="h-full w-full flex flex-col justify-between">
+                <h1 className="font-semibold text-red-500">
+                  Tidak dapat menghapus kontingen
+                </h1>
+                <p>
+                  Maaf, peserta yang sudah diselesaikan pembayarannya tidak
+                  dapat dihapus
+                </p>
+                <button
+                  onClick={cancelDelete}
+                  className="self-end btn_green btn_full"
+                  type="button"
+                >
+                  Ok
+                </button>
+              </div>
+            ) : (
+              <div className="h-full w-full flex flex-col justify-between">
+                <h1 className="font-semibold text-red-500">Hapus kontingen</h1>
+                <p>
+                  {deleteInfo.officials.length !== 0 ||
+                  deleteInfo.officials.length !== 0 ? (
+                    <span>
+                      Kontingen anda terdiri dari {deleteInfo.officials.length}{" "}
+                      Official dan {deleteInfo.pesertas.length} Peserta.
+                      <br />
+                      jika anda memilih untuk menghapus kontingen ini,{" "}
+                      {deleteInfo.officials.length} Official dan{" "}
+                      {deleteInfo.pesertas.length} Peserta yang tergabung di
+                      dalam kontingen ini akan ikut terhapus
+                    </span>
+                  ) : null}
+                  Apakah anda yakin akan menghapus Kontingen?
+                </p>
+                <div className="self-end flex gap-2">
+                  <button
+                    className="btn_red btn_full"
+                    onClick={deleteData}
+                    type="button"
+                  >
+                    Yakin
+                  </button>
+                  <button
+                    className="btn_green btn_full"
+                    onClick={cancelDelete}
+                    type="button"
+                  >
+                    Batal
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </Rodal>
         <div className="input_container">
           <label className="input_label">Nama Kontingen</label>
           <div className="flex gap-5">
@@ -176,13 +361,13 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
               }
             />
             <button
-              className="button_red btn_full"
+              className="btn_red btn_full"
               onClick={resetData}
               type="button"
             >
               Batal
             </button>
-            <button className="button_green btn_full" type="submit">
+            <button className="btn_green btn_full" type="submit">
               {updating ? "Perbaharui" : "Simpan"}
             </button>
           </div>

@@ -1,23 +1,21 @@
 const TabelActionButtons = ({
   handleDelete,
   handleEdit,
-  id,
 }: {
-  handleDelete: (id: string) => void;
-  handleEdit: (id: string) => void;
-  id: string;
+  handleDelete: () => void;
+  handleEdit: () => void;
 }) => {
   return (
     <div className="flex gap-2">
       <button
         className="hover:text-custom-gold transition"
-        onClick={() => handleDelete(id)}
+        onClick={handleDelete}
       >
         Delete
       </button>
       <button
         className="hover:text-custom-gold transition"
-        onClick={() => handleEdit(id)}
+        onClick={handleEdit}
       >
         Edit
       </button>

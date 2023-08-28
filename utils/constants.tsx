@@ -2,6 +2,8 @@ import {
   DataKontingenState,
   DataOfficialState,
   DataPesertaState,
+  DeleteInfoState,
+  ErrorValidationMessagesForOfficials,
 } from "./types";
 
 // KATEGORI GENERATOR - START
@@ -168,10 +170,10 @@ export const dataOfficialInitialValue: DataOfficialState = {
   waktuPendaftaran: "",
   waktuPerubahan: "",
   namaLengkap: "",
-  jenisKelamin: "",
-  jabatan: "",
+  jenisKelamin: jenisKelamin[0],
+  jabatan: jabatanOfficials[0],
   namaKontingen: "",
-  kontingenId: "",
+  idKontingen: "",
   fotoUrl: "",
   downloadFotoUrl: "",
 };
@@ -183,7 +185,7 @@ export const dataPesertaInitialValue: DataPesertaState = {
   creatorUid: "",
   waktuPendaftaran: "",
   waktuPerubahan: "",
-  namaPeserta: "",
+  namaLengkap: "",
   NIK: "",
   tempatLahir: "",
   tanggalLahir: "",
@@ -196,10 +198,27 @@ export const dataPesertaInitialValue: DataPesertaState = {
   jenisPertandingan: jenisPertandingan[0],
   kategoriPertandingan: tingkatanKategori[0].kategoriTanding[0],
   namaKontingen: "",
-  kontingenId: "",
+  idKontingen: "",
   fotoUrl: "",
   downloadFotoUrl: "",
   downloadBuktiPembayaranUrl: "",
   waktuPembayaran: "",
   konfirmasiPembayaran: false,
 };
+
+// DELETE INFO INITIAL VALUE
+export const deleteInfoInitialValue: DeleteInfoState = {
+  id: "",
+  pesertas: [],
+  officials: [],
+  dibayar: false,
+};
+
+export const errorValidationMessagesForOfficials: ErrorValidationMessagesForOfficials =
+  {
+    namaLengkap: null,
+    jenisKelamin: null,
+    jabatan: null,
+    namaKontingen: null,
+    pasFoto: null,
+  };
