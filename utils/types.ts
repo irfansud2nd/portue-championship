@@ -42,7 +42,7 @@ export type DataKontingenState = {
 
 // DATA OFFICIAL
 export type DataOfficialState = {
-  idOfficial: string;
+  id: string;
   creatorEmail: string;
   creatorUid: string;
   waktuPendaftaran: number | string;
@@ -58,7 +58,7 @@ export type DataOfficialState = {
 
 // DATA PESERTA
 export type DataPesertaState = {
-  idPeserta: string;
+  id: string;
   waktuPendaftaran: number | string;
   waktuPerubahan: number | string;
   creatorEmail: string;

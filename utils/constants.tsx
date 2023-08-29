@@ -164,7 +164,7 @@ export const dataKontingenInitialValue: DataKontingenState = {
 
 // DATA OFFICIAL INITIAL VALUE
 export const dataOfficialInitialValue: DataOfficialState = {
-  idOfficial: "",
+  id: "",
   creatorEmail: "",
   creatorUid: "",
   waktuPendaftaran: "",
@@ -180,7 +180,7 @@ export const dataOfficialInitialValue: DataOfficialState = {
 
 // DATA PESERTA INITIAL VALUE
 export const dataPesertaInitialValue: DataPesertaState = {
-  idPeserta: "",
+  id: "",
   creatorEmail: "",
   creatorUid: "",
   waktuPendaftaran: "",

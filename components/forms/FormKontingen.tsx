@@ -35,14 +35,22 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
     DocumentData
   > | null>(null);
   const [updating, setUpdating] = useState(false);
-  const [deleteInfo, setDeleteInfo] = useState<DeleteInfoState>(
-    deleteInfoInitialValue
-  );
+  const [dataToDelete, setDataToDelete] = useState(dataKontingenInitialValue);
   const [modalVisible, setModalVisible] = useState(false);
 
   const { user } = MyContext();
 
   const toastId = useRef(null);
+
+  // SET DATA USER
+  useEffect(() => {
+    setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
+  }, [user]);
+
+  // GET KONTINGENS ON DID MOUNT
+  useEffect(() => {
+    getKontingens();
+  }, []);
 
   // GET ALL KONTIGENS
   const getKontingens = () => {
@@ -80,48 +88,42 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
   const saveKontingen = (e: React.FormEvent) => {
     e.preventDefault();
     if (updating) {
-      updateData();
+      updateKontingen();
     } else {
-      sendNewData();
+      sendKontingen();
     }
   };
 
-  // SEND NEW DATA - STEP 1
-  const sendNewData = () => {
-    newToast("loading", toastId, "Mendaftarkan Kontingen");
+  // SEND KONTINGEN
+  const sendKontingen = () => {
     if (data.namaKontingen !== "") {
+      newToast(toastId, "loading", "Mendaftarkan Kontingen");
       const newDocRef = doc(collection(firestore, "kontingens"));
-      setData({
+      setDoc(newDocRef, {
         ...data,
         idKontingen: newDocRef.id,
         waktuPendaftaran: Date.now(),
-      });
-      setNewDataRef(newDocRef);
-    } else {
-      alert("tolong lengkapi data terlebih dahulu");
-    }
-  };
-
-  // SEND NEW DATA - STEP 2 - IF HAVE ID
-  useEffect(() => {
-    if (data.idKontingen && data.waktuPendaftaran && newDataRef) {
-      setDoc(newDataRef, data)
+      })
         .then(() => {
           updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
-          getKontingens();
         })
         .catch((error) => alert(error))
         .finally(() => {
           resetData();
           getKontingens();
         });
+    } else {
+      alert("tolong lengkapi data terlebih dahulu");
     }
-  }, [data.idKontingen, newDataRef, data.waktuPendaftaran]);
+  };
 
-  // UPDATE DATA
-  const updateData = () => {
-    newToast("loading", toastId, "Mengubah Data Kontingen");
-    setDoc(doc(firestore, "kontingens", data.idKontingen), data)
+  // UPDATE KONTINGEN
+  const updateKontingen = () => {
+    newToast(toastId, "loading", "Mengubah Data Kontingen");
+    setDoc(doc(firestore, "kontingens", data.idKontingen), {
+      ...data,
+      waktuPerubahan: Date.now(),
+    })
       .then(() => {
         updateToast(toastId, "success", "Data berhasil dirubah");
         getKontingens();
@@ -133,20 +135,10 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
       });
   };
 
-  // SET DATA USER
-  useEffect(() => {
-    setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
-  }, [user]);
-
-  // GET KONTINGENS ON DID MOUNT
-  useEffect(() => {
-    getKontingens();
-  }, []);
-
   // EDIT HANDLER
-  const handleEdit = (id: string) => {
+  const handleEdit = (data: DataKontingenState) => {
     setUpdating(true);
-    getKontingen(id);
+    setData(data);
   };
 
   // RESETER
@@ -160,31 +152,25 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
     setUpdating(false);
   };
 
+  // DELETE HANDLER
+  const handleDelete = (data: DataKontingenState) => {
+    setModalVisible(true);
+    setDataToDelete(data);
+  };
+
   // DELETE CANCELER
   const cancelDelete = () => {
     setModalVisible(false);
-    setDeleteInfo(deleteInfoInitialValue);
-  };
-
-  // DELETE HANDLER
-  const handleDelete = (
-    id: string,
-    pesertas: string[] | [],
-    officials: string[] | [],
-    dibayar: boolean
-  ) => {
-    console.log(id, pesertas, officials, dibayar);
-    setModalVisible(true);
-    setDeleteInfo({ id, pesertas, officials, dibayar });
+    setDataToDelete(dataKontingenInitialValue);
   };
 
   // DELETING DATA - START
   // DELETE CONTROLLER
   const deleteData = () => {
     setModalVisible(false);
-    if (deleteInfo.pesertas.length) {
+    if (dataToDelete.pesertas.length) {
       deletePesertas();
-    } else if (deleteInfo.officials.length) {
+    } else if (dataToDelete.officials.length) {
       deleteOfficials();
     } else {
       deleteKontingen();
@@ -193,82 +179,26 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
 
   //DELETE ALL PESERTA
   const deletePesertas = () => {
-    newToast("loading", toastId, "Menghapus Peserta");
-    const jumlahPeserta = deleteInfo.pesertas.length;
-    let pesertaDeleted = 0;
-    while (pesertaDeleted <= jumlahPeserta) {
-      if (pesertaDeleted < jumlahPeserta) {
-        deleteDoc(
-          doc(firestore, "pesertas", deleteInfo.pesertas[pesertaDeleted])
-        )
-          .then(() => (pesertaDeleted += 1))
-          .catch((error) => {
-            console.log(error);
-            updateToast(
-              toastId,
-              "error",
-              "Gagal mengapus semua peserta dari kontingen"
-            );
-            pesertaDeleted = jumlahPeserta;
-            getKontingens();
-            cancelDelete();
-          });
-      } else {
-        updateToast(
-          toastId,
-          "success",
-          "Berhasil menghapus semua official dari kontingen"
-        );
-        deleteOfficials();
-      }
-    }
+    // FIX ME
   };
 
   // DELETE ALL OFFICIAL
   const deleteOfficials = () => {
-    newToast("loading", toastId, "Menghapus Official");
-    const jumlahOfficial = deleteInfo.officials.length;
-    let officialDeleted = 0;
-    while (officialDeleted <= jumlahOfficial) {
-      if (officialDeleted < jumlahOfficial) {
-        deleteDoc(
-          doc(firestore, "officials", deleteInfo.officials[officialDeleted])
-        )
-          .then(() => (officialDeleted += 1))
-          .catch((error) => {
-            console.log(error);
-            updateToast(
-              toastId,
-              "error",
-              "Gagal mengapus semua official dari kontingen"
-            );
-            officialDeleted = jumlahOfficial;
-            cancelDelete();
-            getKontingens();
-          });
-      } else {
-        updateToast(
-          toastId,
-          "success",
-          "Berhasil menghapus semua official dari kontingen"
-        );
-        deleteKontingen();
-      }
-    }
+    // FIX ME
   };
 
   // DELETE KONTINGEN
   const deleteKontingen = () => {
-    newToast("loading", toastId, "Menghapus Kontingen");
-    deleteDoc(doc(firestore, "kontingens", deleteInfo.id))
+    newToast(toastId, "loading", "Menghapus Kontingen");
+    deleteDoc(doc(firestore, "kontingens", dataToDelete.idKontingen))
       .then(() => updateToast(toastId, "success", "Kontingen berhasil dihapus"))
       .catch((error) => {
-        console.log(error);
         updateToast(
           toastId,
           "error",
           "Gagal mengapus semua official dari kontingen"
         );
+        alert(error);
       })
       .finally(() => {
         getKontingens();
@@ -294,7 +224,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
       <form onSubmit={(e) => saveKontingen(e)}>
         <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
           <div className="h-full w-full">
-            {deleteInfo.dibayar ? (
+            {dataToDelete.waktuPembayaran ? (
               <div className="h-full w-full flex flex-col justify-between">
                 <h1 className="font-semibold text-red-500">
                   Tidak dapat menghapus kontingen
@@ -315,16 +245,15 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
               <div className="h-full w-full flex flex-col justify-between">
                 <h1 className="font-semibold text-red-500">Hapus kontingen</h1>
                 <p>
-                  {deleteInfo.officials.length !== 0 ||
-                  deleteInfo.officials.length !== 0 ? (
+                  {dataToDelete.officials.length !== 0 ||
+                  dataToDelete.officials.length !== 0 ? (
                     <span>
-                      Kontingen anda terdiri dari {deleteInfo.officials.length}{" "}
-                      Official dan {deleteInfo.pesertas.length} Peserta.
-                      <br />
                       jika anda memilih untuk menghapus kontingen ini,{" "}
-                      {deleteInfo.officials.length} Official dan{" "}
-                      {deleteInfo.pesertas.length} Peserta yang tergabung di
-                      dalam kontingen ini akan ikut terhapus
+                      {dataToDelete.officials.length} Official dan{" "}
+                      {dataToDelete.pesertas.length} Peserta yang tergabung di
+                      dalam kontingen {dataToDelete.namaKontingen} akan ikut
+                      terhapus
+                      <br />
                     </span>
                   ) : null}
                   Apakah anda yakin akan menghapus Kontingen?

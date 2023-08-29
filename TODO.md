@@ -6,7 +6,8 @@ Project Description
 
 ### Todo
 
-- [ ] refactor form official  
+- [ ] delete kontignen with its pesertas and official  
+- [ ] bukti pembayaran kontingen jadi array  
 - [ ] delete oficial from kontingen jika ganti kontingen  
 - [ ] cant leave unsaved form  
 - [ ] test rodal delete  
@@ -15,9 +16,11 @@ Project Description
 
 ### In Progress
 
+- [ ] refactor form kontingen  
 
 ### Done ✓
 
+- [x] refactor form official  
 - [x] upload foto official  
 - [x] delete official from kontingen  
 - [x] delete foto offcial  
