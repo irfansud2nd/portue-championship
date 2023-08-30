@@ -1,9 +1,11 @@
 "use client";
 import { MyContext } from "@/context/Context";
 import Link from "next/link";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { BsGoogle } from "react-icons/bs";
+
 const LoginButton = () => {
-  const { user, googleSignIn } = MyContext();
+  const { user, googleSignIn, userLoading } = MyContext();
   const handleLogin = async () => {
     try {
       await googleSignIn();
@@ -13,7 +15,11 @@ const LoginButton = () => {
   };
   return (
     <>
-      {user ? (
+      {userLoading ? (
+        <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center">
+          <AiOutlineLoading3Quarters className="animate-spin h-7" />
+        </div>
+      ) : user ? (
         <Link
           href="/halaman-pendaftaran"
           className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"

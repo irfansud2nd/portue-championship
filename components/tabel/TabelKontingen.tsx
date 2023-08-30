@@ -7,13 +7,8 @@ const TabelKontingen = ({
   handleEdit,
 }: {
   data: DataKontingenState[];
-  handleDelete: (
-    id: string,
-    pesertas: string[] | [],
-    officials: string[] | [],
-    dibayar: boolean
-  ) => void;
-  handleEdit: (id: string) => void;
+  handleDelete: (data: DataKontingenState) => void;
+  handleEdit: (data: DataKontingenState) => void;
 }) => {
   const tableHead = ["No", "Nama Kontingen", "Official", "Peserta", "Aksi"];
   return (
@@ -36,15 +31,8 @@ const TabelKontingen = ({
             <td>{item.pesertas.length}</td>
             <td>
               <TabelActionButtons
-                handleDelete={() =>
-                  handleDelete(
-                    item.idKontingen,
-                    item.pesertas,
-                    item.officials,
-                    item.downloadBuktiPembayaranUrl !== ""
-                  )
-                }
-                handleEdit={() => handleEdit(item.idKontingen)}
+                handleDelete={() => handleDelete(item)}
+                handleEdit={() => handleEdit(item)}
               />
             </td>
           </tr>
