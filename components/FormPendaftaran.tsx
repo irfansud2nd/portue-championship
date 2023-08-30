@@ -15,6 +15,8 @@ import { MyContext } from "@/context/Context";
 import { FiMenu } from "react-icons/fi";
 import { GrClose } from "react-icons/gr";
 import KategoriPendaftaran from "./KategoriPendaftaran";
+import Link from "next/link";
+import { AiOutlineRollback } from "react-icons/ai";
 
 const FormPendaftaran = ({
   setKategoriPendaftaran,
@@ -83,9 +85,16 @@ const FormPendaftaran = ({
         </button>
         {showNav && (
           <div
-            className="absolute z-[10] top-9 right-0"
+            className="absolute z-[10] top-9 right-0 bg-gray-300 rounded-md pt-1"
             onClick={() => setShowNav(false)}
           >
+            <Link
+              href="/"
+              className="font-semibold tracking-wide hover:text-custom-navy transition hover:underline"
+            >
+              <AiOutlineRollback className="inline text-xl mb-1 mr-1" />
+              Halaman Awal
+            </Link>
             <KategoriPendaftaran
               kategoriPendaftaran={kategoriPendaftaran}
               setKategoriPendaftaran={setKategoriPendaftaran}

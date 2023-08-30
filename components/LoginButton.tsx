@@ -3,8 +3,6 @@ import { MyContext } from "@/context/Context";
 import Link from "next/link";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { BsGoogle } from "react-icons/bs";
-import { useState, useEffect } from "react";
-import { getJumlahPeserta } from "@/utils/sharedFunctions";
 
 const LoginButton = () => {
   const { user, googleSignIn, userLoading } = MyContext();
@@ -12,7 +10,7 @@ const LoginButton = () => {
     try {
       await googleSignIn();
     } catch (error) {
-      console.log(error);
+      alert(error);
     }
   };
 

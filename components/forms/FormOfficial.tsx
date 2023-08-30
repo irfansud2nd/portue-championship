@@ -13,6 +13,7 @@ import {
   deletePerson,
   getInputErrorOfficial,
   limitImage,
+  newToast,
   sendPerson,
   updatePerson,
   updatePersonImage,
@@ -75,11 +76,9 @@ const FormOfficial = ({
   // SET DATA USER
   useEffect(() => {
     if (user && kontingens.length == 0) {
-      console.log("setting user");
       setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
     }
     if (user && kontingens.length !== 0) {
-      console.log("setting user and kontingen");
       setData({
         ...data,
         creatorEmail: user.email,
@@ -109,7 +108,7 @@ const FormOfficial = ({
           container.push(doc.data());
         })
       )
-      .catch((error) => alert(error))
+      .catch((error) => newToast(toastId, "error", error.messages))
       .finally(() => {
         setOfficials(container.sort(compare("waktuPendaftaran", "asc")));
         // TABEL LOADING FALSE
@@ -216,7 +215,6 @@ const FormOfficial = ({
         data.idKontingen !== prevData.idKontingen &&
         imageSelected
       ) {
-        console.log("updatePersonImageKontingen");
         updatePersonImageKontingen(
           "official",
           data,
@@ -230,10 +228,8 @@ const FormOfficial = ({
         imagePreviewSrc !== prevData.downloadFotoUrl &&
         imageSelected
       ) {
-        console.log("updatePersonImage");
         updatePersonImage("official", data, toastId, imageSelected, resetEdit);
       } else if (data.idKontingen !== prevData.idKontingen) {
-        console.log("updatePersonKontingen");
         updatePersonKontingen(
           "official",
           data,
@@ -246,7 +242,6 @@ const FormOfficial = ({
         imagePreviewSrc == prevData.downloadFotoUrl &&
         data.idKontingen == prevData.idKontingen
       ) {
-        console.log("updatePerson");
         updatePerson("official", data, toastId, resetEdit);
       }
     }

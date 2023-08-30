@@ -1,30 +1,3 @@
-// import {
-//   DataKontingenState,
-//   DataOfficialState,
-//   DataPesertaState,
-// } from "@/utils/types";
-// import InfoKontingenTerdaftar from "../tabel/InfoKontingenTerdaftar";
-
-// const FormPembayaran = ({
-//   kontingens,
-//   officials,
-//   pesertas,
-// }: {
-//   kontingens: DataKontingenState[];
-//   officials: DataOfficialState[];
-//   pesertas: DataPesertaState[];
-// }) => {
-//   return (
-//     <div>
-//       <InfoKontingenTerdaftar
-//         kontingens={kontingens}
-//         officials={officials}
-//         pesertas={pesertas}
-//       />
-//     </div>
-//   );
-// };
-// export default FormPembayaran;
 "use client";
 import {
   DataKontingenState,
@@ -58,7 +31,6 @@ import { PiWarningCircleBold } from "react-icons/pi";
 import Image from "next/image";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
-import { Console } from "console";
 import TabelOfficial from "../tabel/TabelOfficial";
 import TabelPeserta from "../tabel/TabelPeserta";
 
@@ -111,7 +83,7 @@ const FormPembayaran = ({
             container.push(doc.data());
           })
         )
-        .catch((error) => alert(error))
+        .catch((error) => newToast(toastId, "error", error.messages))
         .finally(() => {
           setFetchedOfficials(container.sort(compare("namaLengkap", "asc")));
           setTabelOfficialLoading(false);
@@ -134,7 +106,6 @@ const FormPembayaran = ({
 
   // FETSCH PESETAS
   const fetchPesertas = () => {
-    console.log("fetch pesertas");
     setTabelPesertaLoading(true);
     const container: any[] = [];
     const q = query(
@@ -147,7 +118,7 @@ const FormPembayaran = ({
           container.push(doc.data());
         })
       )
-      .catch((error) => alert(error))
+      .catch((error) => newToast(toastId, "error", error.messages))
       .finally(() => {
         setFetchedPesertas(container.sort(compare("namaLengkap", "asc")));
         setTabelPesertaLoading(false);
@@ -275,7 +246,6 @@ const FormPembayaran = ({
     pesertasIndex: number,
     time: number
   ) => {
-    console.log("LOOP", pesertasIndex);
     const id =
       pesertas.length >= fetchedPesertas.length
         ? pesertas[pesertasIndex].id
@@ -294,12 +264,17 @@ const FormPembayaran = ({
             .then(() => {
               sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
             })
-            .catch((error) => alert(error));
+            .catch((error) =>
+              updateToast(
+                toastId,
+                "error",
+                `Gagal menyimpan data pembayaran ke peserta. ${error.messages}`
+              )
+            );
         } else {
           alert("id undefined");
         }
       } else {
-        console.log("GARA GARA INI");
         sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
       }
     } else {
@@ -328,7 +303,6 @@ const FormPembayaran = ({
     time: number
   ) => {
     const id = kontingens[kontingenIndex].idKontingen;
-    console.log(kontingenIndex, id);
     if (kontingenIndex >= 0) {
       if (id) {
         updateDoc(doc(firestore, "kontingens", id), {
@@ -344,7 +318,13 @@ const FormPembayaran = ({
               resetData();
             }
           })
-          .catch((error) => alert(error));
+          .catch((error) =>
+            updateToast(
+              toastId,
+              "error",
+              `Gagal menyimpan data pembayaran ke kontingen ${error.messages}`
+            )
+          );
       } else {
         newToast(toastId, "error", "id undefined");
       }
@@ -525,7 +505,7 @@ const FormPembayaran = ({
             <div>
               <h5 className="mt-2">Fasilitas yang didapatkan:</h5>
               <ol>
-                <li>1. Kartu rekening BJB</li>
+                <li>1. Kartu Bandung Juara</li>
                 <li>2. Buku rekening BJB</li>
                 <li>3. Asuransi BPJS Ketenagakerjaan</li>
               </ol>

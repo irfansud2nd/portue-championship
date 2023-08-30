@@ -6,6 +6,7 @@ Project Description
 
 ### Todo
 
+- [ ] fix toast error message  
 - [ ] page for bendahara  
 - [ ] page for admin  
 - [ ] image loading  
@@ -13,10 +14,16 @@ Project Description
 
 ### Untested
 
-- [ ] responsive  
 
 ### Done ✓
 
+- [x] delete console log  
+- [x] cant delete peserta yang psid  
+- [x] tambah back to dashboard di nav menu  
+- [x] delete add kontingen  
+- [x] add download proposal  
+- [x] responsive  
+- [x] ganti kartu bandung juara  
 - [x] set disable logout  
 - [x] set disable pembayaran  
 - [x] set disable official  

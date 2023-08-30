@@ -1,9 +1,7 @@
 "use client";
 import { MyContext } from "@/context/Context";
-import { useEffect } from "react";
 import { FaUserCircle } from "react-icons/fa";
 import Image from "next/image";
-import { BiSolidLogInCircle } from "react-icons/bi";
 import { FcGoogle } from "react-icons/fc";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
@@ -13,12 +11,9 @@ const Profile = () => {
     try {
       await logOut();
     } catch (error) {
-      console.log(error);
+      alert(error);
     }
   };
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
 
   return (
     <div className="max-w-[160px] w-fit max-h-full -translate-y-1 sm:translate-y-0">

@@ -112,7 +112,7 @@ const FormPeserta = ({
           container.push(doc.data());
         })
       )
-      .catch((error) => alert(error))
+      .catch((error) => newToast(toastId, "error", error.messages))
       .finally(() => {
         setPesertas(container.sort(compare("namaLenkap", "asc")));
         // TABEL LOADING FALSE
@@ -447,15 +447,21 @@ const FormPeserta = ({
         <div className="h-full w-full">
           <div className="h-full w-full flex flex-col justify-between">
             <h1 className="font-semibold text-red-500">Hapus Peserta</h1>
-            <p>Apakah anda yakin akan menghapus Peserta ini?</p>
+            <p>
+              {dataToDelete?.downloadBuktiPembayaranUrl
+                ? "Maaf peserta yang terlah diselesaikan pembayarannya tidak dapat dihapus"
+                : "Apakah anda yakin akan menghapus Peserta ini?"}
+            </p>
             <div className="self-end flex gap-2">
-              <button
-                className="btn_red btn_full"
-                onClick={deleteData}
-                type="button"
-              >
-                Yakin
-              </button>
+              {!dataToDelete?.downloadBuktiPembayaranUrl && (
+                <button
+                  className="btn_red btn_full"
+                  onClick={deleteData}
+                  type="button"
+                >
+                  Yakin
+                </button>
+              )}
               <button
                 className="btn_green btn_full"
                 onClick={cancelDelete}

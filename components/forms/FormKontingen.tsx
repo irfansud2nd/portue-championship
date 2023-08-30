@@ -66,7 +66,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           container.push(doc.data());
         })
       )
-      .catch((error) => console.log(error))
+      .catch((error) => newToast(toastId, "error", error.messages))
       .finally(() => {
         setKontingens(container.sort(compare("waktuPendaftaran", "asc")));
         // TABEL LOADING FALSE
@@ -101,7 +101,13 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
       .then(() => {
         updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
       })
-      .catch((error) => alert(error))
+      .catch((error) =>
+        updateToast(
+          toastId,
+          "error",
+          `Gagal mendaftarkan kontingen. ${error.messages}`
+        )
+      )
       .finally(() => {
         resetData();
         getKontingens();
@@ -119,7 +125,9 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
         updateToast(toastId, "success", "Data berhasil dirubah");
         getKontingens();
       })
-      .catch((error) => alert(error))
+      .catch((error) =>
+        updateToast(toastId, "error", `Gagal mengubah data. ${error.messages}`)
+      )
       .finally(() => {
         resetData();
         getKontingens();
@@ -231,9 +239,8 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
         updateToast(
           toastId,
           "error",
-          "Gagal mengapus semua official dari kontingen"
+          `Gagal menghapus kontingen. ${error.messages}`
         );
-        alert(error);
       })
       .finally(() => {
         getKontingens();
@@ -260,95 +267,98 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           <p>Belum ada Kontingen yang didaftarkan</p>
         </p>
       )}
-      <form onSubmit={(e) => saveKontingen(e)}>
-        <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
-          <div className="h-full w-full">
-            {dataToDelete.waktuPembayaran.length ? (
-              <div className="h-full w-full flex flex-col justify-between">
-                <h1 className="font-semibold text-red-500">
-                  Tidak dapat menghapus kontingen
-                </h1>
-                <p>
-                  Maaf, kontingen yang pesertanya sudah diselesaikan
-                  pembayarannya tidak dapat dihapus
-                </p>
-                <button
-                  onClick={cancelDelete}
-                  className="self-end btn_green btn_full"
-                  type="button"
-                >
-                  Ok
-                </button>
-              </div>
-            ) : (
-              <div className="h-full w-full flex flex-col justify-between">
-                <h1 className="font-semibold text-red-500">Hapus kontingen</h1>
-                <p>
-                  {dataToDelete.officials.length !== 0 ||
-                  dataToDelete.officials.length !== 0 ? (
-                    <span>
-                      jika anda memilih untuk menghapus kontingen ini,{" "}
-                      {dataToDelete.officials.length} Official dan{" "}
-                      {dataToDelete.pesertas.length} Peserta yang tergabung di
-                      dalam kontingen {dataToDelete.namaKontingen} akan ikut
-                      terhapus
-                      <br />
-                    </span>
-                  ) : null}
-                  Apakah anda yakin akan menghapus Kontingen?
-                </p>
-                <div className="self-end flex gap-2">
-                  <button
-                    className="btn_red btn_full"
-                    onClick={deleteData}
-                    type="button"
-                  >
-                    Yakin
-                  </button>
-                  <button
-                    className="btn_green btn_full"
-                    onClick={cancelDelete}
-                    type="button"
-                  >
-                    Batal
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </Rodal>
-        <div className="input_container">
-          <label className="input_label">Nama Kontingen</label>
-          <div className="flex flex-wrap gap-y-2 gap-x-5">
-            <input
-              type="text"
-              className="input"
-              value={data.namaKontingen}
-              onChange={(e) =>
-                setData({ ...data, namaKontingen: e.target.value })
-              }
-            />
-            <div className="flex gap-3">
+      <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
+        <div className="h-full w-full">
+          {dataToDelete.waktuPembayaran.length ? (
+            <div className="h-full w-full flex flex-col justify-between">
+              <h1 className="font-semibold text-red-500">
+                Tidak dapat menghapus kontingen
+              </h1>
+              <p>
+                Maaf, kontingen yang pesertanya sudah diselesaikan pembayarannya
+                tidak dapat dihapus
+              </p>
               <button
-                disabled={disable}
-                className="btn_red btn_full"
-                onClick={resetData}
+                onClick={cancelDelete}
+                className="self-end btn_green btn_full"
                 type="button"
               >
-                Batal
-              </button>
-              <button
-                disabled={disable}
-                className="btn_green btn_full"
-                type="submit"
-              >
-                {updating ? "Perbaharui" : "Simpan"}
+                Ok
               </button>
             </div>
-          </div>
+          ) : (
+            <div className="h-full w-full flex flex-col justify-between">
+              <h1 className="font-semibold text-red-500">Hapus kontingen</h1>
+              <p>
+                {dataToDelete.officials.length !== 0 ||
+                dataToDelete.officials.length !== 0 ? (
+                  <span>
+                    jika anda memilih untuk menghapus kontingen ini,{" "}
+                    {dataToDelete.officials.length} Official dan{" "}
+                    {dataToDelete.pesertas.length} Peserta yang tergabung di
+                    dalam kontingen {dataToDelete.namaKontingen} akan ikut
+                    terhapus
+                    <br />
+                  </span>
+                ) : null}
+                Apakah anda yakin akan menghapus Kontingen?
+              </p>
+              <div className="self-end flex gap-2">
+                <button
+                  className="btn_red btn_full"
+                  onClick={deleteData}
+                  type="button"
+                >
+                  Yakin
+                </button>
+                <button
+                  className="btn_green btn_full"
+                  onClick={cancelDelete}
+                  type="button"
+                >
+                  Batal
+                </button>
+              </div>
+            </div>
+          )}
         </div>
-        <div className="flex gap-2"></div>
-      </form>
+      </Rodal>
+      {(updating || kontingens.length == 0) && (
+        <form onSubmit={(e) => saveKontingen(e)}>
+          <div className="input_container">
+            <label className="input_label">Nama Kontingen</label>
+            <div className="flex flex-wrap gap-y-2 gap-x-5">
+              <input
+                type="text"
+                className="input"
+                value={data.namaKontingen}
+                onChange={(e) =>
+                  setData({ ...data, namaKontingen: e.target.value })
+                }
+              />
+
+              <div className="flex gap-3">
+                <button
+                  disabled={disable}
+                  className="btn_red btn_full"
+                  onClick={resetData}
+                  type="button"
+                >
+                  Batal
+                </button>
+                <button
+                  disabled={disable}
+                  className="btn_green btn_full"
+                  type="submit"
+                >
+                  {updating ? "Perbaharui" : "Simpan"}
+                </button>
+              </div>
+            </div>
+          </div>
+          <div className="flex gap-2"></div>
+        </form>
+      )}
     </div>
   );
 };

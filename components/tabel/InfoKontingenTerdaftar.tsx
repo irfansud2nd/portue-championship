@@ -107,7 +107,6 @@ const InfoKontingenTerdaftar = ({
 
   // FETSCH PESETAS
   const fetchPesertas = () => {
-    console.log("fetch pesertas");
     setTabelPesertaLoading(true);
     const container: any[] = [];
     const q = query(
@@ -248,7 +247,6 @@ const InfoKontingenTerdaftar = ({
     pesertasIndex: number,
     time: number
   ) => {
-    console.log("LOOP", pesertasIndex);
     const id =
       pesertas.length >= fetchedPesertas.length
         ? pesertas[pesertasIndex].id
@@ -272,7 +270,6 @@ const InfoKontingenTerdaftar = ({
           alert("id undefined");
         }
       } else {
-        console.log("GARA GARA INI");
         sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
       }
     } else {
@@ -301,7 +298,6 @@ const InfoKontingenTerdaftar = ({
     time: number
   ) => {
     const id = kontingens[kontingenIndex].idKontingen;
-    console.log(kontingenIndex, id);
     if (kontingenIndex >= 0) {
       if (id) {
         updateDoc(doc(firestore, "kontingens", id), {
