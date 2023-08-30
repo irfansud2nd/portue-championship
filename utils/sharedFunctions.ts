@@ -254,8 +254,7 @@ export const updatePersonImage = async (
     .then(() => {
       // UPLOAD NEW IMAGE
       updateToast(toastId, "loading", "Mengunggah Foto Baru");
-      const url = `${tipe}s/${v4()}.${imageSelected.type.split("/")[1]}`;
-      uploadBytes(ref(storage, url), imageSelected)
+      uploadBytes(ref(storage, data.fotoUrl), imageSelected)
         .then((snapshot) => {
           // UPLOAD PERSON
           getDownloadURL(snapshot.ref).then((downloadUrl) => {
@@ -267,7 +266,6 @@ export const updatePersonImage = async (
             updateDoc(doc(firestore, `${tipe}s`, data.id), {
               ...data,
               downloadFotoUrl: downloadUrl,
-              fotoUrl: url,
               waktuPerubahan: Date.now(),
             })
               .then(() => {
@@ -392,8 +390,7 @@ export const updatePersonImageKontingen = async (
     .then(() => {
       // UPLOAD NEW IMAGE
       updateToast(toastId, "loading", "Mengunggah Foto Baru");
-      const url = `${tipe}s/${v4()}.${imageSelected.type.split("/")[1]}`;
-      uploadBytes(ref(storage, url), imageSelected)
+      uploadBytes(ref(storage, data.fotoUrl), imageSelected)
         .then((snapshot) => {
           getDownloadURL(snapshot.ref).then((downloadUrl) => {
             // UPLOAD PERSON
@@ -405,7 +402,6 @@ export const updatePersonImageKontingen = async (
             updateDoc(doc(firestore, `${tipe}s`, data.id), {
               ...data,
               downloadFotoUrl: downloadUrl,
-              fotoUrl: url,
               waktuPerubahan: Date.now(),
             })
               .then(() => {
@@ -549,8 +545,9 @@ export const sendPerson = async (
 ) => {
   const namaKontingen = findNamaKontingen(kontingens, data.idKontingen);
   newToast(toastId, "loading", `Mengunggah foto ${data.namaLengkap}`);
-  const url = `${tipe}s/${v4()}.${imageSelected.type.split("/")[1]}`;
   // UPLOAD IMAGE
+  const newDocRef = doc(collection(firestore, `${tipe}s`));
+  const url = `${tipe}s/${newDocRef.id}-image`;
   return uploadBytes(ref(storage, url), imageSelected)
     .then((snapshot) => {
       getDownloadURL(snapshot.ref).then((downloadUrl) => {
@@ -560,7 +557,6 @@ export const sendPerson = async (
           "loading",
           `Mendaftarkan ${data.namaLengkap} sebagai ${tipe}`
         );
-        const newDocRef = doc(collection(firestore, `${tipe}s`));
         setDoc(newDocRef, {
           ...data,
           id: newDocRef.id,

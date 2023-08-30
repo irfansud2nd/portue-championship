@@ -172,7 +172,12 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
       const id = dataToDelete.officials[officialIndex];
       deletePerson(
         "officials",
-        { namaLengkap: "", idKontingen: dataToDelete.idKontingen },
+        {
+          namaLengkap: `${dataToDelete.officials.length} official`,
+          idKontingen: dataToDelete.idKontingen,
+          fotoUrl: `officials/${id}-image`,
+          id: id,
+        },
         kontingens,
         toastId,
         () => afterDeleteOfficial(officialIndex)
@@ -193,10 +198,15 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   //DELETE ALL PESERTA
   const deletePesertas = (pesertaIndex: number) => {
     if (pesertaIndex >= 0) {
-      const id = dataToDelete.officials[pesertaIndex];
+      const id = dataToDelete.pesertas[pesertaIndex];
       deletePerson(
         "pesertas",
-        { namaLengkap: "", idKontingen: dataToDelete.idKontingen },
+        {
+          namaLengkap: `${dataToDelete.pesertas.length} peserta`,
+          idKontingen: dataToDelete.idKontingen,
+          fotoUrl: `pesertas/${id}-image`,
+          id: id,
+        },
         kontingens,
         toastId,
         () => afterDeletePeserta(pesertaIndex)
