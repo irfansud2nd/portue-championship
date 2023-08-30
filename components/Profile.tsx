@@ -21,8 +21,8 @@ const Profile = () => {
   }, [user]);
 
   return (
-    <div className="max-w-[160px] w-[160px]">
-      <div className="flex items-center gap-2 w-fit bg-white rounded-full p-2">
+    <div className="max-w-[160px] w-fit max-h-full -translate-y-1 sm:translate-y-0">
+      <div className="flex items-center text-sm sm:text-base gap-2 w-fit bg-white rounded-full p-1 sm:p2">
         {user ? (
           user.photoURL ? (
             <Image
@@ -30,7 +30,7 @@ const Profile = () => {
               width={30}
               height={30}
               alt="profil"
-              className="rounded-full object-cover max-h-[30px]"
+              className="rounded-full object-cover max-h-[20px] max-w-[20px] sm:max-w-[30px] sm:max-h-[30px]"
             />
           ) : (
             <FaUserCircle className="h-[30px] w-[30px]" />

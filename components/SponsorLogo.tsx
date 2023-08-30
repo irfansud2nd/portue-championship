@@ -8,16 +8,16 @@ import Profile from "./Profile";
 
 const SponsorLogo = () => {
   return (
-    <section className="w-full flex justify-between h-[80px] p-2 items-center">
+    <section className="w-full flex justify-between h-[40px] sm:h-[60px] md:h-[80px] p-2 items-center ">
       <div className="h-full flex items-center">
         <Profile />
         <Image
           src={graphic_portue}
           alt="graphic-portue"
-          className="w-fit h-full"
+          className="w-fit h-full my-auto"
         />
       </div>
-      <div className="flex gap-3 h-full">
+      <div className="flex gap-3 h-full w-full justify-end">
         <Image src={logo_koni} alt="logo-koni" className="w-fit h-full" />
         <Image src={logo_ipsi} alt="logo-ipsi" className="w-fit h-full" />
         <Image src={logo_bpjs} alt="logo-bpjs" className="w-fit h-full" />

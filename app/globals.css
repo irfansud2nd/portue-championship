@@ -5,7 +5,6 @@
 
 @layer base {
   /* TABEL */
-
   button {
     @apply disabled:text-white disabled:hover:text-white disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:border-gray-300 disabled:hover:border-gray-300;
   }
@@ -34,6 +33,10 @@
   tbody > td {
     @apply whitespace-nowrap;
   }
+
+  body {
+    @apply text-sm sm:text-base;
+  }
 }
 @layer utilities {
   /* BUTTON COLOR */
@@ -56,12 +59,6 @@
   }
 
   /* SPECIAL BUTTON */
-  .btn_kategori {
-    @apply rounded-full px-3 py-2 border-2 border-custom-yellow capitalize text-custom-yellow font-bold text-xl tracking-wide hover:btn_kategori_active transition;
-  }
-  .btn_kategori_active {
-    @apply bg-custom-yellow text-black;
-  }
   .btn_wa {
     @apply bg-gray-300 text-green-500 px-1 rounded-md;
   }

@@ -1,20 +1,27 @@
 "use client";
-import InfoPendaftar from "@/components/InfoPendaftar";
 import LoginButton from "@/components/LoginButton";
 import Pendaftaran from "@/components/Pendaftaran";
 import { MyContext } from "@/context/Context";
 import { AiOutlineRollback } from "react-icons/ai";
 import { PiWarningBold } from "react-icons/pi";
+import { useEffect } from "react";
 import graphic_portue from "@/public/images/graphic-portue.png";
-import mascot_2 from "@/public/images/mascot-2.png";
 import Image from "next/image";
 import Link from "next/link";
+import Head from "next/head";
 
 const PendaftaranPage = () => {
   const { user, userLoading } = MyContext();
 
+  useEffect(() => {
+    document.title = "Halaman Pendaftaran - Portue Silat Bandung Championship";
+  }, []);
+
   return (
-    <>
+    <div className="h-full max-w-[100vw]">
+      <Head>
+        <title>Halaman Pendaftaran - Portue Silat Bandung Championship</title>
+      </Head>
       {userLoading ? (
         <div className="h-full w-full flex justify-center items-center">
           <Image
@@ -24,15 +31,9 @@ const PendaftaranPage = () => {
           />
         </div>
       ) : user ? (
-        <div className="h-full w-full grid grid-cols-[1fr_auto] gap-2 p-3">
-          <div className="bg-gray-200 rounded-md p-2">
+        <div className="h-full w-full justify-center items-center p-2">
+          <div>
             <Pendaftaran />
-          </div>
-          <div className="bg-gray-200 w-[200px] rounded-md grid grid-rows-[auto_1fr] max-h-[85vh] sticky top-2">
-            <Image src={mascot_2} alt="mascot-2" className="h-fit w-full" />
-            <div className="p-1">
-              <InfoPendaftar />
-            </div>
           </div>
         </div>
       ) : (
@@ -56,7 +57,7 @@ const PendaftaranPage = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 export default PendaftaranPage;

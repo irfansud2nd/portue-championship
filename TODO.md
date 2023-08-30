@@ -6,7 +6,6 @@ Project Description
 
 ### Todo
 
-- [ ] responsive  
 - [ ] page for bendahara  
 - [ ] page for admin  
 - [ ] image loading  
@@ -14,6 +13,7 @@ Project Description
 
 ### Untested
 
+- [ ] responsive  
 
 ### Done ✓
 

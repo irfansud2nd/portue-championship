@@ -26,7 +26,7 @@ const TabelPeserta = ({
   ];
 
   return (
-    <>
+    <div className="overflow-x-auto">
       {!data.length ? (
         loading ? (
           <p>
@@ -81,7 +81,7 @@ const TabelPeserta = ({
           </tbody>
         </table>
       )}
-    </>
+    </div>
   );
 };
 export default TabelPeserta;

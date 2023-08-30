@@ -33,6 +33,7 @@ export const ContextProvider = ({
       setError({ message: error.message, code: error.code })
     );
   };
+
   const adminLogin = (email: string, pass: string) => {
     signInWithEmailAndPassword(auth, email, pass)
       .then((userCredential) => {
@@ -40,6 +41,7 @@ export const ContextProvider = ({
       })
       .catch((error) => setError({ message: error.message, code: error.code }));
   };
+
   const logOut = () => {
     signOut(auth).then(() => {
       setAdminAuthorized(false);
@@ -61,8 +63,9 @@ export const ContextProvider = ({
     });
     return () => unsubscribe();
   }, [user]);
+
   const checkAdminAuthorized = (user: User) => {
-    if (user.uid === process.env.NEXT_PUBLIC_ADMIN_UID) {
+    if (user.uid === process.env.ADMIN_UID) {
       setAdminAuthorized(true);
     } else {
       setError({ ...error, message: "UID doesnt match" });

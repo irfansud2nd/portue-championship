@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className="font-poppins">
         <ContextProvider>
           <BackgroundImages />
-          <main className="grid grid-rows-[auto_1fr] min-h-screen">
+          <main className="grid grid-rows-[auto_1fr] min-h-screen w-full max-w-[1440px]">
             <SponsorLogo />
             <section className="h-full">{children}</section>
           </main>

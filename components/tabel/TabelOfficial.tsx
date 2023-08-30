@@ -25,7 +25,7 @@ const TabelOfficial = ({
   ];
 
   return (
-    <>
+    <div className="overflow-x-auto">
       {!data.length ? (
         loading ? (
           <p>
@@ -35,43 +35,45 @@ const TabelOfficial = ({
           <p className="text-red-500">Belum ada Official yang didaftarkan</p>
         )
       ) : (
-        <table>
-          <thead>
-            <tr>
-              {tableHead.map((item) => (
-                <th key={item} scope="col">
-                  {item}
-                </th>
-              ))}
-              {handleDelete && handleEdit && (
-                <th key="aksi" scope="col">
-                  Aksi
-                </th>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((item, i) => (
-              <tr key={item.id}>
-                <td>{i + 1}</td>
-                <td>{item.namaLengkap}</td>
-                <td>{item.jenisKelamin}</td>
-                <td className="capitalize">{item.jabatan}</td>
-                <td>{findNamaKontingen(kontingens, item.idKontingen)}</td>
+        <div>
+          <table className="w-full">
+            <thead>
+              <tr>
+                {tableHead.map((item) => (
+                  <th key={item} scope="col">
+                    {item}
+                  </th>
+                ))}
                 {handleDelete && handleEdit && (
-                  <td>
-                    <TabelActionButtons
-                      handleDelete={() => handleDelete(item)}
-                      handleEdit={() => handleEdit(item)}
-                    />
-                  </td>
+                  <th key="aksi" scope="col">
+                    Aksi
+                  </th>
                 )}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((item, i) => (
+                <tr key={item.id}>
+                  <td>{i + 1}</td>
+                  <td>{item.namaLengkap}</td>
+                  <td>{item.jenisKelamin}</td>
+                  <td className="capitalize">{item.jabatan}</td>
+                  <td>{findNamaKontingen(kontingens, item.idKontingen)}</td>
+                  {handleDelete && handleEdit && (
+                    <td>
+                      <TabelActionButtons
+                        handleDelete={() => handleDelete(item)}
+                        handleEdit={() => handleEdit(item)}
+                      />
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 export default TabelOfficial;

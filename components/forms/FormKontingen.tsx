@@ -319,7 +319,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
         </Rodal>
         <div className="input_container">
           <label className="input_label">Nama Kontingen</label>
-          <div className="flex gap-5">
+          <div className="flex flex-wrap gap-y-2 gap-x-5">
             <input
               type="text"
               className="input"
@@ -328,21 +328,23 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
                 setData({ ...data, namaKontingen: e.target.value })
               }
             />
-            <button
-              disabled={disable}
-              className="btn_red btn_full"
-              onClick={resetData}
-              type="button"
-            >
-              Batal
-            </button>
-            <button
-              disabled={disable}
-              className="btn_green btn_full"
-              type="submit"
-            >
-              {updating ? "Perbaharui" : "Simpan"}
-            </button>
+            <div className="flex gap-3">
+              <button
+                disabled={disable}
+                className="btn_red btn_full"
+                onClick={resetData}
+                type="button"
+              >
+                Batal
+              </button>
+              <button
+                disabled={disable}
+                className="btn_green btn_full"
+                type="submit"
+              >
+                {updating ? "Perbaharui" : "Simpan"}
+              </button>
+            </div>
           </div>
         </div>
         <div className="flex gap-2"></div>

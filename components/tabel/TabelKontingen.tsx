@@ -12,33 +12,35 @@ const TabelKontingen = ({
 }) => {
   const tableHead = ["No", "Nama Kontingen", "Official", "Peserta", "Aksi"];
   return (
-    <table>
-      <thead>
-        <tr>
-          {tableHead.map((item) => (
-            <th key={item} scope="col">
-              {item}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.map((item, i) => (
-          <tr key={item.idKontingen}>
-            <td>{i + 1}</td>
-            <td>{item.namaKontingen}</td>
-            <td>{item.officials.length}</td>
-            <td>{item.pesertas.length}</td>
-            <td>
-              <TabelActionButtons
-                handleDelete={() => handleDelete(item)}
-                handleEdit={() => handleEdit(item)}
-              />
-            </td>
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr>
+            {tableHead.map((item) => (
+              <th key={item} scope="col">
+                {item}
+              </th>
+            ))}
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {data.map((item, i) => (
+            <tr key={item.idKontingen}>
+              <td>{i + 1}</td>
+              <td>{item.namaKontingen}</td>
+              <td>{item.officials.length}</td>
+              <td>{item.pesertas.length}</td>
+              <td>
+                <TabelActionButtons
+                  handleDelete={() => handleDelete(item)}
+                  handleEdit={() => handleEdit(item)}
+                />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 export default TabelKontingen;

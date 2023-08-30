@@ -9,23 +9,24 @@ const KategoriPendaftaran = ({
 }: KategoriPendaftaranProps) => {
   const { disable } = MyContext();
   return (
-    <div
-      className={`py-2 bg-custom-navy rounded-md grid grid-cols-4 items-center text-white`}
-    >
+    <div className={`grid grid-rows-4 items-center text-white`}>
       {kategoriPendaftaranArray.map((kategori, i: number) => (
-        <div key={kategori} className="w-full flex justify-around items-center">
+        <div key={kategori} className="w-full flex flex-col gap-2 items-center">
           <button
             disabled={disable}
             onClick={() => setKategoriPendaftaran(kategori)}
-            className={`btn_kategori ${
-              kategori == kategoriPendaftaran && "btn_kategori_active"
-            }`}
+            className={`w-full px-2 capitalize font-bold text-xl tracking-wide hover:bg-custom-yellow hover:text-black transition
+            ${
+              kategori == kategoriPendaftaran
+                ? "bg-custom-yellow text-black"
+                : "bg-custom-navy text-custom-yellow"
+            }
+            ${i == 0 && "rounded-t-md"}
+            ${i == 3 && "rounded-b-md"}
+            `}
           >
             {kategori}
           </button>
-          {i !== kategoriPendaftaranArray.length - 1 && (
-            <BsArrowRightCircleFill className="inline text-4xl text-custom-yellow" />
-          )}
         </div>
       ))}
     </div>

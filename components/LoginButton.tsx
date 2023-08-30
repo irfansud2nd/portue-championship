@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { getJumlahPeserta } from "@/utils/sharedFunctions";
 
 const LoginButton = () => {
-  const [jumlahPeserta, setJumlahPeserta] = useState<number | null>(null);
   const { user, googleSignIn, userLoading } = MyContext();
   const handleLogin = async () => {
     try {
@@ -17,30 +16,11 @@ const LoginButton = () => {
     }
   };
 
-  useEffect(() => {
-    getJumlahPeserta().then((res) => {
-      setJumlahPeserta(res);
-    });
-    return () => setJumlahPeserta(null);
-  }, []);
-
-  useEffect(() => {
-    console.log(jumlahPeserta);
-  }, [jumlahPeserta]);
-
   return (
     <>
-      {userLoading || jumlahPeserta == null ? (
+      {userLoading ? (
         <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center">
           <AiOutlineLoading3Quarters className="animate-spin h-7" />
-        </div>
-      ) : jumlahPeserta == Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
-        <div className="w-full rounded-full font-semibold text-lg text-center flex justify-center">
-          <p>
-            Maaf jumlah peserta terdaftar
-            <br />
-            sudah mencapai kuota maksimum
-          </p>
         </div>
       ) : user ? (
         <Link

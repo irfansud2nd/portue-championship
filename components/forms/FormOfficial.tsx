@@ -302,6 +302,7 @@ const FormOfficial = ({
   return (
     <div className="flex flex-col gap-2">
       <ToastContainer />
+
       <TabelOfficial
         loading={tabelLoading}
         data={officials.sort(compare("namaLengkap", "asc"))}
@@ -309,181 +310,198 @@ const FormOfficial = ({
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
+
+      {/* RODAL */}
+      <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
+        <div className="h-full w-full">
+          <div className="h-full w-full flex flex-col justify-between">
+            <h1 className="font-semibold text-red-500">Hapus Official</h1>
+            <p>Apakah anda yakin akan menghapus Official ini?</p>
+            <div className="self-end flex gap-2">
+              <button
+                className="btn_red btn_full"
+                onClick={deleteData}
+                type="button"
+              >
+                Yakin
+              </button>
+              <button
+                className="btn_green btn_full"
+                onClick={cancelDelete}
+                type="button"
+              >
+                Batal
+              </button>
+            </div>
+          </div>
+        </div>
+      </Rodal>
+      {/* RODAL */}
+
+      {/* FORM */}
       <form
-        className="grid grid-cols-[auto_1fr] gap-3"
+        className="grid grid-rows-[1fr_auto] gap-2"
         onSubmit={(e) => saveOfficial(e)}
       >
-        <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
-          <div className="h-full w-full">
-            <div className="h-full w-full flex flex-col justify-between">
-              <h1 className="font-semibold text-red-500">Hapus Official</h1>
-              <p>Apakah anda yakin akan menghapus Official ini?</p>
-              <div className="self-end flex gap-2">
-                <button
-                  className="btn_red btn_full"
-                  onClick={deleteData}
-                  type="button"
-                >
-                  Yakin
-                </button>
-                <button
-                  className="btn_green btn_full"
-                  onClick={cancelDelete}
-                  type="button"
-                >
-                  Batal
-                </button>
-              </div>
-            </div>
-          </div>
-        </Rodal>
-
-        <div className="input_container max-w-[150px] ">
-          <label className="input_label text-center">Pas Foto</label>
-          <p className="-mt-2 text-sm text-gray-600 text-center">Maks. 1MB</p>
-          <div
-            className={`
+        {/* BARIS 1 */}
+        <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3">
+          {/* KOLOM KIRI */}
+          {/* PAS FOT0 */}
+          <div className="input_container max-w-[150px]">
+            <label className="input_label text-center">Pas Foto</label>
+            <p className="-mt-2 text-sm text-gray-600 text-center">Maks. 1MB</p>
+            <div
+              className={`
             ${inputErrorMessages.pasFoto ? "input_error" : "input"}
             bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
-          >
-            {imagePreviewSrc && (
-              <Image
-                src={imagePreviewSrc}
-                alt="preview"
-                fill
-                className="object-cover rounded-md"
-              />
-            )}
-          </div>
-          <input
-            disabled={disable}
-            ref={inputImageRef}
-            accept=".jpg, .jpeg, .png"
-            type="file"
-            multiple={false}
-            onChange={(e) =>
-              e.target.files && imageChangeHandler(e.target.files[0])
-            }
-            className="input_file mt-1 w-full text-transparent"
-          />
-          <p className="text-red-500 text-center">
-            {inputErrorMessages.pasFoto}
-          </p>
-        </div>
-
-        <div className="h-full w-fit flex flex-col justify-between">
-          <div>
-            <div className="inputs_container">
-              <div className="input_container">
-                <label className="input_label">Nama Lengkap</label>
-                <input
-                  disabled={disable}
-                  className={`
-                  ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
-                  type="text"
-                  value={data.namaLengkap}
-                  onChange={(e) =>
-                    setData({ ...data, namaLengkap: e.target.value })
-                  }
+            >
+              {imagePreviewSrc && (
+                <Image
+                  src={imagePreviewSrc}
+                  alt="preview"
+                  fill
+                  className="object-cover rounded-md"
                 />
-                <p className="text-red-500">{inputErrorMessages.namaLengkap}</p>
-              </div>
+              )}
+            </div>
+            <input
+              disabled={disable}
+              ref={inputImageRef}
+              accept=".jpg, .jpeg, .png"
+              type="file"
+              multiple={false}
+              onChange={(e) =>
+                e.target.files && imageChangeHandler(e.target.files[0])
+              }
+              className="input_file mt-1 w-full text-transparent"
+            />
+            <p className="text-red-500 text-center">
+              {inputErrorMessages.pasFoto}
+            </p>
+          </div>
+          {/* PAS FOT0 */}
+          {/* KOLOM KIRI */}
 
-              <div className="input_container">
-                <label className="input_label">Jenis Kelamin</label>
-                <select
-                  disabled={disable}
-                  className={`
+          {/* KOLOM KANAN */}
+          <div className="w-full flex flex-wrap justify-center sm:justify-normal gap-3 h-fit">
+            {/* NAMA LENGKAP */}
+            <div className="input_container">
+              <label className="input_label">Nama Lengkap</label>
+              <input
+                disabled={disable}
+                className={`
+                  ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
+                type="text"
+                value={data.namaLengkap}
+                onChange={(e) =>
+                  setData({ ...data, namaLengkap: e.target.value })
+                }
+              />
+              <p className="text-red-500">{inputErrorMessages.namaLengkap}</p>
+            </div>
+            {/* NAMA LENGKAP */}
+
+            {/* JENIS KELAMIN */}
+            <div className="input_container">
+              <label className="input_label">Jenis Kelamin</label>
+              <select
+                disabled={disable}
+                className={`
                   ${inputErrorMessages.jenisKelamin ? "input_error" : "input"}
                   `}
-                  value={data.jenisKelamin}
-                  onChange={(e) =>
-                    setData({ ...data, jenisKelamin: e.target.value })
-                  }
-                >
-                  {jenisKelamin.map((item) => (
-                    <option value={item} key={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-red-500">
-                  {inputErrorMessages.jenisKelamin}
-                </p>
-              </div>
+                value={data.jenisKelamin}
+                onChange={(e) =>
+                  setData({ ...data, jenisKelamin: e.target.value })
+                }
+              >
+                {jenisKelamin.map((item) => (
+                  <option value={item} key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+              <p className="text-red-500">{inputErrorMessages.jenisKelamin}</p>
             </div>
+            {/* JENIS KELAMIN */}
 
-            <div className="inputs_container">
-              <div className="input_container">
-                <label className="input_label">Jabatan</label>
-                <select
-                  disabled={disable}
-                  className={`
+            {/* JABATAN */}
+            <div className="input_container">
+              <label className="input_label">Jabatan</label>
+              <select
+                disabled={disable}
+                className={`
                   ${inputErrorMessages.jabatan ? "input_error" : "input"}
                   `}
-                  value={data.jabatan}
-                  onChange={(e) =>
-                    setData({ ...data, jabatan: e.target.value })
-                  }
-                >
-                  {jabatanOfficials.map((item) => (
-                    <option value={item} className="capitalize" key={item}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-red-500">{inputErrorMessages.jabatan}</p>
-              </div>
+                value={data.jabatan}
+                onChange={(e) => setData({ ...data, jabatan: e.target.value })}
+              >
+                {jabatanOfficials.map((item) => (
+                  <option value={item} className="capitalize" key={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+              <p className="text-red-500">{inputErrorMessages.jabatan}</p>
+            </div>
+            {/* JABATAN */}
 
-              <div className="input_container">
-                <label className="input_label">Nama Kontingen</label>
-                <select
-                  disabled={disable}
-                  value={data.idKontingen}
-                  onChange={(e) => {
-                    setData({
-                      ...data,
-                      idKontingen: e.target.value,
-                    });
-                  }}
-                  className={`
+            {/* NAMA KONTINGEN */}
+            <div className="input_container">
+              <label className="input_label">Nama Kontingen</label>
+              <select
+                disabled={disable}
+                value={data.idKontingen}
+                onChange={(e) => {
+                  setData({
+                    ...data,
+                    idKontingen: e.target.value,
+                  });
+                }}
+                className={`
                     ${inputErrorMessages.idKontingen ? "input_error" : "input"}
                   `}
-                >
-                  {kontingens.length &&
-                    kontingens.map((kontingen) => (
-                      <option
-                        value={kontingen.idKontingen}
-                        key={kontingen.idKontingen}
-                      >
-                        {kontingen.namaKontingen}
-                      </option>
-                    ))}
-                </select>
-                <p className="text-red-500">{inputErrorMessages.idKontingen}</p>
-              </div>
+              >
+                {kontingens.length &&
+                  kontingens.map((kontingen) => (
+                    <option
+                      value={kontingen.idKontingen}
+                      key={kontingen.idKontingen}
+                    >
+                      {kontingen.namaKontingen}
+                    </option>
+                  ))}
+              </select>
+              <p className="text-red-500">{inputErrorMessages.idKontingen}</p>
             </div>
+            {/* NAMA KONTINGEN */}
           </div>
-
-          <div className="mt-2 flex gap-2 justify-end self-end">
-            <button
-              disabled={disable}
-              className="btn_red btn_full"
-              onClick={resetData}
-              type="button"
-            >
-              Batal
-            </button>
-            <button
-              disabled={disable}
-              className="btn_green btn_full"
-              type="submit"
-            >
-              {updating ? "Perbaharui" : "Simpan"}
-            </button>
-          </div>
+          {/* KOLOM KANAN */}
         </div>
+        {/* BARIS 1 */}
+
+        {/* BARIS 2 */}
+        {/* BOTTONS */}
+        <div className="mt-2 flex gap-2 justify-end self-end">
+          <button
+            disabled={disable}
+            className="btn_red btn_full"
+            onClick={resetData}
+            type="button"
+          >
+            Batal
+          </button>
+          <button
+            disabled={disable}
+            className="btn_green btn_full"
+            type="submit"
+          >
+            {updating ? "Perbaharui" : "Simpan"}
+          </button>
+        </div>
+        {/* BUTTONS */}
+        {/* BARIS 2 */}
       </form>
+      {/* FORM */}
     </div>
   );
 };
