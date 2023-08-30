@@ -8,9 +8,13 @@ const BackgroundLogo = () => {
         <Image
           src={mascot_1}
           alt="mascot-1"
-          className="self-end h-[250px] w-fit -translate-x-[10vw] translate-y-[50px]"
+          className="self-end h-[180px] md:h-[250px] w-fit -translate-x-[10vw] translate-y-[50px]"
         />
-        <Image src={mascot_2} alt="mascot-2" className="h-[200px] w-fit" />
+        <Image
+          src={mascot_2}
+          alt="mascot-2"
+          className="h-[140px] sm:h-[180px] md:h-[200px] w-fit"
+        />
       </div>
     </div>
   );

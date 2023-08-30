@@ -8,7 +8,7 @@ import Profile from "./Profile";
 
 const SponsorLogo = () => {
   return (
-    <section className="w-full flex justify-between h-[40px] sm:h-[60px] md:h-[80px] p-2 items-center ">
+    <section className="w-full flex justify-between h-[50px] sm:h-[60px] md:h-[80px] p-2 items-center ">
       <div className="h-full flex items-center">
         <Profile />
         <Image

@@ -608,7 +608,7 @@ const FormPembayaran = ({
 
             {/* UPLOAD BUKTI PEMBAYARAN */}
             <form
-              className="input_container max-w-[170px] flex flex-col items-center md:mx-auto"
+              className="input_container max-w-[170px] flex flex-col items-center mx-auto"
               onSubmit={(e) => sendPembayaran(e)}
             >
               <label className="input_label text-center">
