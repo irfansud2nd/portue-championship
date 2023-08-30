@@ -12,7 +12,7 @@ const Pendaftaran = () => {
     useState<string>("kontingen");
   return (
     <div className="w-full h-full lg:grid grid-cols-[auto_1fr] gap-2">
-      <div className="hidden lg:block w-[200px] bg-white rounded-md p-2 sticky top-2 h-fit">
+      <div className="hidden lg:block w-[200px] bg-gray-100 rounded-md p-2 sticky top-2 h-fit">
         <div>
           <Link
             href="/"

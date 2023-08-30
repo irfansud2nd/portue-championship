@@ -66,7 +66,7 @@ const FormPendaftaran = ({
     },
   ];
   return (
-    <div className="bg-white rounded-md min-h-full w-full p-2">
+    <div className="bg-gray-100 rounded-md min-h-full w-full p-2">
       <div className="flex justify-between items-start relative">
         <h1 className="capitalize text-2xl sm:text-3xl font-bold">
           Form Pendaftaran {kategoriPendaftaran}

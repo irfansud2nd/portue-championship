@@ -15,7 +15,7 @@ const BackgroundImages = () => {
       </div>
       <div className="w-full h-full relative">
         <Image
-          src="/images/background.png"
+          src="/images/bg.png"
           fill
           alt="backdrop"
           className="object-cover object-center -z-[9]"
