@@ -24,6 +24,7 @@ import {
   setDoc,
   updateDoc,
 } from "firebase/firestore";
+import { User } from "firebase/auth";
 
 //COMPARE FOR DATA SORTER
 export const compare = (query: string, type: "asc" | "desc") => {
@@ -610,73 +611,4 @@ export const sendPerson = async (
       updateToast(toastId, "error", `Foto ${data.namaLengkap} gagal diunggah`);
       return error;
     });
-};
-
-// SET USER AND KONTINGENS
-export const setUserKontingens = (
-  user: User,
-  kontingens: DataKontingenState[],
-  data: DataOfficialState | DataPesertaState | DocumentData,
-  setData: React.Dispatch<
-    React.SetStateAction<DataOfficialState | DataOfficialState | DocumentData>
-  >
-) => {
-  if (user && kontingens.length == 0) {
-    console.log("setting user");
-    setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
-  }
-  if (user && kontingens.length !== 0) {
-    console.log("setting user and kontingen");
-    setData({
-      ...data,
-      creatorEmail: user.email,
-      creatorUid: user.uid,
-      namaKontingen: kontingens[0].namaKontingen,
-      idKontingen: kontingens[0].idKontingen,
-    });
-  }
-};
-
-// DATA GETTER
-export const getData = async (
-  tipeData: "pesertas" | "officials" | "kontingens",
-  id: string,
-  setData: React.Dispatch<
-    React.SetStateAction<
-      | DataOfficialState[]
-      | DataOfficialState[]
-      | DataKontingenState[]
-      | DocumentData
-    >
-  >
-) => {
-  return getDoc(doc(firestore, tipeData, id))
-    .then((docSnap) => {
-      if (docSnap.exists()) {
-        setData(docSnap.data());
-        return docSnap.data();
-      }
-    })
-    .catch((error) => error);
-};
-
-// DATAS GETTER
-export const getDatas = async (
-  tipeData: "pesertas" | "officials" | "kontingens",
-  user: User
-) => {
-  console.log("getting officials");
-  const container: any[] = [];
-  const q = query(
-    collection(firestore, tipeData),
-    where("creatorUid", "==", user.uid)
-  );
-  return getDocs(q)
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        container.push(doc.data());
-      });
-      return container.sort(compare("waktuPendaftaran", "asc"));
-    })
-    .catch((error) => error);
 };

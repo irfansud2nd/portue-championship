@@ -397,7 +397,7 @@ const InfoKontingenTerdaftar = ({
           <div className="flex flex-wrap gap-1 items-baseline text-xl mt-1">
             <h3 className="font-semibold">Daftar Peserta</h3>
             <p className="whitespace-nowrap text-gray-700">
-              (Total Official : {selectPesertas(kontingen.idKontingen).length}{" "}
+              (Total Peserta : {selectPesertas(kontingen.idKontingen).length}{" "}
               orang)
             </p>
           </div>

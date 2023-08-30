@@ -14,7 +14,6 @@ import {
   getInputErrorOfficial,
   limitImage,
   sendPerson,
-  setUserKontingens,
   updatePerson,
   updatePersonImage,
   updatePersonImageKontingen,
