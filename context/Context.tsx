@@ -23,6 +23,8 @@ export const ContextProvider = ({
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
+  const [userLoading, setUserLoading] = useState(true);
+  const [loaded, setLoaded] = useState(false);
 
   const googleSignIn = () => {
     const provider = new GoogleAuthProvider();
@@ -42,7 +44,17 @@ export const ContextProvider = ({
       setAdminAuthorized(false);
     });
   };
+
   useEffect(() => {
+    if (userLoading) {
+      setTimeout(() => {
+        setUserLoading(false);
+      }, 500);
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    setLoaded(true);
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
@@ -60,6 +72,7 @@ export const ContextProvider = ({
       value={{
         error,
         user,
+        userLoading,
         googleSignIn,
         logOut,
         adminLogin,

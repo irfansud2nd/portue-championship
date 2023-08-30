@@ -5,21 +5,30 @@ import Pendaftaran from "@/components/Pendaftaran";
 import { MyContext } from "@/context/Context";
 import { AiOutlineRollback } from "react-icons/ai";
 import { PiWarningBold } from "react-icons/pi";
+import graphic_portue from "@/public/images/graphic-portue.png";
 import mascot_2 from "@/public/images/mascot-2.png";
 import Image from "next/image";
 import Link from "next/link";
 
 const PendaftaranPage = () => {
-  const { user } = MyContext();
+  const { user, userLoading } = MyContext();
 
   return (
     <>
-      {user ? (
+      {userLoading ? (
+        <div className="h-full w-full flex justify-center items-center">
+          <Image
+            src={graphic_portue}
+            alt="graphic-portue"
+            className="w-[200px] animate-[spin_5s_linear_infinite]"
+          />
+        </div>
+      ) : user ? (
         <div className="h-full w-full grid grid-cols-[1fr_auto] gap-2 p-3">
           <div className="bg-gray-200 rounded-md p-2">
             <Pendaftaran />
           </div>
-          <div className="bg-gray-200 w-[200px] rounded-md grid grid-rows-[auto_1fr] max-h-[85vh] sticky top-0">
+          <div className="bg-gray-200 w-[200px] rounded-md grid grid-rows-[auto_1fr] max-h-[85vh] sticky top-2">
             <Image src={mascot_2} alt="mascot-2" className="h-fit w-full" />
             <div className="p-1">
               <InfoPendaftar />

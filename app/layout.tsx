@@ -2,7 +2,6 @@
 import BackgroundImages from "@/components/BackgroundImages";
 import "./globals.css";
 import type { Metadata } from "next";
-import { Poppins, Dancing_Script, Staatliches } from "next/font/google";
 import SponsorLogo from "@/components/SponsorLogo";
 import { ContextProvider } from "@/context/Context";
 

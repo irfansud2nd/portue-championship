@@ -13,20 +13,23 @@ import {
   where,
 } from "firebase/firestore";
 import { firestore } from "@/utils/firebase";
-import { compare, newToast, updateToast } from "@/utils/sharedFunctions";
+import {
+  compare,
+  deletePerson,
+  newToast,
+  updateToast,
+} from "@/utils/sharedFunctions";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MyContext } from "@/context/Context";
-import { DataKontingenState, DeleteInfoState, FormProps } from "@/utils/types";
-import {
-  dataKontingenInitialValue,
-  deleteInfoInitialValue,
-} from "@/utils/constants";
+import { DataKontingenState, FormKontingenProps } from "@/utils/types";
+import { dataKontingenInitialValue } from "@/utils/constants";
 import TabelKontingen from "../tabel/TabelKontingen";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
+import { BiLoader } from "react-icons/bi";
 
-const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
+const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   const [data, setData] = useState<DataKontingenState | DocumentData>(
     dataKontingenInitialValue
   );
@@ -37,6 +40,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
   const [updating, setUpdating] = useState(false);
   const [dataToDelete, setDataToDelete] = useState(dataKontingenInitialValue);
   const [modalVisible, setModalVisible] = useState(false);
+  const [tabelLoading, setTabelLoading] = useState(false);
 
   const { user } = MyContext();
 
@@ -54,7 +58,8 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
 
   // GET ALL KONTIGENS
   const getKontingens = () => {
-    console.log("getting kontingens");
+    // TABLE LOADING TRUE
+    setTabelLoading(true);
     const container: any[] = [];
     const q = query(
       collection(firestore, "kontingens"),
@@ -67,21 +72,11 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
         })
       )
       .catch((error) => console.log(error))
-      .finally(() =>
-        setKontingens(container.sort(compare("waktuPendaftaran", "asc")))
-      );
-  };
-
-  // GET ONE KONTINGEN
-  const getKontingen = (id: string) => {
-    console.log("getKontingen");
-    getDoc(doc(firestore, "kontingens", id))
-      .then((docSnap) => {
-        if (docSnap.exists()) {
-          setData(docSnap.data());
-        }
-      })
-      .catch((error) => console.log(error));
+      .finally(() => {
+        setKontingens(container.sort(compare("waktuPendaftaran", "asc")));
+        // TABEL LOADING FALSE
+        setTabelLoading(false);
+      });
   };
 
   // SUBMIT HANDLER - UPDATE OR NEW DATA
@@ -168,23 +163,55 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
   // DELETE CONTROLLER
   const deleteData = () => {
     setModalVisible(false);
-    if (dataToDelete.pesertas.length) {
-      deletePesertas();
-    } else if (dataToDelete.officials.length) {
-      deleteOfficials();
+    deleteOfficials(dataToDelete.officials.length - 1);
+  };
+
+  // DELETE ALL OFFICIAL
+  const deleteOfficials = (officialIndex: number) => {
+    if (officialIndex >= 0) {
+      const id = dataToDelete.officials[officialIndex];
+      deletePerson(
+        "officials",
+        { namaLengkap: "", idKontingen: dataToDelete.idKontingen },
+        kontingens,
+        toastId,
+        () => afterDeleteOfficial(officialIndex)
+      );
+    } else {
+      deletePesertas(dataToDelete.pesertas.length - 1);
+    }
+  };
+
+  const afterDeleteOfficial = (officialIndex: number) => {
+    if (officialIndex != 0) {
+      deleteOfficials(officialIndex - 1);
+    } else {
+      deletePesertas(dataToDelete.pesertas.length - 1);
+    }
+  };
+
+  //DELETE ALL PESERTA
+  const deletePesertas = (pesertaIndex: number) => {
+    if (pesertaIndex >= 0) {
+      const id = dataToDelete.officials[pesertaIndex];
+      deletePerson(
+        "pesertas",
+        { namaLengkap: "", idKontingen: dataToDelete.idKontingen },
+        kontingens,
+        toastId,
+        () => afterDeletePeserta(pesertaIndex)
+      );
     } else {
       deleteKontingen();
     }
   };
 
-  //DELETE ALL PESERTA
-  const deletePesertas = () => {
-    // FIX ME
-  };
-
-  // DELETE ALL OFFICIAL
-  const deleteOfficials = () => {
-    // FIX ME
+  const afterDeletePeserta = (pesertaIndex: number) => {
+    if (pesertaIndex != 0) {
+      deletePesertas(pesertaIndex - 1);
+    } else {
+      deleteKontingen();
+    }
   };
 
   // DELETE KONTINGEN
@@ -216,6 +243,10 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
           handleDelete={handleDelete}
           handleEdit={handleEdit}
         />
+      ) : tabelLoading ? (
+        <p>
+          Memuat Data Kontingen... <BiLoader className="animate-spin inline" />
+        </p>
       ) : (
         <p>
           <p>Belum ada Kontingen yang didaftarkan</p>
@@ -224,14 +255,14 @@ const FormKontingen = ({ kontingens, setKontingens }: FormProps) => {
       <form onSubmit={(e) => saveKontingen(e)}>
         <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
           <div className="h-full w-full">
-            {dataToDelete.waktuPembayaran ? (
+            {dataToDelete.waktuPembayaran.length ? (
               <div className="h-full w-full flex flex-col justify-between">
                 <h1 className="font-semibold text-red-500">
                   Tidak dapat menghapus kontingen
                 </h1>
                 <p>
-                  Maaf, peserta yang sudah diselesaikan pembayarannya tidak
-                  dapat dihapus
+                  Maaf, kontingen yang pesertanya sudah diselesaikan
+                  pembayarannya tidak dapat dihapus
                 </p>
                 <button
                   onClick={cancelDelete}

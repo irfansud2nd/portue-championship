@@ -2,8 +2,8 @@ import {
   DataKontingenState,
   DataOfficialState,
   DataPesertaState,
-  DeleteInfoState,
-  ErrorValidationMessagesForOfficials,
+  ErrorOfficial,
+  ErrorPeserta,
 } from "./types";
 
 // KATEGORI GENERATOR - START
@@ -52,13 +52,13 @@ const generateKategoriPertandingan = (
     kategoriArr.push(
       `Kelas ${bebasBawah.namaKelas} (Dibawah ${
         bebasBawah.batasKelas ? bebasBawah.batasKelas : start
-      } Kg)`
+      } KG)`
     );
 
   startKategori = start;
   for (let i = 0; i <= repeatValue; i++) {
     kategoriArr.push(
-      `Kelas ${alphabet[i]} (${startKategori}-${startKategori + step} Kg)`
+      `Kelas ${alphabet[i]} (${startKategori}-${startKategori + step} KG)`
     );
     startKategori += step;
   }
@@ -67,7 +67,7 @@ const generateKategoriPertandingan = (
     kategoriArr.push(
       `Kelas ${bebasAtas.namaKelas} (Diatas ${
         bebasAtas.batasKelas ? bebasAtas.batasKelas : endNumber
-      } Kg)`
+      } KG)`
     );
   return kategoriArr;
 };
@@ -145,7 +145,7 @@ export const kategoriPendaftaranArray = [
 ];
 
 // JABATAN OPTION
-export const jabatanOfficials = ["official", "manajer tim", "pelatih"];
+export const jabatanOfficials = ["Official", "Manajer Tim", "Pelatih"];
 
 // DATA KONTINGEN INITIAL VALUE
 export const dataKontingenInitialValue: DataKontingenState = {
@@ -155,8 +155,8 @@ export const dataKontingenInitialValue: DataKontingenState = {
   waktuPendaftaran: "",
   waktuPerubahan: "",
   namaKontingen: "",
-  downloadBuktiPembayaranUrl: "",
-  waktuPembayaran: "",
+  downloadBuktiPembayaranUrl: [],
+  waktuPembayaran: [],
   pesertas: [],
   officials: [],
   konfirmasiPembayaran: false,
@@ -172,7 +172,6 @@ export const dataOfficialInitialValue: DataOfficialState = {
   namaLengkap: "",
   jenisKelamin: jenisKelamin[0],
   jabatan: jabatanOfficials[0],
-  namaKontingen: "",
   idKontingen: "",
   fotoUrl: "",
   downloadFotoUrl: "",
@@ -197,7 +196,6 @@ export const dataPesertaInitialValue: DataPesertaState = {
   tingkatanPertandingan: tingkatanKategori[0].tingkatan,
   jenisPertandingan: jenisPertandingan[0],
   kategoriPertandingan: tingkatanKategori[0].kategoriTanding[0],
-  namaKontingen: "",
   idKontingen: "",
   fotoUrl: "",
   downloadFotoUrl: "",
@@ -206,19 +204,28 @@ export const dataPesertaInitialValue: DataPesertaState = {
   konfirmasiPembayaran: false,
 };
 
-// DELETE INFO INITIAL VALUE
-export const deleteInfoInitialValue: DeleteInfoState = {
-  id: "",
-  pesertas: [],
-  officials: [],
-  dibayar: false,
+// ERRROR OFFICIAL
+export const errorOfficialInitialValue: ErrorOfficial = {
+  namaLengkap: null,
+  jenisKelamin: null,
+  jabatan: null,
+  idKontingen: null,
+  pasFoto: null,
 };
 
-export const errorValidationMessagesForOfficials: ErrorValidationMessagesForOfficials =
-  {
-    namaLengkap: null,
-    jenisKelamin: null,
-    jabatan: null,
-    namaKontingen: null,
-    pasFoto: null,
-  };
+// ERROR PESERTA
+export const errorPesertaInitialValue: ErrorPeserta = {
+  namaLengkap: null,
+  NIK: null,
+  tempatLahir: null,
+  tanggalLahir: null,
+  beratBadan: null,
+  tinggiBadan: null,
+  jenisKelamin: null,
+  alamatLengkap: null,
+  idKontingen: null,
+  tingkatanPertandingan: null,
+  jenisPertandingan: null,
+  kategoriPertandingan: null,
+  pasFoto: null,
+};

@@ -3,6 +3,8 @@ import {
   DataKontingenState,
   DataOfficialState,
   DataPesertaState,
+  ErrorOfficial,
+  ErrorPeserta,
 } from "./types";
 import {
   deleteObject,
@@ -18,10 +20,14 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { v4 } from "uuid";
+import { MyContext } from "@/context/Context";
 
 //COMPARE FOR DATA SORTER
 export const compare = (query: string, type: "asc" | "desc") => {
@@ -92,20 +98,114 @@ export const findNamaKontingen = (
 };
 
 // IMAGE LIMITER
-export const limitImage = (file: File) => {
+export const limitImage = (
+  file: File,
+  toastId: React.MutableRefObject<Id | null>
+) => {
   const maxSize = 1 * 1024 * 1024; //1MB
   const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
   if (!allowedTypes.includes(file.type)) {
-    alert(
-      "Format file yang ada masukan tidak valid, yang diperbolehkan hanya .jpg, .jpeg, dan .png"
+    newToast(
+      toastId,
+      "error",
+      "File yang dipilih tidak valid (harus png, jpg, jpeg)"
     );
     return false;
   }
   if (file.size > maxSize) {
-    alert("File yang ada masukan terlalu besar, Makismal 1MB");
+    newToast(toastId, "error", "File yang dipilih terlalu besar (Maks. 1MB)");
     return false;
   }
   return true;
+};
+
+// GET INPUT ERROR PESERTA
+export const getInputErrorPeserta = (
+  data: DataPesertaState | DocumentData,
+  imageUrl: string | null,
+  error: ErrorPeserta,
+  setError: React.Dispatch<React.SetStateAction<ErrorPeserta>>
+) => {
+  console.log("get error");
+  setError({
+    ...error,
+    pasFoto: imageUrl ? null : "Tolong lengkapi Pas Foto",
+    namaLengkap: data.namaLengkap == "" ? "Tolong lengkapi Nama Lengkap" : null,
+    NIK:
+      data.NIK.length != 0 && data.NIK.length != 16 ? "NIK tidak valid" : null,
+    jenisKelamin:
+      data.jenisKelamin == "" ? "Tolong lengkapi Jenis Kelamin" : null,
+    alamatLengkap:
+      data.alamatLengkap == "" ? "Tolong lengkapi Alamat Lengkap" : null,
+    tempatLahir: data.tempatLahir == "" ? "Tolong lengkapi Tempat Lahir" : null,
+    tanggalLahir:
+      data.tanggalLahir == "" ? "Tolong lengkapi Tanggal Lahir" : null,
+    tinggiBadan: data.tinggiBadan == "" ? "Tolong lengkapi Tinggi Badan" : null,
+    beratBadan: data.beratBadan == "" ? "Tolong lengkapi Berat Badan" : null,
+    idKontingen:
+      data.idKontingen == "" ? "Tolong lengkapi Nama Kontingen" : null,
+    tingkatanPertandingan:
+      data.tingkatanPertandingan == ""
+        ? "Tolong lengkapi Tingkatan Pertandingan"
+        : null,
+    jenisPertandingan:
+      data.jenisPertandingan == ""
+        ? "Tolong lengkapi Jenis Pertandingan"
+        : null,
+    kategoriPertandingan:
+      data.kategoriPertandingan == ""
+        ? "Tolong lengkapi kategori Pertandingan"
+        : null,
+  });
+  if (
+    imageUrl &&
+    data.namaLengkap &&
+    (data.NIK.length == 0 || data.NIK.length == 16) &&
+    data.jenisKelamin &&
+    data.alamatLengkap &&
+    data.tempatLahir &&
+    data.tanggalLahir &&
+    data.tinggiBadan &&
+    data.beratBadan &&
+    data.idKontingen &&
+    data.tingkatanPertandingan &&
+    data.jenisPertandingan &&
+    data.kategoriPertandingan
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+// GET INPUT ERROR OFFICIAL
+export const getInputErrorOfficial = (
+  data: DataOfficialState | DocumentData,
+  imageUrl: string | null,
+  error: ErrorOfficial,
+  setError: React.Dispatch<React.SetStateAction<ErrorOfficial>>
+) => {
+  setError({
+    ...error,
+    pasFoto: imageUrl ? null : "Tolong lengkapi Pas Foto",
+    namaLengkap: data.namaLengkap == "" ? "Tolong lengkapi Nama Lengkap" : null,
+    jenisKelamin:
+      data.jenisKelamin == "" ? "Tolong lengkapi Jenis Kelamin" : null,
+    idKontingen:
+      data.idKontingen == "" ? "Tolong lengkapi Nama Kontingen" : null,
+    jabatan: data.jabatan == "" ? "Tolong lengkapi Jabatan" : null,
+  });
+  if (
+    imageUrl &&
+    data.namaLengkap &&
+    data.jenisKelamin &&
+    data.idKontingen &&
+    data.jabatan
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 };
 
 // UPDATE PERSON
@@ -205,9 +305,12 @@ export const updatePersonKontingen = async (
   tipe: "peserta" | "official",
   data: DataOfficialState | DataPesertaState | DocumentData,
   prevData: DataOfficialState | DataPesertaState,
+  kontingens: DataKontingenState[],
   toastId: React.MutableRefObject<Id | null>,
   callback?: () => void
 ) => {
+  const namaPrevKontingen = findNamaKontingen(kontingens, prevData.idKontingen);
+  const namaNewKontingen = findNamaKontingen(kontingens, data.idKontingen);
   // UPLOAD PERSON
   newToast(toastId, "loading", `Menyimpan perubahan data ${data.namaLengkap}`);
   return updateDoc(doc(firestore, `${tipe}s`, data.id), {
@@ -219,7 +322,7 @@ export const updatePersonKontingen = async (
       updateToast(
         toastId,
         "loading",
-        `Menghapus ${data.namaLengkap} dari Kontingen ${prevData.namaKontingen}`
+        `Menghapus ${data.namaLengkap} dari Kontingen ${namaPrevKontingen}`
       );
       updateDoc(doc(firestore, "kontingens", prevData.idKontingen), {
         [`${tipe}s`]: arrayRemove(data.id),
@@ -229,7 +332,7 @@ export const updatePersonKontingen = async (
           updateToast(
             toastId,
             "loading",
-            `Menambahkan ${data.namaLengkap} ke Kontingen ${data.namaKontingen}`
+            `Menambahkan ${data.namaLengkap} ke Kontingen ${namaNewKontingen}`
           );
           updateDoc(doc(firestore, "kontingens", data.idKontingen), {
             [`${tipe}s`]: arrayUnion(data.id),
@@ -239,7 +342,7 @@ export const updatePersonKontingen = async (
               updateToast(
                 toastId,
                 "success",
-                `${data.namaLengkap} berhasil ditambahkan ke Kontingen ${data.namaKontingen}`
+                `${data.namaLengkap} berhasil ditambahkan ke Kontingen ${namaNewKontingen}`
               );
               callback && callback();
             })
@@ -247,7 +350,7 @@ export const updatePersonKontingen = async (
               updateToast(
                 toastId,
                 "error",
-                `${data.namaLengkap} gagal ditambahkan ke Kontingen ${data.namaKontingen}`
+                `${data.namaLengkap} gagal ditambahkan ke Kontingen ${namaNewKontingen}`
               );
               alert(error);
             });
@@ -256,7 +359,7 @@ export const updatePersonKontingen = async (
           updateToast(
             toastId,
             "error",
-            `${data.namaLengkap} gagal dihapus dari Kontingen ${prevData.namaKontingen}`
+            `${data.namaLengkap} gagal dihapus dari Kontingen ${namaPrevKontingen}`
           );
           alert(error);
         });
@@ -276,10 +379,13 @@ export const updatePersonImageKontingen = async (
   tipe: "peserta" | "official",
   data: DataOfficialState | DataPesertaState | DocumentData,
   prevData: DataOfficialState | DataPesertaState,
+  kontingens: DataKontingenState[],
   toastId: React.MutableRefObject<Id | null>,
   imageSelected: File,
   callback?: () => void
 ) => {
+  const namaPrevKontingen = findNamaKontingen(kontingens, prevData.idKontingen);
+  const namaNewKontingen = findNamaKontingen(kontingens, data.idKontingen);
   // DELETE OLD IMAGE
   newToast(toastId, "loading", "Menghapus Foto Lama");
   return deleteObject(ref(storage, data.fotoUrl))
@@ -307,7 +413,7 @@ export const updatePersonImageKontingen = async (
                 updateToast(
                   toastId,
                   "loading",
-                  `Menghapus ${data.namaLengkap} dari Kontingen ${prevData.namaKontingen}`
+                  `Menghapus ${data.namaLengkap} dari Kontingen ${namaPrevKontingen}`
                 );
                 updateDoc(doc(firestore, "kontingens", prevData.idKontingen), {
                   [`${tipe}s`]: arrayRemove(data.id),
@@ -317,7 +423,7 @@ export const updatePersonImageKontingen = async (
                     updateToast(
                       toastId,
                       "loading",
-                      `Menambahkan ${data.namaLengkap} ke Kontingen ${data.namaKontingen}`
+                      `Menambahkan ${data.namaLengkap} ke Kontingen ${namaNewKontingen}`
                     );
                     updateDoc(doc(firestore, "kontingens", data.idKontingen), {
                       [`${tipe}s`]: arrayUnion(data.id),
@@ -327,7 +433,7 @@ export const updatePersonImageKontingen = async (
                         updateToast(
                           toastId,
                           "success",
-                          `${data.namaLengkap} berhasil dipindahkan ke Kontingen ${data.namaKontingen}`
+                          `${data.namaLengkap} berhasil dipindahkan ke Kontingen ${namaNewKontingen}`
                         );
                         callback && callback();
                       })
@@ -374,9 +480,11 @@ export const updatePersonImageKontingen = async (
 export const deletePerson = async (
   query: "officials" | "pesertas",
   data: DataPesertaState | DataOfficialState | DocumentData,
+  kontingens: DataKontingenState[],
   toastId: React.MutableRefObject<Id | null>,
   callback?: () => void
 ) => {
+  const namaKontingen = findNamaKontingen(kontingens, data.idKontingen);
   // DELETE IMAGE
   newToast(toastId, "loading", `Menghapus foto ${data.namaLengkap}`);
   return deleteObject(ref(storage, data.fotoUrl))
@@ -385,7 +493,7 @@ export const deletePerson = async (
       updateToast(
         toastId,
         "loading",
-        `Menghapus ${data.namaLengkap} dari Kontingen ${data.namaKontingen}`
+        `Menghapus ${data.namaLengkap} dari Kontingen ${namaKontingen}`
       );
       updateDoc(doc(firestore, "kontingens", data.idKontingen), {
         [`${query}`]: arrayRemove(data.id),
@@ -419,7 +527,7 @@ export const deletePerson = async (
           updateToast(
             toastId,
             "error",
-            `${data.namaLengkap} gagal dihapus dari kontingen ${data.namaKontingen}`
+            `${data.namaLengkap} gagal dihapus dari kontingen ${namaKontingen}`
           );
           alert(error);
         });
@@ -435,9 +543,11 @@ export const sendPerson = async (
   tipe: "peserta" | "official",
   data: DataPesertaState | DataOfficialState | DocumentData,
   imageSelected: File,
+  kontingens: DataKontingenState[],
   toastId: React.MutableRefObject<Id | null>,
   callback?: () => void
 ) => {
+  const namaKontingen = findNamaKontingen(kontingens, data.idKontingen);
   newToast(toastId, "loading", `Mengunggah foto ${data.namaLengkap}`);
   const url = `${tipe}s/${v4()}.${imageSelected.type.split("/")[1]}`;
   // UPLOAD IMAGE
@@ -463,7 +573,7 @@ export const sendPerson = async (
             updateToast(
               toastId,
               "loading",
-              `Mendaftarkan ${data.namaLengkap} sebagai ${tipe} kontingen ${data.namaKontingen}`
+              `Mendaftarkan ${data.namaLengkap} sebagai ${tipe} kontingen ${namaKontingen}`
             );
             updateDoc(doc(firestore, "kontingens", data.idKontingen), {
               [`${tipe}s`]: arrayUnion(newDocRef.id),
@@ -473,7 +583,7 @@ export const sendPerson = async (
                 updateToast(
                   toastId,
                   "success",
-                  `${data.namaLengkap} berhasil didaftarkan sebagai ${tipe} kontingen ${data.namaKontingen}`
+                  `${data.namaLengkap} berhasil didaftarkan sebagai ${tipe} kontingen ${namaKontingen}`
                 );
                 callback && callback();
               })
@@ -481,7 +591,7 @@ export const sendPerson = async (
                 updateToast(
                   toastId,
                   "error",
-                  `${data.namaLengkap} gagal didaftarkan sebagai ${tipe} kontingen ${data.namaKontingen}`
+                  `${data.namaLengkap} gagal didaftarkan sebagai ${tipe} kontingen ${namaKontingen}`
                 );
                 alert(error);
               });

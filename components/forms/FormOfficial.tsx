@@ -3,7 +3,7 @@
 import { MyContext } from "@/context/Context";
 import {
   dataOfficialInitialValue,
-  errorValidationMessagesForOfficials,
+  errorOfficialInitialValue,
   jabatanOfficials,
   jenisKelamin,
 } from "@/utils/constants";
@@ -11,6 +11,7 @@ import { firestore, storage } from "@/utils/firebase";
 import {
   compare,
   deletePerson,
+  getInputErrorOfficial,
   limitImage,
   sendPerson,
   updatePerson,
@@ -19,45 +20,53 @@ import {
   updatePersonKontingen,
 } from "@/utils/sharedFunctions";
 import {
+  DataKontingenState,
   DataOfficialState,
-  ErrorValidationMessagesForOfficials,
-  FormProps,
+  ErrorOfficial,
 } from "@/utils/types";
 import {
   DocumentData,
-  DocumentReference,
   collection,
   getDocs,
   query,
   where,
 } from "firebase/firestore";
 import { useEffect, useRef, useState } from "react";
-import { ToastContainer, Id } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TabelOfficial from "../tabel/TabelOfficial";
 import Rodal from "rodal";
+import "rodal/lib/rodal.css";
 import Image from "next/image";
+import { BiLoader } from "react-icons/bi";
 
-const FormOfficial = ({ kontingens }: FormProps) => {
+const FormOfficial = ({
+  kontingens,
+  officials,
+  setOfficials,
+}: {
+  kontingens: DataKontingenState[];
+  officials: DataOfficialState[];
+  setOfficials: React.Dispatch<React.SetStateAction<DataOfficialState[] | []>>;
+}) => {
   const [data, setData] = useState<DataOfficialState | DocumentData>(
     dataOfficialInitialValue
   );
-
-  const [officials, setOfficials] = useState<DataOfficialState[] | []>([]);
+  const [sendClicked, setSendClicked] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [imageSelected, setImageSelected] = useState<File | null>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
-  const [errorValidationMessages, setErrorValidationMessages] =
-    useState<ErrorValidationMessagesForOfficials>(
-      errorValidationMessagesForOfficials
-    );
+  const [inputErrorMessages, setInputErrorMessages] = useState<ErrorOfficial>(
+    errorOfficialInitialValue
+  );
   const [dataToDelete, setDataToDelete] = useState<DataOfficialState | null>(
     null
   );
   const [prevData, setPrevData] = useState<DataOfficialState>(
     dataOfficialInitialValue
   );
+  const [tabelLoading, setTabelLoading] = useState(false);
 
   const toastId = useRef(null);
   const inputImageRef = useRef<HTMLInputElement>(null);
@@ -89,7 +98,8 @@ const FormOfficial = ({ kontingens }: FormProps) => {
 
   // GET ALL OFFICIAL - GETTER
   const getOfficials = () => {
-    console.log("getting officials");
+    // TABLE LOADING TRUE
+    setTabelLoading(true);
     const container: any[] = [];
     const q = query(
       collection(firestore, "officials"),
@@ -102,14 +112,16 @@ const FormOfficial = ({ kontingens }: FormProps) => {
         })
       )
       .catch((error) => alert(error))
-      .finally(() =>
-        setOfficials(container.sort(compare("waktuPendaftaran", "asc")))
-      );
+      .finally(() => {
+        setOfficials(container.sort(compare("waktuPendaftaran", "asc")));
+        // TABEL LOADING FALSE
+        setTabelLoading(false);
+      });
   };
 
   // VALIDATE IMAGE
   const imageChangeHandler = (file: File) => {
-    if (limitImage(file)) {
+    if (limitImage(file, toastId)) {
       setImageSelected(file);
       setImagePreviewSrc(URL.createObjectURL(file));
     } else {
@@ -117,18 +129,53 @@ const FormOfficial = ({ kontingens }: FormProps) => {
     }
   };
 
+  // RESET IMAGE INPUT
+  const clearInputImage = () => {
+    if (inputImageRef.current) inputImageRef.current.value = "";
+    setImagePreviewSrc("");
+  };
+
   // SUBMIT HANDLER - UPDATE OR NEW DATA
   const saveOfficial = (e: React.FormEvent) => {
     e.preventDefault();
-    if (updating) {
-      updateDataHandler();
-    } else {
-      if (imageSelected) {
-        // SEND PERSON
-        sendPerson("official", data, imageSelected, toastId, afterSendPerson);
+    setSendClicked(true);
+    if (
+      getInputErrorOfficial(
+        data,
+        imagePreviewSrc,
+        inputErrorMessages,
+        setInputErrorMessages
+      )
+    ) {
+      if (updating) {
+        updateDataHandler();
+      } else {
+        if (imageSelected) {
+          // SEND PERSON
+          sendPerson(
+            "official",
+            data,
+            imageSelected,
+            kontingens,
+            toastId,
+            afterSendPerson
+          );
+        }
       }
     }
   };
+
+  // GET INPUT ERROR AFTER SEND CLICKED
+  useEffect(() => {
+    if (sendClicked) {
+      getInputErrorOfficial(
+        data,
+        imagePreviewSrc,
+        inputErrorMessages,
+        setInputErrorMessages
+      );
+    }
+  }, [data, sendClicked, imageSelected]);
 
   // SEND PERSON CALLBACK
   const afterSendPerson = () => {
@@ -147,12 +194,7 @@ const FormOfficial = ({ kontingens }: FormProps) => {
     });
     setUpdating(false);
     clearInputImage();
-  };
-
-  // RESET IMAGE INPUT
-  const clearInputImage = () => {
-    if (inputImageRef.current) inputImageRef.current.value = "";
-    setImagePreviewSrc("");
+    setSendClicked(false);
   };
 
   // EDIT - STEP 1 - EDIT BUTTON
@@ -180,6 +222,7 @@ const FormOfficial = ({ kontingens }: FormProps) => {
           "official",
           data,
           prevData,
+          kontingens,
           toastId,
           imageSelected,
           resetEdit
@@ -192,7 +235,14 @@ const FormOfficial = ({ kontingens }: FormProps) => {
         updatePersonImage("official", data, toastId, imageSelected, resetEdit);
       } else if (data.idKontingen !== prevData.idKontingen) {
         console.log("updatePersonKontingen");
-        updatePersonKontingen("official", data, prevData, toastId, resetEdit);
+        updatePersonKontingen(
+          "official",
+          data,
+          prevData,
+          kontingens,
+          toastId,
+          resetEdit
+        );
       } else if (
         imagePreviewSrc == prevData.downloadFotoUrl &&
         data.idKontingen == prevData.idKontingen
@@ -220,7 +270,13 @@ const FormOfficial = ({ kontingens }: FormProps) => {
   const deleteData = () => {
     setModalVisible(false);
     if (dataToDelete)
-      deletePerson("officials", dataToDelete, toastId, afterDeletePerson);
+      deletePerson(
+        "officials",
+        dataToDelete,
+        kontingens,
+        toastId,
+        afterDeletePerson
+      );
   };
 
   // DELETE - STEP 3 - CALLBACK
@@ -238,18 +294,13 @@ const FormOfficial = ({ kontingens }: FormProps) => {
   return (
     <div className="flex flex-col gap-2">
       <ToastContainer />
-      {officials.length ? (
-        <TabelOfficial
-          data={officials.sort(compare("namaLengkap", "asc"))}
-          kontingens={kontingens}
-          handleDelete={handleDelete}
-          handleEdit={handleEdit}
-        />
-      ) : (
-        <p>
-          <p>Belum ada Official yang didaftarkan</p>
-        </p>
-      )}
+      <TabelOfficial
+        loading={tabelLoading}
+        data={officials.sort(compare("namaLengkap", "asc"))}
+        kontingens={kontingens}
+        handleDelete={handleDelete}
+        handleEdit={handleEdit}
+      />
       <form
         className="grid grid-cols-[auto_1fr] gap-3"
         onSubmit={(e) => saveOfficial(e)}
@@ -281,15 +332,11 @@ const FormOfficial = ({ kontingens }: FormProps) => {
 
         <div className="input_container max-w-[150px] ">
           <label className="input_label text-center">Pas Foto</label>
+          <p className="-mt-2 text-sm text-gray-600 text-center">Maks. 1MB</p>
           <div
             className={`
-          ${
-            errorValidationMessages.pasFoto !== "" && imageSelected == null
-              ? "input_error"
-              : null
-          }
-          bg-white w-[150px] h-[200px] relative input
-          `}
+            ${inputErrorMessages.pasFoto ? "input_error" : "input"}
+            bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
           >
             {imagePreviewSrc && (
               <Image
@@ -308,15 +355,11 @@ const FormOfficial = ({ kontingens }: FormProps) => {
             onChange={(e) =>
               e.target.files && imageChangeHandler(e.target.files[0])
             }
-            className={`
-            ${
-              errorValidationMessages.pasFoto !== "" &&
-              imageSelected == null &&
-              "input_error"
-            }
-            input_file mt-1 w-full text-transparent
-            `}
+            className="input_file mt-1 w-full text-transparent"
           />
+          <p className="text-red-500 text-center">
+            {inputErrorMessages.pasFoto}
+          </p>
         </div>
 
         <div className="h-full w-fit flex flex-col justify-between">
@@ -325,19 +368,23 @@ const FormOfficial = ({ kontingens }: FormProps) => {
               <div className="input_container">
                 <label className="input_label">Nama Lengkap</label>
                 <input
-                  className="input"
+                  className={`
+                  ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
                   type="text"
                   value={data.namaLengkap}
                   onChange={(e) =>
                     setData({ ...data, namaLengkap: e.target.value })
                   }
                 />
+                <p className="text-red-500">{inputErrorMessages.namaLengkap}</p>
               </div>
 
               <div className="input_container">
                 <label className="input_label">Jenis Kelamin</label>
                 <select
-                  className="input"
+                  className={`
+                  ${inputErrorMessages.jenisKelamin ? "input_error" : "input"}
+                  `}
                   value={data.jenisKelamin}
                   onChange={(e) =>
                     setData({ ...data, jenisKelamin: e.target.value })
@@ -349,6 +396,9 @@ const FormOfficial = ({ kontingens }: FormProps) => {
                     </option>
                   ))}
                 </select>
+                <p className="text-red-500">
+                  {inputErrorMessages.jenisKelamin}
+                </p>
               </div>
             </div>
 
@@ -356,51 +406,48 @@ const FormOfficial = ({ kontingens }: FormProps) => {
               <div className="input_container">
                 <label className="input_label">Jabatan</label>
                 <select
-                  className="input capitalize"
+                  className={`
+                  ${inputErrorMessages.jabatan ? "input_error" : "input"}
+                  `}
                   value={data.jabatan}
                   onChange={(e) =>
                     setData({ ...data, jabatan: e.target.value })
                   }
                 >
                   {jabatanOfficials.map((item) => (
-                    <option value={item} className="capitalize">
+                    <option value={item} className="capitalize" key={item}>
                       {item}
                     </option>
                   ))}
                 </select>
+                <p className="text-red-500">{inputErrorMessages.jabatan}</p>
               </div>
 
               <div className="input_container">
                 <label className="input_label">Nama Kontingen</label>
                 <select
-                  value={`${data.namaKontingen}-${data.idKontingen}`}
+                  value={data.idKontingen}
                   onChange={(e) => {
-                    const value = e.target.value.split("-");
                     setData({
                       ...data,
-                      namaKontingen: value[0],
-                      idKontingen: value[1],
+                      idKontingen: e.target.value,
                     });
                   }}
                   className={`
-                ${
-                  errorValidationMessages.namaKontingen != "" &&
-                  data.namaKontingen == "" &&
-                  "input_error"
-                }
-                input
-                `}
+                    ${inputErrorMessages.idKontingen ? "input_error" : "input"}
+                  `}
                 >
                   {kontingens.length &&
                     kontingens.map((kontingen) => (
                       <option
-                        value={`${kontingen.namaKontingen}-${kontingen.idKontingen}`}
+                        value={kontingen.idKontingen}
                         key={kontingen.idKontingen}
                       >
                         {kontingen.namaKontingen}
                       </option>
                     ))}
                 </select>
+                <p className="text-red-500">{inputErrorMessages.idKontingen}</p>
               </div>
             </div>
           </div>

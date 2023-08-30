@@ -7,7 +7,7 @@ import BackgroundLogo from "@/components/BackgroundLogo";
 export default function Home() {
   return (
     <div className="h-full w-full flex justify-center items-center relative">
-      <BackgroundLogo home />
+      <BackgroundLogo />
       <div className="w-fit flex flex-col gap-3 -translate-y-5">
         <Image src={logo_portue} alt="logo-portue" />
         <LoginButton />

@@ -16,7 +16,7 @@
   }
   th,
   td {
-    @apply pl-1;
+    @apply px-1 border border-gray-400;
   }
   tbody > tr {
     @apply odd:bg-gray-200 even:bg-gray-100 border-b border-b-black last:border-b-0;
@@ -26,14 +26,6 @@
   }
 }
 @layer utilities {
-  /* BUTTON  */
-  .btn_kategori {
-    @apply rounded-full px-3 py-2 border-2 border-custom-yellow capitalize text-custom-yellow font-bold text-xl tracking-wide hover:btn_kategori_active transition;
-  }
-  .btn_kategori_active {
-    @apply bg-custom-yellow text-black;
-  }
-
   /* BUTTON COLOR */
   .btn_navy_gold {
     @apply text-custom-gold bg-custom-navy border-2 border-custom-navy hover:bg-transparent hover:text-custom-navy transition;
@@ -53,26 +45,53 @@
     @apply px-2 rounded-full;
   }
 
+  /* SPECIAL BUTTON */
+  .btn_kategori {
+    @apply rounded-full px-3 py-2 border-2 border-custom-yellow capitalize text-custom-yellow font-bold text-xl tracking-wide hover:btn_kategori_active transition;
+  }
+  .btn_kategori_active {
+    @apply bg-custom-yellow text-black;
+  }
+  .btn_wa {
+    @apply bg-gray-300 text-green-500 px-1 rounded-md;
+  }
+  .btn_copy {
+    @apply bg-gray-300 text-custom-navy px-1 rounded-md;
+  }
+
   /* INPUT FORM */
-  form .input_container {
+  .input_container {
     @apply flex flex-col w-[300px];
   }
-  form .inputs_container {
+  .inputs_container {
     @apply flex gap-3;
   }
-  form .input_label {
+  .input_label {
     @apply text-lg font-semibold;
   }
-  form .input {
-    @apply border-2 border-custom-navy rounded-md px-1;
+  .input {
+    @apply border-custom-navy;
+  }
+  input,
+  select,
+  textarea {
+    @apply border-2 rounded-md px-1;
   }
 
   /* INPUT FILE */
   .input_file {
-    @apply px-1 text-sm;
+    @apply px-1 text-sm border-none;
   }
   .input_file::-webkit-file-upload-button {
     @apply my-1 translate-x-5 btn_navy_yellow btn_full;
+  }
+
+  /* INPUT BUKTI */
+  .input_bukti {
+    @apply px-1 text-sm w-[115px] border-none;
+  }
+  .input_bukti::-webkit-file-upload-button {
+    @apply my-1 translate-x-0.5 btn_navy_yellow btn_full;
   }
 
   /* INPUT ERROR */

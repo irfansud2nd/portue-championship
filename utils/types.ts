@@ -1,5 +1,3 @@
-import { type } from "os";
-
 // KATEGORI PENDAFTARAN
 export type KategoriPendaftaranProps = {
   setKategoriPendaftaran: React.Dispatch<React.SetStateAction<string>>;
@@ -18,7 +16,7 @@ export type TabelPendaftaranProps = {
 };
 
 // FOR ALL FORM
-export type FormProps = {
+export type FormKontingenProps = {
   kontingens: DataKontingenState[];
   setKontingens: React.Dispatch<
     React.SetStateAction<DataKontingenState[] | any[]>
@@ -35,8 +33,8 @@ export type DataKontingenState = {
   namaKontingen: string;
   pesertas: string[] | [];
   officials: string[] | [];
-  downloadBuktiPembayaranUrl: string;
-  waktuPembayaran: string;
+  downloadBuktiPembayaranUrl: [];
+  waktuPembayaran: [];
   konfirmasiPembayaran: boolean;
 };
 
@@ -50,7 +48,6 @@ export type DataOfficialState = {
   namaLengkap: string;
   jenisKelamin: string;
   jabatan: string;
-  namaKontingen: string;
   idKontingen: string;
   fotoUrl: string;
   downloadFotoUrl: string;
@@ -75,7 +72,6 @@ export type DataPesertaState = {
   tingkatanPertandingan: string;
   jenisPertandingan: string;
   kategoriPertandingan: string;
-  namaKontingen: string;
   idKontingen: string;
   downloadFotoUrl: string;
   fotoUrl: string;
@@ -84,18 +80,26 @@ export type DataPesertaState = {
   konfirmasiPembayaran: boolean;
 };
 
-// DELETE INFO
-export type DeleteInfoState = {
-  id: string;
-  pesertas: string[] | [];
-  officials: string[] | [];
-  dibayar: boolean;
-};
-
-export type ErrorValidationMessagesForOfficials = {
+export type ErrorOfficial = {
   namaLengkap: string | null;
   jenisKelamin: string | null;
   jabatan: string | null;
-  namaKontingen: string | null;
+  idKontingen: string | null;
+  pasFoto: string | null;
+};
+
+export type ErrorPeserta = {
+  namaLengkap: string | null;
+  NIK: string | null;
+  tempatLahir: string | null;
+  tanggalLahir: string | null;
+  beratBadan: string | null;
+  tinggiBadan: string | null;
+  jenisKelamin: string | null;
+  alamatLengkap: string | null;
+  idKontingen: string | null;
+  tingkatanPertandingan: string | null;
+  jenisPertandingan: string | null;
+  kategoriPertandingan: string | null;
   pasFoto: string | null;
 };
