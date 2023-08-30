@@ -65,7 +65,7 @@ export const ContextProvider = ({
   }, [user]);
 
   const checkAdminAuthorized = (user: User) => {
-    if (user.uid === process.env.ADMIN_UID) {
+    if (user.uid === process.env.NEXT_PUBLIC_ADMIN_UID) {
       setAdminAuthorized(true);
     } else {
       setError({ ...error, message: "UID doesnt match" });

@@ -201,7 +201,7 @@ const FormPeserta = ({
         if (imageSelected) {
           // SEND PERSON
           getJumlahPeserta().then((res) => {
-            if (res < Number(process.env.KUOTA_MAKSIMUM)) {
+            if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
               setDisable(true);
               sendPerson(
                 "peserta",
