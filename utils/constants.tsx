@@ -81,7 +81,7 @@ const seniTunggal = {
 // SENI LENGKAP
 const seniLengkap = {
   putra: ["Tunggal Putra", "Ganda Putra", "Regu Putra"],
-  putri: ["Tunggal Putra", "Ganda Putra", "Regu Putra"],
+  putri: ["Tunggal Putri", "Ganda Putri", "Regu Putri"],
 };
 // KATEGORI GENERATOR - END
 

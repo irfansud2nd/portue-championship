@@ -6,18 +6,26 @@ Project Description
 
 ### Todo
 
-- [ ] cek kuota kelas on send  
-- [ ] set submitting disable  
-- [ ] cant leave unsaved form  
 - [ ] responsive  
+- [ ] page for bendahara  
+- [ ] page for admin  
 - [ ] image loading  
+- [ ] refactor everything  
 
-### In Progress
+### Untested
 
-- [ ] delete kontignen with its pesertas and official  
 
 ### Done ✓
 
+- [x] set disable logout  
+- [x] set disable pembayaran  
+- [x] set disable official  
+- [x] set disable kontingen  
+- [x] fix logout button  
+- [x] set disable nav kategori  
+- [x] set submitting disable peserta  
+- [x] delete kontignen with its pesertas and official  
+- [x] cek kuota kelas on send  
 - [x] add sma max 16 per kelas  
 - [x] add dewasa max 16 per kelas  
 - [x] rapihin upload pembayaran  

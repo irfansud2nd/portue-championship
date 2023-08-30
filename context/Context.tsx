@@ -25,6 +25,7 @@ export const ContextProvider = ({
   const [submitting, setSubmitting] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
   const [loaded, setLoaded] = useState(false);
+  const [disable, setDisable] = useState(false);
 
   const googleSignIn = () => {
     const provider = new GoogleAuthProvider();
@@ -80,6 +81,8 @@ export const ContextProvider = ({
         adminAuthorized,
         submitting,
         setSubmitting,
+        disable,
+        setDisable,
       }}
     >
       {children}
