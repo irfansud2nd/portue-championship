@@ -20,14 +20,10 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDocs,
-  query,
+  getCountFromServer,
   setDoc,
   updateDoc,
-  where,
 } from "firebase/firestore";
-import { v4 } from "uuid";
-import { MyContext } from "@/context/Context";
 
 //COMPARE FOR DATA SORTER
 export const compare = (query: string, type: "asc" | "desc") => {
@@ -40,6 +36,12 @@ export const compare = (query: string, type: "asc" | "desc") => {
     }
     return 0;
   };
+};
+
+// GET JUMLAH PESERTA
+export const getJumlahPeserta = async () => {
+  const snapshot = await getCountFromServer(collection(firestore, "pesertas"));
+  return snapshot.data().count;
 };
 
 // TOAST LOADING
@@ -94,7 +96,9 @@ export const findNamaKontingen = (
   const index = dataKontingen.findIndex(
     (kontingen) => kontingen.idKontingen == idKontingen
   );
-  return dataKontingen[index].namaKontingen;
+  return dataKontingen[index]
+    ? dataKontingen[index].namaKontingen
+    : "kontingen not found";
 };
 
 // IMAGE LIMITER

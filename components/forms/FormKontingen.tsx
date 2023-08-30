@@ -6,7 +6,6 @@ import {
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   query,
   setDoc,
@@ -33,16 +32,12 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   const [data, setData] = useState<DataKontingenState | DocumentData>(
     dataKontingenInitialValue
   );
-  const [newDataRef, setNewDataRef] = useState<DocumentReference<
-    DocumentData,
-    DocumentData
-  > | null>(null);
   const [updating, setUpdating] = useState(false);
   const [dataToDelete, setDataToDelete] = useState(dataKontingenInitialValue);
   const [modalVisible, setModalVisible] = useState(false);
   const [tabelLoading, setTabelLoading] = useState(false);
 
-  const { user } = MyContext();
+  const { user, disable, setDisable } = MyContext();
 
   const toastId = useRef(null);
 
@@ -82,34 +77,35 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   // SUBMIT HANDLER - UPDATE OR NEW DATA
   const saveKontingen = (e: React.FormEvent) => {
     e.preventDefault();
-    if (updating) {
-      updateKontingen();
+    if (data.namaKontingen !== "") {
+      setDisable(true);
+      if (updating) {
+        updateKontingen();
+      } else {
+        sendKontingen();
+      }
     } else {
-      sendKontingen();
+      newToast(toastId, "error", "Tolong lengkapi nama kontingen");
     }
   };
 
   // SEND KONTINGEN
   const sendKontingen = () => {
-    if (data.namaKontingen !== "") {
-      newToast(toastId, "loading", "Mendaftarkan Kontingen");
-      const newDocRef = doc(collection(firestore, "kontingens"));
-      setDoc(newDocRef, {
-        ...data,
-        idKontingen: newDocRef.id,
-        waktuPendaftaran: Date.now(),
+    newToast(toastId, "loading", "Mendaftarkan Kontingen");
+    const newDocRef = doc(collection(firestore, "kontingens"));
+    setDoc(newDocRef, {
+      ...data,
+      idKontingen: newDocRef.id,
+      waktuPendaftaran: Date.now(),
+    })
+      .then(() => {
+        updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
       })
-        .then(() => {
-          updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
-        })
-        .catch((error) => alert(error))
-        .finally(() => {
-          resetData();
-          getKontingens();
-        });
-    } else {
-      alert("tolong lengkapi data terlebih dahulu");
-    }
+      .catch((error) => alert(error))
+      .finally(() => {
+        resetData();
+        getKontingens();
+      });
   };
 
   // UPDATE KONTINGEN
@@ -138,12 +134,12 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
 
   // RESETER
   const resetData = () => {
+    setDisable(false);
     setData({
       ...dataKontingenInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
     });
-    setNewDataRef(null);
     setUpdating(false);
   };
 
@@ -157,11 +153,13 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   const cancelDelete = () => {
     setModalVisible(false);
     setDataToDelete(dataKontingenInitialValue);
+    setDisable(false);
   };
 
   // DELETING DATA - START
   // DELETE CONTROLLER
   const deleteData = () => {
+    setDisable(true);
     setModalVisible(false);
     deleteOfficials(dataToDelete.officials.length - 1);
   };
@@ -331,13 +329,18 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
               }
             />
             <button
+              disabled={disable}
               className="btn_red btn_full"
               onClick={resetData}
               type="button"
             >
               Batal
             </button>
-            <button className="btn_green btn_full" type="submit">
+            <button
+              disabled={disable}
+              className="btn_green btn_full"
+              type="submit"
+            >
               {updating ? "Perbaharui" : "Simpan"}
             </button>
           </div>

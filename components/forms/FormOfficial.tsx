@@ -38,7 +38,6 @@ import TabelOfficial from "../tabel/TabelOfficial";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import Image from "next/image";
-import { BiLoader } from "react-icons/bi";
 
 const FormOfficial = ({
   kontingens,
@@ -71,7 +70,7 @@ const FormOfficial = ({
   const toastId = useRef(null);
   const inputImageRef = useRef<HTMLInputElement>(null);
 
-  const { user } = MyContext();
+  const { user, disable, setDisable } = MyContext();
 
   // SET DATA USER
   useEffect(() => {
@@ -85,7 +84,6 @@ const FormOfficial = ({
         ...data,
         creatorEmail: user.email,
         creatorUid: user.uid,
-        namaKontingen: kontingens[0].namaKontingen,
         idKontingen: kontingens[0].idKontingen,
       });
     }
@@ -147,6 +145,7 @@ const FormOfficial = ({
         setInputErrorMessages
       )
     ) {
+      setDisable(true);
       if (updating) {
         updateDataHandler();
       } else {
@@ -181,6 +180,7 @@ const FormOfficial = ({
   const afterSendPerson = () => {
     getOfficials();
     resetData();
+    setDisable(false);
   };
 
   // RESET DATA
@@ -189,7 +189,6 @@ const FormOfficial = ({
       ...dataOfficialInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
-      namaKontingen: kontingens[0].namaKontingen,
       idKontingen: kontingens[0].idKontingen,
     });
     setUpdating(false);
@@ -258,6 +257,7 @@ const FormOfficial = ({
     getOfficials();
     setPrevData(dataOfficialInitialValue);
     clearInputImage();
+    setDisable(false);
   };
 
   // DELETE - STEP 1 - DELETE BUTTON
@@ -269,7 +269,8 @@ const FormOfficial = ({
   // DELETE - STEP 2 - DELETE PERSON
   const deleteData = () => {
     setModalVisible(false);
-    if (dataToDelete)
+    if (dataToDelete) {
+      setDisable(true);
       deletePerson(
         "officials",
         dataToDelete,
@@ -277,6 +278,7 @@ const FormOfficial = ({
         toastId,
         afterDeletePerson
       );
+    }
   };
 
   // DELETE - STEP 3 - CALLBACK
@@ -287,9 +289,15 @@ const FormOfficial = ({
 
   // DELETE CANCELER
   const cancelDelete = () => {
+    setDisable(false);
     setModalVisible(false);
     setDataToDelete(null);
   };
+
+  // INPUT FILE DISABLER
+  useEffect(() => {
+    if (inputImageRef.current) inputImageRef.current.disabled = disable;
+  }, [disable]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -308,7 +316,7 @@ const FormOfficial = ({
         <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
           <div className="h-full w-full">
             <div className="h-full w-full flex flex-col justify-between">
-              <h1 className="font-semibold text-red-500">Hapus kontingen</h1>
+              <h1 className="font-semibold text-red-500">Hapus Official</h1>
               <p>Apakah anda yakin akan menghapus Official ini?</p>
               <div className="self-end flex gap-2">
                 <button
@@ -348,6 +356,7 @@ const FormOfficial = ({
             )}
           </div>
           <input
+            disabled={disable}
             ref={inputImageRef}
             accept=".jpg, .jpeg, .png"
             type="file"
@@ -368,6 +377,7 @@ const FormOfficial = ({
               <div className="input_container">
                 <label className="input_label">Nama Lengkap</label>
                 <input
+                  disabled={disable}
                   className={`
                   ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
                   type="text"
@@ -382,6 +392,7 @@ const FormOfficial = ({
               <div className="input_container">
                 <label className="input_label">Jenis Kelamin</label>
                 <select
+                  disabled={disable}
                   className={`
                   ${inputErrorMessages.jenisKelamin ? "input_error" : "input"}
                   `}
@@ -406,6 +417,7 @@ const FormOfficial = ({
               <div className="input_container">
                 <label className="input_label">Jabatan</label>
                 <select
+                  disabled={disable}
                   className={`
                   ${inputErrorMessages.jabatan ? "input_error" : "input"}
                   `}
@@ -426,6 +438,7 @@ const FormOfficial = ({
               <div className="input_container">
                 <label className="input_label">Nama Kontingen</label>
                 <select
+                  disabled={disable}
                   value={data.idKontingen}
                   onChange={(e) => {
                     setData({
@@ -454,13 +467,18 @@ const FormOfficial = ({
 
           <div className="mt-2 flex gap-2 justify-end self-end">
             <button
+              disabled={disable}
               className="btn_red btn_full"
               onClick={resetData}
               type="button"
             >
               Batal
             </button>
-            <button className="btn_green btn_full" type="submit">
+            <button
+              disabled={disable}
+              className="btn_green btn_full"
+              type="submit"
+            >
               {updating ? "Perbaharui" : "Simpan"}
             </button>
           </div>

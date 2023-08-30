@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <div className="h-full w-full flex justify-center items-center relative">
       <BackgroundLogo />
-      <div className="w-fit flex flex-col gap-3 -translate-y-5">
+      <div className="w-fit flex flex-col items-center gap-3 -translate-y-5">
         <Image src={logo_portue} alt="logo-portue" />
         <LoginButton />
         <button className="w-full rounded-full text-lg font-semibold btn_navy_gold">

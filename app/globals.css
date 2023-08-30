@@ -5,6 +5,16 @@
 
 @layer base {
   /* TABEL */
+
+  button {
+    @apply disabled:text-white disabled:hover:text-white disabled:bg-gray-300 disabled:hover:bg-gray-300 disabled:border-gray-300 disabled:hover:border-gray-300;
+  }
+  input,
+  select,
+  option,
+  textarea {
+    @apply disabled:border-gray-200 disabled:bg-gray-100 disabled:outline-gray-200;
+  }
   table {
     @apply divide-y divide-black rounded-md;
   }
@@ -80,7 +90,7 @@
 
   /* INPUT FILE */
   .input_file {
-    @apply px-1 text-sm border-none;
+    @apply px-1 text-sm border-none disabled:border-none disabled:bg-transparent;
   }
   .input_file::-webkit-file-upload-button {
     @apply my-1 translate-x-5 btn_navy_yellow btn_full;
@@ -88,7 +98,7 @@
 
   /* INPUT BUKTI */
   .input_bukti {
-    @apply px-1 text-sm w-[115px] border-none;
+    @apply px-1 text-sm w-[115px] border-none disabled:border-none disabled:bg-transparent;
   }
   .input_bukti::-webkit-file-upload-button {
     @apply my-1 translate-x-0.5 btn_navy_yellow btn_full;

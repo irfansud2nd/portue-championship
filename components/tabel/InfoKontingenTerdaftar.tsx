@@ -33,6 +33,7 @@ import { PiWarningCircleBold } from "react-icons/pi";
 import Image from "next/image";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { v4 } from "uuid";
+import { Console } from "console";
 
 const InfoKontingenTerdaftar = ({
   kontingens,
@@ -61,7 +62,7 @@ const InfoKontingenTerdaftar = ({
     noHp: string | null;
   }>(inputErrorInitialValue);
 
-  const { user } = MyContext();
+  const { user, disable, setDisable } = MyContext();
 
   // FETCH OFFICIALS IF OFFICIALS EMPTY
   useEffect(() => {
@@ -100,32 +101,37 @@ const InfoKontingenTerdaftar = ({
       !pesertas.length &&
       user
     ) {
-      console.log("fetch pesertas");
-      setTabelPesertaLoading(true);
-      const container: any[] = [];
-      const q = query(
-        collection(firestore, "pesertas"),
-        where("creatorUid", "==", user.uid)
-      );
-      getDocs(q)
-        .then((querySnapshot) =>
-          querySnapshot.forEach((doc) => {
-            container.push(doc.data());
-          })
-        )
-        .catch((error) => alert(error))
-        .finally(() => {
-          setFetchedPesertas(container.sort(compare("namaLengkap", "asc")));
-          setTabelPesertaLoading(false);
-          setFetched({ ...fetched, pesertas: true });
-        });
+      fetchPesertas();
     }
   }, [fetchedPesertas, pesertas, fetched.pesertas, user]);
+
+  // FETSCH PESETAS
+  const fetchPesertas = () => {
+    console.log("fetch pesertas");
+    setTabelPesertaLoading(true);
+    const container: any[] = [];
+    const q = query(
+      collection(firestore, "pesertas"),
+      where("creatorUid", "==", user.uid)
+    );
+    getDocs(q)
+      .then((querySnapshot) =>
+        querySnapshot.forEach((doc) => {
+          container.push(doc.data());
+        })
+      )
+      .catch((error) => alert(error))
+      .finally(() => {
+        setFetchedPesertas(container.sort(compare("namaLengkap", "asc")));
+        setTabelPesertaLoading(false);
+        setFetched({ ...fetched, pesertas: true });
+      });
+  };
 
   // GROUPING OFFICIALS
   const selectOfficials = (idKontingen: string) => {
     const selectedOfficials: DataOfficialState[] = [];
-    if (officials.length) {
+    if (officials.length >= fetchedOfficials.length) {
       officials.map((official, i) => {
         if (official.idKontingen == idKontingen) {
           selectedOfficials.push(officials[i]);
@@ -144,7 +150,7 @@ const InfoKontingenTerdaftar = ({
   // GROUPING PESERTAS
   const selectPesertas = (idKontingen: string) => {
     const selectedPesertas: DataPesertaState[] = [];
-    if (pesertas.length) {
+    if (pesertas.length >= fetchedPesertas.length) {
       pesertas.map((peserta, i) => {
         if (peserta.idKontingen == idKontingen)
           selectedPesertas.push(pesertas[i]);
@@ -159,21 +165,29 @@ const InfoKontingenTerdaftar = ({
   };
 
   // GENERATE TAGIHAN
-  const generateTagihan = (datas: DataPesertaState[]) => {
+  const generateTagihan = () => {
     let tagihan = 0;
-    datas.map((data, i) => {
-      if (data.waktuPembayaran == "") {
-        tagihan += 300000;
-      }
-    });
+    if (pesertas.length >= fetchedPesertas.length) {
+      pesertas.map((data, i) => {
+        if (data.waktuPembayaran == "") {
+          tagihan += 300000;
+        }
+      });
+    } else {
+      fetchedPesertas.map((data, i) => {
+        if (data.waktuPembayaran == "") {
+          tagihan += 300000;
+        }
+      });
+    }
     return tagihan;
   };
 
   // GENERATE NOMINAL
-  const generateNominal = (total: string, telp: string) => {
-    const tagihan = Number(total);
+  const generateNominal = (telp: string) => {
+    const tagihan = generateTagihan();
     const addToNominal = telp ? telp.slice(-3) : "000";
-    return `${tagihan.toLocaleString("id")}.${addToNominal}`;
+    return `${tagihan.toLocaleString("id").slice(0, -4)}.${addToNominal}`;
   };
 
   // IMAGE INPUT REF
@@ -196,26 +210,35 @@ const InfoKontingenTerdaftar = ({
   };
 
   const toastId = useRef(null);
+
   // SEND PEMBAYARAN
   const sendPembayaran = (e: React.FormEvent) => {
     e.preventDefault();
-    if (noHp != "" && imageSelected) {
-      newToast(toastId, "loading", "sending image");
-      const url = `buktiPembayarans/${v4()}.${
-        imageSelected.type.split("/")[1]
-      }`;
-      uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
-        getDownloadURL(snapshot.ref).then((downloadUrl) => {
-          updateToast(toastId, "loading", "sending url to pesertas");
-          sendUrlToPesertas(
-            downloadUrl,
-            pesertas.length ? pesertas.length - 1 : fetchedPesertas.length - 1,
-            Date.now()
-          );
-        })
-      );
+    if (getUnpaidPeserta()) {
+      if (noHp != "" && imageSelected) {
+        newToast(toastId, "loading", "sending image");
+        setDisable(true);
+        const time = Date.now();
+        const url = `buktiPembayarans/${time}-${v4()}.${
+          imageSelected.type.split("/")[1]
+        }`;
+        uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
+          getDownloadURL(snapshot.ref).then((downloadUrl) => {
+            updateToast(toastId, "loading", "sending url to pesertas");
+            sendUrlToPesertas(
+              downloadUrl,
+              pesertas.length
+                ? pesertas.length - 1
+                : fetchedPesertas.length - 1,
+              time
+            );
+          })
+        );
+      } else {
+        getInputError();
+      }
     } else {
-      getInputError();
+      newToast(toastId, "error", "Tidak ada peserta yang belum dibayar");
     }
   };
 
@@ -225,15 +248,15 @@ const InfoKontingenTerdaftar = ({
     pesertasIndex: number,
     time: number
   ) => {
-    console.log(pesertasIndex);
-    const id = pesertas.length
-      ? pesertas[pesertasIndex].id
-      : fetchedPesertas.length
-      ? fetchedPesertas[pesertasIndex].id
-      : "";
-    const paid = pesertas.length
-      ? pesertas[pesertasIndex].waktuPembayaran
-      : fetchedPesertas[pesertasIndex].waktuPembayaran;
+    console.log("LOOP", pesertasIndex);
+    const id =
+      pesertas.length >= fetchedPesertas.length
+        ? pesertas[pesertasIndex].id
+        : fetchedPesertas[pesertasIndex].id;
+    const paid =
+      pesertas.length >= fetchedPesertas.length
+        ? pesertas[pesertasIndex].waktuPembayaran
+        : fetchedPesertas[pesertasIndex].waktuPembayaran;
     if (pesertasIndex >= 0) {
       if (!paid) {
         if (id) {
@@ -241,23 +264,33 @@ const InfoKontingenTerdaftar = ({
             waktuPembayaran: time,
             downloadBuktiPembayaranUrl: url,
           })
-            .then(() => sendUrlToPesertas(url, pesertasIndex - 1, time))
+            .then(() => {
+              sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
+            })
             .catch((error) => alert(error));
         } else {
           alert("id undefined");
         }
       } else {
-        if (pesertasIndex != 0) {
-          sendUrlToPesertas(url, pesertasIndex - 1, time);
-        } else {
-          updateToast(toastId, "loading", "sending url to kontingen");
-          sendUrlToKontingen(url, kontingens.length - 1, time);
-        }
+        console.log("GARA GARA INI");
+        sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
       }
     } else {
-      console.log("kepake ga");
       updateToast(toastId, "loading", "sending url to kontingen");
       sendUrlToKontingen(url, kontingens.length - 1, time);
+    }
+  };
+
+  const sendUrlToPesertasRepeater = (
+    url: string,
+    pesertasIndex: number,
+    time: number
+  ) => {
+    if (pesertasIndex <= 0) {
+      updateToast(toastId, "loading", "sending url to kontingen");
+      sendUrlToKontingen(url, kontingens.length - 1, time);
+    } else {
+      sendUrlToPesertas(url, pesertasIndex - 1, time);
     }
   };
 
@@ -272,7 +305,7 @@ const InfoKontingenTerdaftar = ({
     if (kontingenIndex >= 0) {
       if (id) {
         updateDoc(doc(firestore, "kontingens", id), {
-          creatorPhoneNumber: noHp,
+          creatorPhoneNumber: arrayUnion(noHp),
           waktuPembayaran: arrayUnion(time),
           downloadBuktiPembayaranUrl: arrayUnion(`${time}-separator-${url}`),
         })
@@ -286,29 +319,34 @@ const InfoKontingenTerdaftar = ({
           })
           .catch((error) => alert(error));
       } else {
-        alert("id undefined");
+        newToast(toastId, "error", "id undefined");
       }
-    } else {
-      updateToast(toastId, "success", "done");
-      alert("done");
     }
   };
 
   // GENERATE UNPAID PESERTA
-  const generateUnpaidPeserta = (datas: DataPesertaState[]) => {
+  const getUnpaidPeserta = () => {
     let unpaidPeserta = 0;
-    datas.map((data) => {
-      if (data.waktuPembayaran == "") unpaidPeserta += 1;
-    });
+    if (pesertas.length >= fetchedPesertas.length) {
+      pesertas.map((data) => {
+        if (data.waktuPembayaran == "") unpaidPeserta += 1;
+      });
+    } else {
+      fetchedPesertas.map((data) => {
+        if (data.waktuPembayaran == "") unpaidPeserta += 1;
+      });
+    }
     return unpaidPeserta;
   };
 
   // RESET DATA
   const resetData = () => {
+    fetchPesertas();
     setnoHp("");
     setImageSelected(null);
     setImagePreviewSrc("");
     setInputErrorMessages(inputErrorInitialValue);
+    setDisable(false);
   };
 
   // ERROR UPDATE LISTENER
@@ -320,6 +358,7 @@ const InfoKontingenTerdaftar = ({
       getInputError();
   }, [noHp, inputErrorMessages, imageSelected]);
 
+  // GET INPUT ERROR
   const getInputError = () => {
     setInputErrorMessages({
       ...inputErrorInitialValue,
@@ -327,6 +366,11 @@ const InfoKontingenTerdaftar = ({
       noHp: !noHp.length ? "Tolong lengkapin No HP" : null,
     });
   };
+
+  // INPUT FILE DISABLER
+  useEffect(() => {
+    if (inputImageRef.current) inputImageRef.current.disabled = disable;
+  }, [disable]);
 
   return (
     <div>
@@ -396,20 +440,12 @@ const InfoKontingenTerdaftar = ({
                 </tr>
                 <tr>
                   <th>Jumlah Peserta</th>
-                  <td className="text-end">
-                    {generateUnpaidPeserta(
-                      pesertas.length ? pesertas : fetchedPesertas
-                    )}
-                    {/* {pesertas.length ? pesertas.length : fetchedPesertas.length} */}
-                  </td>
+                  <td className="text-end">{getUnpaidPeserta()}</td>
                 </tr>
                 <tr className="font-bold">
                   <th>Total Biaya</th>
                   <td className="text-end">
-                    Rp.{" "}
-                    {generateTagihan(
-                      pesertas.length ? pesertas : fetchedPesertas
-                    ).toLocaleString("id")}
+                    Rp. {generateTagihan().toLocaleString("id")}
                   </td>
                 </tr>
               </tbody>
@@ -422,6 +458,7 @@ const InfoKontingenTerdaftar = ({
               <div className="flex flex-col w-[200px]">
                 <label>No HP</label>
                 <input
+                  disabled={disable}
                   type="text"
                   onChange={(e) =>
                     setnoHp(e.target.value.replace(/[^0-9]/g, ""))
@@ -438,24 +475,11 @@ const InfoKontingenTerdaftar = ({
               <div className="flex flex-col w-[200px]">
                 <p>Nominal yang ditranfer: </p>
                 <div className="bg-white w-full rounded-md px-1 translate-y-[1px] flex justify-between">
-                  <span>
-                    Rp.{" "}
-                    {generateNominal(
-                      generateTagihan(
-                        pesertas.length ? pesertas : fetchedPesertas
-                      ).toLocaleString("id"),
-                      noHp
-                    )}
-                  </span>
+                  <span>Rp. {generateNominal(noHp)}</span>
                   <button
                     onClick={() => {
                       navigator.clipboard.writeText(
-                        generateNominal(
-                          generateTagihan(
-                            pesertas.length ? pesertas : fetchedPesertas
-                          ).toLocaleString("id"),
-                          noHp
-                        ).replace(/[^0-9]/g, "")
+                        generateNominal(noHp).replace(/[^0-9]/g, "")
                       );
                     }}
                   >
@@ -575,6 +599,7 @@ const InfoKontingenTerdaftar = ({
                 )}
               </div>
               <input
+                disabled={disable}
                 ref={inputImageRef}
                 accept=".jpg, .jpeg, .png"
                 type="file"
@@ -590,6 +615,7 @@ const InfoKontingenTerdaftar = ({
               <button
                 className="btn_green btn_full w-fit text-sm font-bold"
                 type="submit"
+                disabled={disable}
               >
                 Simpan
               </button>

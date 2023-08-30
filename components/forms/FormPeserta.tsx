@@ -18,6 +18,8 @@ import {
   updatePersonImage,
   updatePersonImageKontingen,
   updatePersonKontingen,
+  getJumlahPeserta,
+  newToast,
 } from "@/utils/sharedFunctions";
 import {
   DataKontingenState,
@@ -73,7 +75,7 @@ const FormPeserta = ({
   const toastId = useRef(null);
   const inputImageRef = useRef<HTMLInputElement>(null);
 
-  const { user } = MyContext();
+  const { user, disable, setDisable } = MyContext();
 
   // SET DATA USER
   useEffect(() => {
@@ -85,7 +87,6 @@ const FormPeserta = ({
         ...data,
         creatorEmail: user.email,
         creatorUid: user.uid,
-        namaKontingen: kontingens[0].namaKontingen,
         idKontingen: kontingens[0].idKontingen,
       });
     }
@@ -162,9 +163,28 @@ const FormPeserta = ({
   };
 
   // SUBMIT HANDLER - UPDATE OR NEW DATA
-  const savePeserta = (e: React.FormEvent) => {
+  const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
     setSendClicked(true);
+    if (
+      data.tingkatanPertandingan == "SMA" ||
+      data.tingkatanPertandingan == "Dewasa"
+    ) {
+      // CEK KUOTA FIRST
+      cekKuota().then((res) => {
+        if (res) {
+          sendPeserta();
+        } else {
+          alert("kuota habis");
+        }
+      });
+    } else {
+      // SEND
+      sendPeserta();
+    }
+  };
+
+  const sendPeserta = () => {
     if (
       getInputErrorPeserta(
         data,
@@ -172,21 +192,33 @@ const FormPeserta = ({
         inputErrorMessages,
         setInputErrorMessages
       ) &&
-      kuotaKelas != 0
+      kuotaKelas !== 0
     ) {
       if (updating) {
+        setDisable(true);
         updateDataHandler();
       } else {
         if (imageSelected) {
           // SEND PERSON
-          sendPerson(
-            "peserta",
-            data,
-            imageSelected,
-            kontingens,
-            toastId,
-            afterSendPerson
-          );
+          getJumlahPeserta().then((res) => {
+            if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
+              setDisable(true);
+              sendPerson(
+                "peserta",
+                data,
+                imageSelected,
+                kontingens,
+                toastId,
+                afterSendPerson
+              );
+            } else {
+              newToast(
+                toastId,
+                "error",
+                "Maaf jumlah peserta yang terdaftar sudah mencapai batas maksimum"
+              );
+            }
+          });
         }
       }
     }
@@ -208,6 +240,7 @@ const FormPeserta = ({
   const afterSendPerson = () => {
     getPesertas();
     resetData();
+    setDisable(false);
   };
 
   // RESET DATA
@@ -216,7 +249,6 @@ const FormPeserta = ({
       ...dataPesertaInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
-      namaKontingen: kontingens[0].namaKontingen,
       idKontingen: kontingens[0].idKontingen,
     });
     setUpdating(false);
@@ -234,7 +266,8 @@ const FormPeserta = ({
   // DELETE - STEP 2 - DELETE PERSON
   const deleteData = () => {
     setModalVisible(false);
-    if (dataToDelete)
+    if (dataToDelete) {
+      setDisable(true);
       deletePerson(
         "pesertas",
         dataToDelete,
@@ -242,6 +275,7 @@ const FormPeserta = ({
         toastId,
         afterDeletePerson
       );
+    }
   };
 
   // DELETE - STEP 3 - CALLBACK
@@ -252,6 +286,7 @@ const FormPeserta = ({
 
   // DELETE CANCELER
   const cancelDelete = () => {
+    setDisable(false);
     setModalVisible(false);
     setDataToDelete(null);
   };
@@ -310,45 +345,92 @@ const FormPeserta = ({
 
   // RESET EDIT
   const resetEdit = () => {
+    setDisable(false);
     resetData();
     getPesertas();
     setPrevData(dataPesertaInitialValue);
     clearInputImage();
   };
 
-  // TINGKATAN AND KATEGORI LISTENER
+  // DATA LISTENER FOR CEK KUOTA
   useEffect(() => {
     if (
       data.tingkatanPertandingan == "SMA" ||
       data.tingkatanPertandingan == "Dewasa"
     ) {
-      cekKuota(data.tingkatanPertandingan, data.kategoriPertandingan);
+      cekKuota();
     } else {
       setKuotaKelas(16);
     }
-  }, [data.tingkatanPertandingan, data.kategoriPertandingan]);
+  }, [
+    data.tingkatanPertandingan,
+    data.kategoriPertandingan,
+    data.jenisKelamin,
+    data.jenisPertandingan,
+  ]);
 
   // CEK KUOTA TINGKATAN SMA DAN DEWASA
-  const cekKuota = (tingkatan: string, kategori: string) => {
-    let kuota = 2;
+  const cekKuota = async () => {
+    let kuota = 16;
     setKuotaLoading(true);
     const q = query(
       collection(firestore, "pesertas"),
-      where("tingkatanPertandingan", "==", tingkatan),
-      where("kategoriPertandingan", "==", kategori)
+      where("tingkatanPertandingan", "==", data.tingkatanPertandingan),
+      where("kategoriPertandingan", "==", data.kategoriPertandingan),
+      where("jenisKelamin", "==", data.jenisKelamin)
     );
-    getDocs(q)
-      .then((querySnapshot) =>
+    return getDocs(q)
+      .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          console.log(doc.data());
           kuota = kuota - 1;
-        })
-      )
+        });
+        return kuota;
+      })
       .finally(() => {
         setKuotaKelas(kuota);
         setKuotaLoading(false);
       });
   };
+
+  // DATA LISTENER TO CHANGE DEFAULT KATEGORI
+  useEffect(() => {
+    const kategoriDefault =
+      data.jenisPertandingan == jenisPertandingan[0]
+        ? tingkatanKategori[
+            tingkatanKategori.findIndex(
+              (item) => item.tingkatan == data.tingkatanPertandingan
+            )
+          ].kategoriTanding[0]
+        : data.jenisKelamin == jenisKelamin[0]
+        ? tingkatanKategori[
+            tingkatanKategori.findIndex(
+              (item) => item.tingkatan == data.tingkatanPertandingan
+            )
+          ].kategoriSeni.putra[0]
+        : tingkatanKategori[
+            tingkatanKategori.findIndex(
+              (item) => item.tingkatan == data.tingkatanPertandingan
+            )
+          ].kategoriSeni.putri[0];
+
+    if (user && data.idKontingen) {
+      setData({
+        ...data,
+        kategoriPertandingan: kategoriDefault,
+      });
+    }
+  }, [
+    data.tingkatanPertandingan,
+    data.jenisPertandingan,
+    data.jenisKelamin,
+    user,
+    data.idKontingen,
+  ]);
+
+  // INPUT FILE DISABLER
+  useEffect(() => {
+    if (inputImageRef.current) inputImageRef.current.disabled = disable;
+  }, [disable]);
 
   return (
     <div className="flex flex-col gap-2">
@@ -363,8 +445,8 @@ const FormPeserta = ({
       <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <div className="h-full w-full">
           <div className="h-full w-full flex flex-col justify-between">
-            <h1 className="font-semibold text-red-500">Hapus kontingen</h1>
-            <p>Apakah anda yakin akan menghapus Official ini?</p>
+            <h1 className="font-semibold text-red-500">Hapus Peserta</h1>
+            <p>Apakah anda yakin akan menghapus Peserta ini?</p>
             <div className="self-end flex gap-2">
               <button
                 className="btn_red btn_full"
@@ -384,7 +466,7 @@ const FormPeserta = ({
           </div>
         </div>
       </Rodal>
-      <form onSubmit={(e) => savePeserta(e)}>
+      <form onSubmit={(e) => submitHandler(e)}>
         <div className="grid grid-cols-[auto_1fr] gap-3">
           {/* PAS FOTO */}
           <div className="input_container max-w-[150px] ">
@@ -405,6 +487,7 @@ const FormPeserta = ({
               )}
             </div>
             <input
+              disabled={disable}
               ref={inputImageRef}
               accept=".jpg, .jpeg, .png"
               type="file"
@@ -424,8 +507,10 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Nama Lengkap</label>
               <input
-                className={`
-               ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
+                disabled={disable}
+                className={`${
+                  inputErrorMessages.namaLengkap ? "input_error" : "input"
+                }`}
                 type="text"
                 value={data.namaLengkap}
                 onChange={(e) =>
@@ -439,6 +524,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">NIK</label>
               <input
+                disabled={disable}
                 value={data.NIK}
                 type="text"
                 onChange={(e) => sanitizeNIK(e.target.value)}
@@ -453,6 +539,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Jenis Kelamin</label>
               <select
+                disabled={disable}
                 value={data.jenisKelamin}
                 onChange={(e) =>
                   setData({ ...data, jenisKelamin: e.target.value })
@@ -474,6 +561,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Alamat Lengkap</label>
               <textarea
+                disabled={disable}
                 value={data.alamatLengkap}
                 onChange={(e) =>
                   setData({ ...data, alamatLengkap: e.target.value })
@@ -489,6 +577,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Tempat Lahir</label>
               <input
+                disabled={disable}
                 value={data.tempatLahir}
                 type="text"
                 onChange={(e) =>
@@ -505,6 +594,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Tanggal Lahir</label>
               <input
+                disabled={disable}
                 value={data.tanggalLahir}
                 type="date"
                 onChange={(e) => calculateAge(e.target.value)}
@@ -521,6 +611,7 @@ const FormPeserta = ({
                 Tinggi Badan <span className="text-sm text-gray-600">(CM)</span>
               </label>
               <input
+                disabled={disable}
                 value={data.tinggiBadan == 0 ? "" : data.tinggiBadan}
                 type="number"
                 onChange={(e) =>
@@ -542,6 +633,7 @@ const FormPeserta = ({
                 Berat Badan <span className="text-sm text-gray-600">(KG)</span>
               </label>
               <input
+                disabled={disable}
                 value={data.beratBadan == 0 ? "" : data.beratBadan}
                 type="number"
                 step={0.1}
@@ -562,6 +654,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Nama Kontingen</label>
               <select
+                disabled={disable}
                 value={data.idKontingen}
                 onChange={(e) => {
                   setData({
@@ -590,6 +683,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Tingkatan</label>
               <select
+                disabled={disable}
                 value={data.tingkatanPertandingan}
                 onChange={(e) => {
                   setData({
@@ -620,6 +714,7 @@ const FormPeserta = ({
             <div className="input_container">
               <label className="input_label">Jenis Pertaindingan</label>
               <select
+                disabled={disable}
                 value={data.jenisPertandingan}
                 onChange={(e) =>
                   setData({
@@ -661,6 +756,7 @@ const FormPeserta = ({
               <div className="input_container">
                 <label className="input_label">Kategori Tanding</label>
                 <select
+                  disabled={disable}
                   value={data.kategoriPertandingan}
                   onChange={(e) => {
                     setData({ ...data, kategoriPertandingan: e.target.value });
@@ -701,7 +797,9 @@ const FormPeserta = ({
                       Kuota kategori habis
                     </p>
                   ) : (
-                    <p className="text-end">Sisa kuota: {kuotaKelas} peserta</p>
+                    <p className="text-end">
+                      Sisa kuota kategori: {kuotaKelas} peserta
+                    </p>
                   ))}
               </div>
             )}
@@ -710,6 +808,7 @@ const FormPeserta = ({
               <div className="input_container">
                 <label className="input_label">Kategori Seni</label>
                 <select
+                  disabled={disable}
                   value={data.kategoriPertandingan}
                   onChange={(e) =>
                     setData({
@@ -749,18 +848,39 @@ const FormPeserta = ({
                 <p className="text-red-500">
                   {inputErrorMessages.kategoriPertandingan}
                 </p>
+                {(data.tingkatanPertandingan == "SMA" ||
+                  data.tingkatanPertandingan == "Dewasa") &&
+                  (kuotaLoading ? (
+                    <p className="text-end">
+                      Memuat kuota kategori{" "}
+                      <BiLoader className="animate-spin inline" />
+                    </p>
+                  ) : !kuotaKelas ? (
+                    <p className="text-end text-red-500">
+                      Kuota kategori habis
+                    </p>
+                  ) : (
+                    <p className="text-end">
+                      Sisa kuota kategori: {kuotaKelas} peserta
+                    </p>
+                  ))}
               </div>
             )}
             {/* BUTTON */}
             <div className="mt-2 flex gap-2 justify-end w-full">
               <button
+                disabled={disable}
                 className="btn_red btn_full"
                 onClick={resetData}
                 type="button"
               >
                 Batal
               </button>
-              <button className="btn_green btn_full" type="submit">
+              <button
+                className="btn_green btn_full"
+                type="submit"
+                disabled={disable}
+              >
                 {updating ? "Perbaharui" : "Simpan"}
               </button>
             </div>
