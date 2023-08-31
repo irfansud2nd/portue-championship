@@ -1,6 +1,7 @@
 "use client";
 import { storage } from "@/utils/firebase";
 import { newToast } from "@/utils/sharedFunctions";
+import FileSaver from "file-saver";
 import { getDownloadURL, ref } from "firebase/storage";
 import { useRef, useState } from "react";
 import { BsFillCloudDownloadFill } from "react-icons/bs";
@@ -16,13 +17,14 @@ const DownloadButton = () => {
       ref(storage, "admin/PROPOSAL PORTUE SILAT BANDUNG CHAMPIONSHIP 2023.pdf")
     )
       .then((url) => {
-        const xhr = new XMLHttpRequest();
-        xhr.responseType = "blob";
-        xhr.onload = (event) => {
-          const blob = xhr.response;
-        };
-        xhr.open("GET", url);
-        xhr.send();
+        // const xhr = new XMLHttpRequest();
+        // xhr.responseType = "blob";
+        // xhr.onload = (event) => {
+        //   const blob = xhr.response;
+        // };
+        // xhr.open("GET", url);
+        // xhr.send();
+        FileSaver.saveAs(url);
         setLoading(false);
       })
       .catch((error) => {
