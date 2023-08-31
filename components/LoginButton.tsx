@@ -16,7 +16,7 @@ const LoginButton = () => {
 
   return (
     <>
-      {userLoading ? (
+      {/* {userLoading ? (
         <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center">
           <AiOutlineLoading3Quarters className="animate-spin h-7" />
         </div>
@@ -34,7 +34,10 @@ const LoginButton = () => {
         >
           <BsGoogle className="inline mb-1" /> Login Dengan Google
         </button>
-      )}
+      )} */}
+      <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center">
+        Pendaftaran dimulai 4 September 2023
+      </div>
     </>
   );
 };

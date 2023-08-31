@@ -17,7 +17,7 @@ const Profile = () => {
 
   return (
     <div className="max-w-[160px] w-fit max-h-full -translate-y-1 sm:translate-y-0">
-      <div className="flex items-center text-sm sm:text-base gap-2 w-fit bg-white rounded-full p-1 sm:p2">
+      {/* <div className="flex items-center text-sm sm:text-base gap-2 w-fit bg-white rounded-full p-1 sm:p2">
         {user ? (
           user.photoURL ? (
             <Image
@@ -54,7 +54,7 @@ const Profile = () => {
             Login
           </button>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

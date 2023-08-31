@@ -1,3 +1,4 @@
+import { findNamaKontingen } from "./sharedFunctions";
 import {
   DataKontingenState,
   DataOfficialState,
@@ -229,3 +230,68 @@ export const errorPesertaInitialValue: ErrorPeserta = {
   kategoriPertandingan: null,
   pasFoto: null,
 };
+
+// ----------------- FOR ADMIN -------------------
+const pilihanTabel = [
+  {
+    nama: "peserta",
+    head: [
+      "No",
+      "ID Peserta",
+      "Nama Lengkap",
+      "NIK",
+      "JenisKelamin",
+      "Tempat Lahir",
+      "Tanggal Lahir",
+      "Umur",
+      "Berat Badan",
+      "Tinggi Badan",
+      "Alamat Lengkap",
+      "Tingkatan",
+      "Jenis Pertandingan",
+      "Kategori Pertandingan",
+      "Nama Kontingen",
+      "ID Kontingen",
+      "Foto Url",
+      "Download FotoUrl",
+      "Download Bukti Pembayaran URL",
+      "Waktu Pembayaran",
+      "Konfirmasi Pembayaran",
+      "Email Pendaftar",
+      "UID Pendaftar",
+      "Waktu Pendaftaran",
+      "Waktu Perubahan",
+    ],
+    row: (
+      data: DataPesertaState,
+      i: number,
+      kontingens: DataKontingenState[]
+    ) => (
+      <tr>
+        <td>{i + 1}</td>
+        <td>{data.id}</td>
+        <td>{data.namaLengkap}</td>
+        <td>{data.NIK}</td>
+        <td>{data.jenisKelamin}</td>
+        <td>{data.tempatLahir}</td>
+        <td>{data.tanggalLahir}</td>
+        <td>{data.umur}</td>
+        <td>{data.beratBadan}</td>
+        <td>{data.tinggiBadan}</td>
+        <td>{data.alamatLengkap}</td>
+        <td>{data.tingkatanPertandingan}</td>
+        <td>{data.jenisPertandingan}</td>
+        <td>{findNamaKontingen(kontingens, data.idKontingen)}</td>
+        <td>{data.idKontingen}</td>
+        <td>{data.fotoUrl}</td>
+        <td>{data.downloadBuktiPembayaranUrl}</td>
+        <td>{data.waktuPembayaran}</td>
+        <td>{data.konfirmasiPembayaran}</td>
+        <td>{data.creatorEmail}</td>
+        <td>{data.creatorUid}</td>
+        <td>{data.waktuPendaftaran}</td>
+        <td>{data.waktuPembayaran}</td>
+      </tr>
+    ),
+  },
+];

@@ -6,6 +6,9 @@ Project Description
 
 ### Todo
 
+- [ ] tutup pendaftaran sebelum maghrib  
+- [ ] ganti proposal  
+- [ ] kecilin logo mobile  
 - [ ] fix toast error message  
 - [ ] page for bendahara  
 - [ ] page for admin  
