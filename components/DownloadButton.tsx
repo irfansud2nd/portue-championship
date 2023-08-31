@@ -29,9 +29,9 @@ const DownloadButton = () => {
         // };
         // xhr.open("GET", url);
         // xhr.send();
-        // FileSaver.saveAs(url);
-        // setLoading(false);
-        setDownloadLink(url);
+        FileSaver.saveAs(url);
+        setLoading(false);
+        // setDownloadLink(url);
       })
       .catch((error) => {
         newToast(
@@ -47,17 +47,22 @@ const DownloadButton = () => {
       onClick={downloadHandler}
     >
       <ToastContainer />
-      {downloadLink ? (
+      {/* {downloadLink ? (
         <>
-          <Link href={downloadLink} target="_blank">
+          <Link
+            href={downloadLink}
+            target="_blank"
+            download="Proposal.pdf"
+            prefetch={false}
+          >
             <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" /> Download
             Proposal
           </Link>
         </>
       ) : (
         "Mohon Tunggu..."
-      )}
-      {/* {loading ? "Mohon Tunggu..." : "Download Proposal"} */}
+      )} */}
+      {loading ? "Mohon Tunggu..." : "Download Proposal"}
     </button>
   );
 };
