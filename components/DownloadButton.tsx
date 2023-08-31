@@ -3,14 +3,19 @@ import { storage } from "@/utils/firebase";
 import { newToast } from "@/utils/sharedFunctions";
 import FileSaver from "file-saver";
 import { getDownloadURL, ref } from "firebase/storage";
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useRef, useState, useEffect } from "react";
 import { BsFillCloudDownloadFill } from "react-icons/bs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const DownloadButton = () => {
   const [loading, setLoading] = useState(false);
+  const [downloadLink, setDownloadLink] = useState("");
 
   const toastId = useRef(null);
+  useEffect(() => {
+    downloadHandler();
+  }, []);
   const downloadHandler = () => {
     setLoading(true);
     getDownloadURL(
@@ -24,8 +29,9 @@ const DownloadButton = () => {
         // };
         // xhr.open("GET", url);
         // xhr.send();
-        FileSaver.saveAs(url);
-        setLoading(false);
+        // FileSaver.saveAs(url);
+        // setLoading(false);
+        setDownloadLink(url);
       })
       .catch((error) => {
         newToast(
@@ -41,8 +47,17 @@ const DownloadButton = () => {
       onClick={downloadHandler}
     >
       <ToastContainer />
-      <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" />
-      {loading ? "Mohon Tunggu..." : "Download Proposal"}
+      {downloadLink ? (
+        <>
+          <Link href={downloadLink} target="_blank">
+            <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" /> Download
+            Proposal
+          </Link>
+        </>
+      ) : (
+        "Mohon Tunggu..."
+      )}
+      {/* {loading ? "Mohon Tunggu..." : "Download Proposal"} */}
     </button>
   );
 };
