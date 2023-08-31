@@ -8,20 +8,53 @@ import Profile from "./Profile";
 
 const SponsorLogo = () => {
   return (
-    <section className="w-full flex justify-between h-[50px] sm:h-[60px] md:h-[80px] p-2 items-center ">
-      <div className="h-full flex items-center">
-        <Profile />
-        <Image
-          src={graphic_portue}
-          alt="graphic-portue"
-          className="w-fit h-full my-auto"
-        />
-      </div>
-      <div className="flex gap-3 h-full w-full justify-end">
-        <Image src={logo_koni} alt="logo-koni" className="w-fit h-full" />
-        <Image src={logo_ipsi} alt="logo-ipsi" className="w-fit h-full" />
-        <Image src={logo_bpjs} alt="logo-bpjs" className="w-fit h-full" />
-        <Image src={logo_bjb} alt="logo-bjb" className="w-fit h-full" />
+    <section className="w-full">
+      {/* <div className="grid grid-cols-12 gap-3 max-w-full px-3 py-1 items-center h-[50px]"> */}
+      <div className="grid grid-cols-[repeat(14,_minmax(0,_1fr))] md:grid-cols-12 gap-3 max-w-full px-3 py-1 items-center h-[50px]">
+        <div className="w-full h-full col-span-2">
+          <Profile />
+        </div>
+        <div className="hidden md:block col-span-4"></div>
+        <div className="w-full h-full col-span-2 md:col-span-1 relative">
+          <Image
+            src={graphic_portue}
+            alt="graphic-portue"
+            fill
+            className="w-fit h-full object-contain"
+          />
+        </div>
+        <div className="w-full h-full col-span-2 md:col-span-1 relative">
+          <Image
+            src={logo_koni}
+            alt="graphic-portue"
+            fill
+            className="w-fit h-full object-contain"
+          />
+        </div>
+        <div className="w-full h-full col-span-2 md:col-span-1 relative">
+          <Image
+            src={logo_ipsi}
+            alt="graphic-portue"
+            fill
+            className="w-fit h-full object-contain"
+          />
+        </div>
+        <div className="w-full h-full col-span-4 md:col-span-2 relative">
+          <Image
+            src={logo_bpjs}
+            alt="graphic-portue"
+            fill
+            className="w-full h-fit object-contain"
+          />
+        </div>
+        <div className="w-full h-full col-span-2 md:col-span-1 relative">
+          <Image
+            src={logo_bjb}
+            alt="graphic-portue"
+            fill
+            className="w-fit h-full object-contain"
+          />
+        </div>
       </div>
     </section>
   );

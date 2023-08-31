@@ -8,12 +8,12 @@ const BackgroundLogo = () => {
         <Image
           src={mascot_1}
           alt="mascot-1"
-          className="self-end h-[150px] md:h-[250px] w-fit -translate-x-[10vw] translate-y-[50px]"
+          className="hidden min-[374px]:block self-end h-[150px] lg:h-[250px] w-fit -translate-x-[10vw] translate-y-[50px]"
         />
         <Image
           src={mascot_2}
           alt="mascot-2"
-          className="h-[140px] sm:h-[180px] md:h-[200px] w-fit"
+          className="hidden min-[374px]:block h-[140px] sm:h-[180px] md:h-[200px] w-fit"
         />
       </div>
     </div>

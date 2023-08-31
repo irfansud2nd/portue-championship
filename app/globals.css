@@ -108,4 +108,9 @@
   .error_text {
     @apply text-red-500;
   }
+
+  /* SPONSOR LOGOS */
+  .sponsor_logo {
+    @apply w-fit h-[50px];
+  }
 }

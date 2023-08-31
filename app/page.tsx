@@ -18,11 +18,7 @@ export default function Home() {
       </Head>
       <BackgroundLogo />
       <div className="w-fit flex flex-col items-center gap-3 -translate-y-5">
-        <Image
-          src={logo_portue}
-          alt="logo-portue"
-          className="w-[80vw] sm:w-fit"
-        />
+        <Image src={logo_portue} alt="logo-portue" className="max-w-[80vw]" />
         <LoginButton />
         <DownloadButton />
         <p className="text-center text-5xl leading-5 font-bold mt-2 font-dancing-script">

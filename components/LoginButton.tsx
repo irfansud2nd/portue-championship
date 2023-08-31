@@ -36,7 +36,8 @@ const LoginButton = () => {
         </button>
       )} */}
       <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center px-2 text-center">
-        Pendaftaran dimulai 4 September 2023
+        Pendaftaran dimulai
+        <br className="min-[375px]:hidden" />4 September 2023
       </div>
     </>
   );

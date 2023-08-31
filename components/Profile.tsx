@@ -6,7 +6,7 @@ import { FcGoogle } from "react-icons/fc";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 const Profile = () => {
-  const { user, logOut, disable, userLoading } = MyContext();
+  const { user, logOut, disable, userLoading, googleSignIn } = MyContext();
   const handleLogout = async () => {
     try {
       await logOut();
@@ -14,34 +14,43 @@ const Profile = () => {
       alert(error);
     }
   };
+  const handleLogin = async () => {
+    try {
+      await googleSignIn();
+    } catch (error) {
+      alert(error);
+    }
+  };
 
   return (
-    <div className="max-w-[160px] w-fit max-h-full -translate-y-1 sm:translate-y-0">
-      {/* <div className="flex items-center text-sm sm:text-base gap-2 w-fit bg-white rounded-full p-1 sm:p2">
-        {user ? (
+    <div className="h-full flex items-center">
+      <div
+        className="flex text-sm sm:text-base gap-1 w-fit bg-white rounded-full p-1"
+        onClick={() => (user ? handleLogout() : handleLogin())}
+      >
+        {userLoading ? (
+          <AiOutlineLoading3Quarters className="animate-spin h-6 w-6 text-blue-500" />
+        ) : user ? (
           user.photoURL ? (
-            <Image
-              src={user.photoURL}
-              width={30}
-              height={30}
-              alt="profil"
-              className="rounded-full object-cover max-h-[20px] max-w-[20px] sm:max-w-[30px] sm:max-h-[30px]"
-            />
+            <div className="h-[20px] w-[20px] sm:w-[30px] sm:h-[30px] relative">
+              <Image
+                src={user.photoURL}
+                alt="profil"
+                fill
+                className="rounded-full profile_img object-cover"
+              />
+            </div>
           ) : (
-            <FaUserCircle className="h-[30px] w-[30px]" />
+            <FaUserCircle className="h-[20px] w-[20px] sm:w-[30px] sm:h-[30px]" />
           )
         ) : (
-          <FcGoogle className="h-[30px] w-[30px]" />
+          <FcGoogle className="h-[20px] w-[20px] sm:w-[30px] sm:h-[30px]" />
         )}
-        {userLoading ? (
-          <div className="btn_full text-white bg-[#39B5FF]">
-            <AiOutlineLoading3Quarters className="animate-spin h-6" />
-          </div>
-        ) : user ? (
+        {userLoading ? null : user ? (
           <button
             onClick={handleLogout}
             disabled={disable}
-            className="btn_full text-white bg-[#39B5FF] border-2 border-[#39B5FF] hover:bg-white hover:text-[#39B5FF] transition "
+            className="btn_full text-white bg-[#39B5FF] border-2 border-[#39B5FF] hover:bg-white hover:text-[#39B5FF] transition hidden sm:block"
           >
             Logout
           </button>
@@ -49,12 +58,12 @@ const Profile = () => {
           <button
             onClick={handleLogout}
             disabled={disable}
-            className="btn_full text-white bg-[#39B5FF] border-2 border-[#39B5FF] hover:bg-white hover:text-[#39B5FF] transition "
+            className="btn_full text-white bg-[#39B5FF] border-2 border-[#39B5FF] hover:bg-white hover:text-[#39B5FF] transition hidden sm:block"
           >
             Login
           </button>
         )}
-      </div> */}
+      </div>
     </div>
   );
 };
