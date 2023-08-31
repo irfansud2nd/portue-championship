@@ -9,6 +9,8 @@ import graphic_portue from "@/public/images/graphic-portue.png";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
+import Rodal from "rodal";
+import "rodal/lib/rodal.css";
 
 const PendaftaranPage = () => {
   const { user, userLoading } = MyContext();
@@ -19,7 +21,16 @@ const PendaftaranPage = () => {
 
   return (
     <div className="h-full max-w-[100vw]">
-      <Head>
+      <Rodal visible={true}>
+        <div className="w-full h-full flex flex-col justify-between items-center">
+          <h1 className="text-xl font-semibold">Informasi</h1>
+          <p>Pendaftaran dimulai dari 4 September, 2023</p>
+          <Link href="/" className="btn_green btn_full">
+            Kembali ke halaman utama
+          </Link>
+        </div>
+      </Rodal>
+      {/* <Head>
         <title>Halaman Pendaftaran - Portue Silat Bandung Championship</title>
       </Head>
       {userLoading ? (
@@ -56,7 +67,7 @@ const PendaftaranPage = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

@@ -9,7 +9,6 @@ Project Description
 - [ ] tutup pendaftaran sebelum maghrib  
 - [ ] ganti proposal  
 - [ ] kecilin logo mobile  
-- [ ] fix toast error message  
 - [ ] page for bendahara  
 - [ ] page for admin  
 - [ ] image loading  
@@ -20,6 +19,7 @@ Project Description
 
 ### Done ✓
 
+- [x] fix toast error message  
 - [x] delete console log  
 - [x] cant delete peserta yang psid  
 - [x] tambah back to dashboard di nav menu  
