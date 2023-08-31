@@ -9,28 +9,22 @@ import { BsFillCloudDownloadFill } from "react-icons/bs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const DownloadButton = () => {
-  const [loading, setLoading] = useState(false);
   const [downloadLink, setDownloadLink] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const toastId = useRef(null);
   useEffect(() => {
     getLink();
   }, []);
   const getLink = () => {
-    setLoading(true);
     getDownloadURL(
       ref(storage, "admin/PROPOSAL PORTUE SILAT BANDUNG CHAMPIONSHIP 2023.pdf")
     )
       .then((url) => {
-        setLoading(false);
         setDownloadLink(url);
       })
       .catch((error) => {
-        newToast(
-          toastId,
-          "error",
-          `Gagal mengunduh proposal. ${error.messages}`
-        );
+        setErrorMessage("Download Proposal tidak tersedia");
       });
   };
   return (
@@ -39,7 +33,9 @@ const DownloadButton = () => {
       onClick={() => FileSaver.saveAs(downloadLink)}
     >
       <ToastContainer />
-      {downloadLink ? (
+      {errorMessage ? (
+        errorMessage
+      ) : downloadLink ? (
         <>
           <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" /> Download
           Proposal
