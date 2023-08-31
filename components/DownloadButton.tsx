@@ -14,24 +14,16 @@ const DownloadButton = () => {
 
   const toastId = useRef(null);
   useEffect(() => {
-    downloadHandler();
+    getLink();
   }, []);
-  const downloadHandler = () => {
+  const getLink = () => {
     setLoading(true);
     getDownloadURL(
       ref(storage, "admin/PROPOSAL PORTUE SILAT BANDUNG CHAMPIONSHIP 2023.pdf")
     )
       .then((url) => {
-        // const xhr = new XMLHttpRequest();
-        // xhr.responseType = "blob";
-        // xhr.onload = (event) => {
-        //   const blob = xhr.response;
-        // };
-        // xhr.open("GET", url);
-        // xhr.send();
-        FileSaver.saveAs(url);
         setLoading(false);
-        // setDownloadLink(url);
+        setDownloadLink(url);
       })
       .catch((error) => {
         newToast(
@@ -44,25 +36,17 @@ const DownloadButton = () => {
   return (
     <button
       className="w-full rounded-full text-lg font-semibold btn_navy_gold"
-      onClick={downloadHandler}
+      onClick={() => FileSaver.saveAs(downloadLink)}
     >
       <ToastContainer />
-      {/* {downloadLink ? (
+      {downloadLink ? (
         <>
-          <Link
-            href={downloadLink}
-            target="_blank"
-            download="Proposal.pdf"
-            prefetch={false}
-          >
-            <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" /> Download
-            Proposal
-          </Link>
+          <BsFillCloudDownloadFill className="inline mr-2 mb-0.5" /> Download
+          Proposal
         </>
       ) : (
         "Mohon Tunggu..."
-      )} */}
-      {loading ? "Mohon Tunggu..." : "Download Proposal"}
+      )}
     </button>
   );
 };
