@@ -21,6 +21,9 @@ const PendaftaranPage = () => {
 
   return (
     <div className="h-full max-w-[100vw]">
+      <Head>
+        <title>Halaman Pendaftaran - Portue Silat Bandung Championship</title>
+      </Head>
       <Rodal visible={true}>
         <div className="w-full h-full flex flex-col justify-between items-center">
           <h1 className="text-xl font-semibold">Informasi</h1>
@@ -30,10 +33,7 @@ const PendaftaranPage = () => {
           </Link>
         </div>
       </Rodal>
-      {/* <Head>
-        <title>Halaman Pendaftaran - Portue Silat Bandung Championship</title>
-      </Head>
-      {userLoading ? (
+      {/* {userLoading ? (
         <div className="h-full w-full flex justify-center items-center">
           <Image
             src={graphic_portue}

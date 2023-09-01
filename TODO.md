@@ -6,9 +6,7 @@ Project Description
 
 ### Todo
 
-- [ ] tutup pendaftaran sebelum maghrib  
-- [ ] ganti proposal  
-- [ ] kecilin logo mobile  
+- [ ] fix RBA  
 - [ ] page for bendahara  
 - [ ] page for admin  
 - [ ] image loading  
@@ -19,6 +17,9 @@ Project Description
 
 ### Done ✓
 
+- [x] kecilin logo mobile  
+- [x] ganti proposal  
+- [x] tutup pendaftaran sebelum maghrib  
 - [x] fix toast error message  
 - [x] delete console log  
 - [x] cant delete peserta yang psid  

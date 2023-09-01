@@ -41,7 +41,7 @@ const DownloadButton = () => {
           Proposal
         </>
       ) : (
-        "Mohon Tunggu..."
+        "Memuat proposal..."
       )}
     </button>
   );
