@@ -18,7 +18,7 @@ const LoginAdmin = () => {
     try {
       adminLogin(email, password);
     } catch (error: any) {
-      newToast(toastId, "error", error.messages);
+      newToast(toastId, "error", error.code);
     }
   };
   return (

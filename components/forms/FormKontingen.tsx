@@ -66,7 +66,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           container.push(doc.data());
         })
       )
-      .catch((error) => newToast(toastId, "error", error.messages))
+      .catch((error) => newToast(toastId, "error", error.code))
       .finally(() => {
         setKontingens(container.sort(compare("waktuPendaftaran", "asc")));
         // TABEL LOADING FALSE
@@ -105,7 +105,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
         updateToast(
           toastId,
           "error",
-          `Gagal mendaftarkan kontingen. ${error.messages}`
+          `Gagal mendaftarkan kontingen. ${error.code}`
         )
       )
       .finally(() => {
@@ -126,7 +126,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
         getKontingens();
       })
       .catch((error) =>
-        updateToast(toastId, "error", `Gagal mengubah data. ${error.messages}`)
+        updateToast(toastId, "error", `Gagal mengubah data. ${error.code}`)
       )
       .finally(() => {
         resetData();
@@ -239,7 +239,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
         updateToast(
           toastId,
           "error",
-          `Gagal menghapus kontingen. ${error.messages}`
+          `Gagal menghapus kontingen. ${error.code}`
         );
       })
       .finally(() => {

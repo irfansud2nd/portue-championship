@@ -112,7 +112,7 @@ const FormPeserta = ({
           container.push(doc.data());
         })
       )
-      .catch((error) => newToast(toastId, "error", error.messages))
+      .catch((error) => newToast(toastId, "error", error.code))
       .finally(() => {
         setPesertas(container.sort(compare("namaLenkap", "asc")));
         // TABEL LOADING FALSE

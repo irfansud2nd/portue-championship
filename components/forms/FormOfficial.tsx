@@ -108,7 +108,7 @@ const FormOfficial = ({
           container.push(doc.data());
         })
       )
-      .catch((error) => newToast(toastId, "error", error.messages))
+      .catch((error) => newToast(toastId, "error", error.code))
       .finally(() => {
         setOfficials(container.sort(compare("waktuPendaftaran", "asc")));
         // TABEL LOADING FALSE

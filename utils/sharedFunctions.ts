@@ -45,7 +45,7 @@ export const getJumlahPeserta = async () => {
   return snapshot.data().count;
 };
 
-// TOAST LOADING
+// NEW TOAST
 export const newToast = (
   ref: React.MutableRefObject<Id | null>,
   type: "loading" | "error",
@@ -238,7 +238,7 @@ export const updatePerson = async (
       updateToast(
         toastId,
         "error",
-        `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.messages}`
+        `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
       );
     });
 };
@@ -284,7 +284,7 @@ export const updatePersonImage = async (
                 updateToast(
                   toastId,
                   "error",
-                  `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.messages}`
+                  `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
                 );
               });
           });
@@ -293,16 +293,12 @@ export const updatePersonImage = async (
           updateToast(
             toastId,
             "error",
-            `Gagal mengunngag foto baru. ${error.messages}`
+            `Gagal mengunngag foto baru. ${error.code}`
           );
         });
     })
     .catch((error) => {
-      updateToast(
-        toastId,
-        "error",
-        `Gagal Menghapus Foto Lama. ${error.messages}`
-      );
+      updateToast(toastId, "error", `Gagal Menghapus Foto Lama. ${error.code}`);
     });
 };
 
@@ -356,7 +352,7 @@ export const updatePersonKontingen = async (
               updateToast(
                 toastId,
                 "error",
-                `${data.namaLengkap} gagal ditambahkan ke Kontingen ${namaNewKontingen}. ${error.messages}`
+                `${data.namaLengkap} gagal ditambahkan ke Kontingen ${namaNewKontingen}. ${error.code}`
               );
             });
         })
@@ -364,7 +360,7 @@ export const updatePersonKontingen = async (
           updateToast(
             toastId,
             "error",
-            `${data.namaLengkap} gagal dihapus dari Kontingen ${namaPrevKontingen}. ${error.messages}`
+            `${data.namaLengkap} gagal dihapus dari Kontingen ${namaPrevKontingen}. ${error.code}`
           );
         });
     })
@@ -372,7 +368,7 @@ export const updatePersonKontingen = async (
       updateToast(
         toastId,
         "error",
-        `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.messages}`
+        `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
       );
     });
 };
@@ -442,7 +438,7 @@ export const updatePersonImageKontingen = async (
                         updateToast(
                           toastId,
                           "error",
-                          `Gagal memindahkan ${data.namaLengkap} ke kontingen baru. ${error.messages}`
+                          `Gagal memindahkan ${data.namaLengkap} ke kontingen baru. ${error.code}`
                         );
                       });
                   })
@@ -450,7 +446,7 @@ export const updatePersonImageKontingen = async (
                     updateToast(
                       toastId,
                       "error",
-                      `Gagal memindahkan ${data.namaLengkap} ke kontingen baru. ${error.messages}`
+                      `Gagal memindahkan ${data.namaLengkap} ke kontingen baru. ${error.code}`
                     );
                   });
               })
@@ -458,7 +454,7 @@ export const updatePersonImageKontingen = async (
                 updateToast(
                   toastId,
                   "error",
-                  `Perubahan data ${data.namaLengkap} gagal disimpann. ${error.messages}`
+                  `Perubahan data ${data.namaLengkap} gagal disimpann. ${error.code}`
                 );
               });
           });
@@ -467,16 +463,12 @@ export const updatePersonImageKontingen = async (
           updateToast(
             toastId,
             "error",
-            `Gagal mengunnga foto baru. ${error.messages}`
+            `Gagal mengunnga foto baru. ${error.code}`
           );
         });
     })
     .catch((error) => {
-      updateToast(
-        toastId,
-        "error",
-        `Gagal Menghapus Foto Lama. ${error.messages}`
-      );
+      updateToast(toastId, "error", `Gagal Menghapus Foto Lama. ${error.code}`);
     });
 };
 
@@ -522,7 +514,7 @@ export const deletePerson = async (
               updateToast(
                 toastId,
                 "error",
-                `Data ${data.namaLengkap} gagal dihapus. ${error.messages}`
+                `Data ${data.namaLengkap} gagal dihapus. ${error.code}`
               );
             });
         })
@@ -530,7 +522,7 @@ export const deletePerson = async (
           updateToast(
             toastId,
             "error",
-            `${data.namaLengkap} gagal dihapus dari kontingen ${namaKontingen}. ${error.messages}`
+            `${data.namaLengkap} gagal dihapus dari kontingen ${namaKontingen}. ${error.code}`
           );
         });
     })
@@ -538,7 +530,7 @@ export const deletePerson = async (
       updateToast(
         toastId,
         "error",
-        `gagal Menghapus foto ${data.namaLengkap}. ${error.messages}`
+        `gagal Menghapus foto ${data.namaLengkap}. ${error.code}`
       );
     });
 };
@@ -596,7 +588,7 @@ export const sendPerson = async (
                 updateToast(
                   toastId,
                   "error",
-                  `${data.namaLengkap} gagal didaftarkan sebagai ${tipe} kontingen ${namaKontingen}. ${error.messages}`
+                  `${data.namaLengkap} gagal didaftarkan sebagai ${tipe} kontingen ${namaKontingen}. ${error.code}`
                 );
               });
           })
@@ -604,7 +596,7 @@ export const sendPerson = async (
             updateToast(
               toastId,
               "error",
-              `${data.namaLengkap} gagal didaftarkan sebagai ${tipe}. ${error.messages}`
+              `${data.namaLengkap} gagal didaftarkan sebagai ${tipe}. ${error.code}`
             );
             return error;
           });
@@ -614,7 +606,7 @@ export const sendPerson = async (
       updateToast(
         toastId,
         "error",
-        `Foto ${data.namaLengkap} gagal diunggah. ${error.messages}`
+        `Foto ${data.namaLengkap} gagal diunggah. ${error.code}`
       );
     });
 };

@@ -83,7 +83,7 @@ const FormPembayaran = ({
             container.push(doc.data());
           })
         )
-        .catch((error) => newToast(toastId, "error", error.messages))
+        .catch((error) => newToast(toastId, "error", error.code))
         .finally(() => {
           setFetchedOfficials(container.sort(compare("namaLengkap", "asc")));
           setTabelOfficialLoading(false);
@@ -118,7 +118,7 @@ const FormPembayaran = ({
           container.push(doc.data());
         })
       )
-      .catch((error) => newToast(toastId, "error", error.messages))
+      .catch((error) => newToast(toastId, "error", error.code))
       .finally(() => {
         setFetchedPesertas(container.sort(compare("namaLengkap", "asc")));
         setTabelPesertaLoading(false);
@@ -268,7 +268,7 @@ const FormPembayaran = ({
               updateToast(
                 toastId,
                 "error",
-                `Gagal menyimpan data pembayaran ke peserta. ${error.messages}`
+                `Gagal menyimpan data pembayaran ke peserta. ${error.code}`
               )
             );
         } else {
@@ -322,7 +322,7 @@ const FormPembayaran = ({
             updateToast(
               toastId,
               "error",
-              `Gagal menyimpan data pembayaran ke kontingen ${error.messages}`
+              `Gagal menyimpan data pembayaran ke kontingen ${error.code}`
             )
           );
       } else {
