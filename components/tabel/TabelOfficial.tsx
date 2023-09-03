@@ -22,6 +22,7 @@ const TabelOfficial = ({
     "Jenis Kelamin",
     "Jabatan",
     "Nama Kontingen",
+    "Aksi",
   ];
 
   return (

@@ -39,6 +39,27 @@ export const compare = (query: string, type: "asc" | "desc") => {
   };
 };
 
+// FORMAT TANGGAL
+export const formatTanggal = (
+  tgl: string | number | undefined,
+  withHour?: boolean
+) => {
+  if (tgl) {
+    const date = new Date(tgl);
+    if (withHour) {
+      return `${date.getDate()} ${date.toLocaleString("id", {
+        month: "short",
+      })}, ${date.getFullYear()} - ${date.getHours()}:${date.getMinutes()}`;
+    } else {
+      return `${date.getDate()} ${date.toLocaleString("id", {
+        month: "short",
+      })}, ${date.getFullYear()}`;
+    }
+  } else {
+    return "-";
+  }
+};
+
 // GET JUMLAH PESERTA
 export const getJumlahPeserta = async () => {
   const snapshot = await getCountFromServer(collection(firestore, "pesertas"));

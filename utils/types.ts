@@ -33,9 +33,19 @@ export type DataKontingenState = {
   namaKontingen: string;
   pesertas: string[] | [];
   officials: string[] | [];
-  downloadBuktiPembayaranUrl: [];
-  waktuPembayaran: [];
-  konfirmasiPembayaran: boolean;
+  pembayaran: {
+    noHp: string;
+    pesertas: string[];
+    nominal: string;
+    waktu: string;
+    downloadBuktiUrl: string;
+    konfirmasi: {
+      status: boolean;
+      nama: string;
+      email: string;
+      waktu: string;
+    };
+  }[];
 };
 
 // DATA OFFICIAL
@@ -75,9 +85,17 @@ export type DataPesertaState = {
   idKontingen: string;
   downloadFotoUrl: string;
   fotoUrl: string;
-  downloadBuktiPembayaranUrl: string;
-  waktuPembayaran: string;
-  konfirmasiPembayaran: boolean;
+  pembayaran: {
+    noHp: string;
+    waktu: string;
+    downdloadBuktiUrl: string;
+  };
+  konfirmasiPembayaran: {
+    status: boolean;
+    nama: string;
+    email: string;
+    waktu: string;
+  };
 };
 
 export type ErrorOfficial = {

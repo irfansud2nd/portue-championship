@@ -1,4 +1,4 @@
-import { auth } from "@/utils/firebase";
+import { auth, firestore } from "@/utils/firebase";
 import {
   GoogleAuthProvider,
   User,
@@ -7,6 +7,7 @@ import {
   signInWithPopup,
   signOut,
 } from "firebase/auth";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useContext, createContext, useState, useEffect } from "react";
 
 const Context = createContext<any>(null);
@@ -17,13 +18,14 @@ export const ContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [adminAuthorized, setAdminAuthorized] = useState<boolean>(false);
+  const [adminAuthorized, setAdminAuthorized] = useState<any[]>([]);
   const [error, setError] = useState({
     code: "",
     message: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [userLoading, setUserLoading] = useState(true);
+  const [adminLoading, setAdminLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [disable, setDisable] = useState(false);
 
@@ -34,17 +36,22 @@ export const ContextProvider = ({
     );
   };
 
-  const adminLogin = (email: string, pass: string) => {
-    signInWithEmailAndPassword(auth, email, pass)
-      .then((userCredential) => {
-        checkAdminAuthorized(userCredential.user);
-      })
-      .catch((error) => setError({ message: error.message, code: error.code }));
+  const checkAdminAuthorized = (user: User) => {
+    setAdminLoading(true);
+    let result: any;
+    getDocs(query(collection(firestore, "admin"), where("uid", "==", user.uid)))
+      .then((querySnapshot) =>
+        querySnapshot.forEach((doc) => {
+          result = doc.data();
+          setAdminAuthorized(result.role);
+        })
+      )
+      .finally(() => setAdminLoading(false));
   };
 
   const logOut = () => {
     signOut(auth).then(() => {
-      setAdminAuthorized(false);
+      setAdminAuthorized([]);
     });
   };
 
@@ -64,13 +71,6 @@ export const ContextProvider = ({
     return () => unsubscribe();
   }, [user]);
 
-  const checkAdminAuthorized = (user: User) => {
-    if (user.uid === process.env.NEXT_PUBLIC_ADMIN_UID) {
-      setAdminAuthorized(true);
-    } else {
-      setError({ ...error, message: "UID doesnt match" });
-    }
-  };
   return (
     <Context.Provider
       value={{
@@ -79,8 +79,8 @@ export const ContextProvider = ({
         userLoading,
         googleSignIn,
         logOut,
-        adminLogin,
         checkAdminAuthorized,
+        adminLoading,
         adminAuthorized,
         submitting,
         setSubmitting,

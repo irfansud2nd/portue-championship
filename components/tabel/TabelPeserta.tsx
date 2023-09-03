@@ -53,8 +53,10 @@ const TabelPeserta = ({
             {data.map((item, i) => (
               <tr key={item.id}>
                 <td>{i + 1}</td>
-                <td>{item.namaLengkap}</td>
-                <td>{findNamaKontingen(kontingens, item.idKontingen)}</td>
+                <td className="capitalize">{item.namaLengkap}</td>
+                <td className="capitalize">
+                  {findNamaKontingen(kontingens, item.idKontingen)}
+                </td>
                 <td>{item.tingkatanPertandingan}</td>
                 <td>{item.jenisPertandingan}</td>
                 <td className="whitespace-nowrap">
@@ -66,8 +68,8 @@ const TabelPeserta = ({
                       handleDelete={() => handleDelete(item)}
                       handleEdit={() => handleEdit(item)}
                     />
-                  ) : item.waktuPembayaran ? (
-                    item.konfirmasiPembayaran ? (
+                  ) : item.pembayaran.downdloadBuktiUrl ? (
+                    item.konfirmasiPembayaran.status ? (
                       "Pembayaran sudah dikonfirmasi"
                     ) : (
                       "Menunggu konfirmasi dari admin"

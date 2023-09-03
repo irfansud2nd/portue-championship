@@ -27,7 +27,7 @@ const TabelKontingen = ({
           {data.map((item, i) => (
             <tr key={item.idKontingen}>
               <td>{i + 1}</td>
-              <td>{item.namaKontingen}</td>
+              <td className="capitalize">{item.namaKontingen}</td>
               <td>{item.officials.length}</td>
               <td>{item.pesertas.length}</td>
               <td>

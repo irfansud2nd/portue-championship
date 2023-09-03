@@ -269,7 +269,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
       )}
       <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <div className="h-full w-full">
-          {dataToDelete.waktuPembayaran.length ? (
+          {dataToDelete.pembayaran.length ? (
             <div className="h-full w-full flex flex-col justify-between">
               <h1 className="font-semibold text-red-500">
                 Tidak dapat menghapus kontingen
@@ -330,10 +330,13 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
             <div className="flex flex-wrap gap-y-2 gap-x-5">
               <input
                 type="text"
-                className="input"
+                className="input capitalize"
                 value={data.namaKontingen}
                 onChange={(e) =>
-                  setData({ ...data, namaKontingen: e.target.value })
+                  setData({
+                    ...data,
+                    namaKontingen: e.target.value.toLowerCase(),
+                  })
                 }
               />
 

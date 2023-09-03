@@ -43,8 +43,12 @@ const FormPembayaran = ({
   officials: DataOfficialState[];
   pesertas: DataPesertaState[];
 }) => {
-  const [fetchedOfficials, setFetchedOfficials] = useState<any[]>([]);
-  const [fetchedPesertas, setFetchedPesertas] = useState<any[]>([]);
+  const [fetchedOfficials, setFetchedOfficials] = useState<DataOfficialState[]>(
+    []
+  );
+  const [fetchedPesertas, setFetchedPesertas] = useState<DataPesertaState[]>(
+    []
+  );
   const [fetched, setFetched] = useState({
     officials: false,
     pesertas: false,
@@ -54,7 +58,9 @@ const FormPembayaran = ({
   const [noHp, setnoHp] = useState("");
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [imageSelected, setImageSelected] = useState<File | null>();
-
+  const [selectedPesertas, setSelectedPesertas] = useState<DataPesertaState[]>(
+    []
+  );
   const inputErrorInitialValue = { foto: null, noHp: null };
   const [inputErrorMessages, setInputErrorMessages] = useState<{
     foto: string | null;
@@ -104,15 +110,20 @@ const FormPembayaran = ({
     }
   }, [fetchedPesertas, pesertas, fetched.pesertas, user]);
 
+  // SET SELECTED PESERTAS
+  useEffect(() => {
+    selectPesertas();
+  }, [pesertas, fetchedPesertas]);
+
   // FETSCH PESETAS
-  const fetchPesertas = () => {
+  const fetchPesertas = async () => {
     setTabelPesertaLoading(true);
     const container: any[] = [];
     const q = query(
       collection(firestore, "pesertas"),
       where("creatorUid", "==", user.uid)
     );
-    getDocs(q)
+    return getDocs(q)
       .then((querySnapshot) =>
         querySnapshot.forEach((doc) => {
           container.push(doc.data());
@@ -146,20 +157,20 @@ const FormPembayaran = ({
   };
 
   // GROUPING PESERTAS
-  const selectPesertas = (idKontingen: string) => {
-    const selectedPesertas: DataPesertaState[] = [];
-    if (pesertas.length >= fetchedPesertas.length) {
+  const selectPesertas = (override?: boolean) => {
+    const container: DataPesertaState[] = [];
+    if (pesertas.length >= fetchedPesertas.length && !override) {
       pesertas.map((peserta, i) => {
-        if (peserta.idKontingen == idKontingen)
-          selectedPesertas.push(pesertas[i]);
+        if (peserta.idKontingen == kontingens[0].idKontingen)
+          container.push(pesertas[i]);
       });
     } else {
       fetchedPesertas.map((peserta, i) => {
-        if (peserta.idKontingen == idKontingen)
-          selectedPesertas.push(fetchedPesertas[i]);
+        if (peserta.idKontingen == kontingens[0].idKontingen)
+          container.push(fetchedPesertas[i]);
       });
     }
-    return selectedPesertas;
+    setSelectedPesertas(container);
   };
 
   // GENERATE TAGIHAN
@@ -167,13 +178,13 @@ const FormPembayaran = ({
     let tagihan = 0;
     if (pesertas.length >= fetchedPesertas.length) {
       pesertas.map((data, i) => {
-        if (data.waktuPembayaran == "") {
+        if (data.pembayaran.downdloadBuktiUrl == "") {
           tagihan += 300000;
         }
       });
     } else {
       fetchedPesertas.map((data, i) => {
-        if (data.waktuPembayaran == "") {
+        if (data.pembayaran.downdloadBuktiUrl == "") {
           tagihan += 300000;
         }
       });
@@ -195,11 +206,15 @@ const FormPembayaran = ({
   const imageChangeHandler = (file: File) => {
     if (limitImage(file, toastId)) {
       setImageSelected(file);
-      setImagePreviewSrc(URL.createObjectURL(file));
     } else {
       clearInputImage();
     }
   };
+
+  // SET IMAGE PREVIEW
+  useEffect(() => {
+    if (imageSelected) setImagePreviewSrc(URL.createObjectURL(imageSelected));
+  }, [imageSelected]);
 
   // RESET IMAGE INPUT
   const clearInputImage = () => {
@@ -212,7 +227,7 @@ const FormPembayaran = ({
   // SEND PEMBAYARAN
   const sendPembayaran = (e: React.FormEvent) => {
     e.preventDefault();
-    if (getUnpaidPeserta()) {
+    if (getUnpaidPeserta().length) {
       if (noHp != "" && imageSelected) {
         newToast(toastId, "loading", "sending image");
         setDisable(true);
@@ -252,14 +267,17 @@ const FormPembayaran = ({
         : fetchedPesertas[pesertasIndex].id;
     const paid =
       pesertas.length >= fetchedPesertas.length
-        ? pesertas[pesertasIndex].waktuPembayaran
-        : fetchedPesertas[pesertasIndex].waktuPembayaran;
+        ? pesertas[pesertasIndex].pembayaran.downdloadBuktiUrl
+        : fetchedPesertas[pesertasIndex].pembayaran.downdloadBuktiUrl;
     if (pesertasIndex >= 0) {
       if (!paid) {
         if (id) {
           updateDoc(doc(firestore, "pesertas", id), {
-            waktuPembayaran: time,
-            downloadBuktiPembayaranUrl: url,
+            pembayaran: {
+              noHp: noHp,
+              waktu: time,
+              downdloadBuktiUrl: url,
+            },
           })
             .then(() => {
               sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
@@ -288,11 +306,11 @@ const FormPembayaran = ({
     pesertasIndex: number,
     time: number
   ) => {
-    if (pesertasIndex <= 0) {
+    if (pesertasIndex < 0) {
       updateToast(toastId, "loading", "sending url to kontingen");
       sendUrlToKontingen(url, kontingens.length - 1, time);
     } else {
-      sendUrlToPesertas(url, pesertasIndex - 1, time);
+      sendUrlToPesertas(url, pesertasIndex, time);
     }
   };
 
@@ -306,15 +324,29 @@ const FormPembayaran = ({
     if (kontingenIndex >= 0) {
       if (id) {
         updateDoc(doc(firestore, "kontingens", id), {
-          creatorPhoneNumber: arrayUnion(noHp),
-          waktuPembayaran: arrayUnion(time),
-          downloadBuktiPembayaranUrl: arrayUnion(`${time}-separator-${url}`),
+          pembayaran: arrayUnion({
+            pesertas: getUnpaidPeserta(),
+            waktu: time,
+            noHp: noHp,
+            nominal: `Rp. ${generateNominal(noHp)}`,
+            downloadBuktiUrl: url,
+            konfirmasi: {
+              status: false,
+              nama: "",
+              email: "",
+              waktu: "",
+            },
+          }),
         })
           .then(() => {
             if (kontingenIndex != 0) {
               sendUrlToKontingen(url, kontingenIndex - 1, time);
             } else {
-              updateToast(toastId, "success", "done");
+              updateToast(
+                toastId,
+                "success",
+                "Berhasil menyimpan bukti pembayaran"
+              );
               resetData();
             }
           })
@@ -332,23 +364,21 @@ const FormPembayaran = ({
   };
 
   // GENERATE UNPAID PESERTA
-  const getUnpaidPeserta = () => {
-    let unpaidPeserta = 0;
-    if (pesertas.length >= fetchedPesertas.length) {
-      pesertas.map((data) => {
-        if (data.waktuPembayaran == "") unpaidPeserta += 1;
-      });
-    } else {
-      fetchedPesertas.map((data) => {
-        if (data.waktuPembayaran == "") unpaidPeserta += 1;
-      });
-    }
+  const getUnpaidPeserta = (override?: boolean) => {
+    let unpaidPeserta: string[] = [];
+    selectedPesertas.map((peserta) => {
+      if (peserta.pembayaran.downdloadBuktiUrl == "")
+        unpaidPeserta.push(peserta.id);
+    });
     return unpaidPeserta;
   };
 
   // RESET DATA
   const resetData = () => {
-    fetchPesertas();
+    fetchPesertas().then(() => {
+      selectPesertas(true);
+      getUnpaidPeserta(true);
+    });
     setnoHp("");
     setImageSelected(null);
     setImagePreviewSrc("");
@@ -388,7 +418,10 @@ const FormPembayaran = ({
           Ringkasan data Yang terdaftar
         </h1>
         {kontingens.map((kontingen) => (
-          <div className="border-b-2 border-b-gray-700 pb-2 mb-2">
+          <div
+            className="border-b-2 border-b-gray-700 pb-2 mb-2"
+            key={kontingen.idKontingen}
+          >
             <h2 className="text-2xl font-bold">{kontingen.namaKontingen}</h2>
             <div className="flex flex-wrap gap-1 items-baseline text-xl">
               <h3 className="font-semibold">Daftar Official</h3>
@@ -405,14 +438,13 @@ const FormPembayaran = ({
             <div className="flex flex-wrap gap-1 items-baseline text-xl mt-1">
               <h3 className="font-semibold">Daftar Peserta</h3>
               <p className="whitespace-nowrap text-gray-700">
-                (Total Peserta : {selectPesertas(kontingen.idKontingen).length}{" "}
-                orang)
+                (Total Peserta : {selectedPesertas.length} orang)
               </p>
             </div>
             <TabelPeserta
               loading={tabelPesertaLoading}
               kontingens={kontingens}
-              data={selectPesertas(kontingen.idKontingen)}
+              data={selectedPesertas}
             />
           </div>
         ))}
@@ -451,7 +483,7 @@ const FormPembayaran = ({
                 </tr>
                 <tr>
                   <th>Jumlah Peserta</th>
-                  <td className="text-end">{getUnpaidPeserta()}</td>
+                  <td className="text-end">{getUnpaidPeserta().length}</td>
                 </tr>
                 <tr className="font-bold">
                   <th>Total Biaya</th>

@@ -448,12 +448,12 @@ const FormPeserta = ({
           <div className="h-full w-full flex flex-col justify-between">
             <h1 className="font-semibold text-red-500">Hapus Peserta</h1>
             <p>
-              {dataToDelete?.downloadBuktiPembayaranUrl
+              {dataToDelete?.pembayaran.downdloadBuktiUrl
                 ? "Maaf peserta yang terlah diselesaikan pembayarannya tidak dapat dihapus"
                 : "Apakah anda yakin akan menghapus Peserta ini?"}
             </p>
             <div className="self-end flex gap-2">
-              {!dataToDelete?.downloadBuktiPembayaranUrl && (
+              {!dataToDelete?.pembayaran.downdloadBuktiUrl && (
                 <button
                   className="btn_red btn_full"
                   onClick={deleteData}
@@ -527,11 +527,14 @@ const FormPeserta = ({
                   disabled={disable}
                   className={`${
                     inputErrorMessages.namaLengkap ? "input_error" : "input"
-                  }`}
+                  } capitalize`}
                   type="text"
                   value={data.namaLengkap}
                   onChange={(e) =>
-                    setData({ ...data, namaLengkap: e.target.value })
+                    setData({
+                      ...data,
+                      namaLengkap: e.target.value.toLowerCase(),
+                    })
                   }
                 />
                 <p className="text-red-500">{inputErrorMessages.namaLengkap}</p>
@@ -586,7 +589,10 @@ const FormPeserta = ({
                   disabled={disable}
                   value={data.alamatLengkap}
                   onChange={(e) =>
-                    setData({ ...data, alamatLengkap: e.target.value })
+                    setData({
+                      ...data,
+                      alamatLengkap: e.target.value,
+                    })
                   }
                   className={`
                 ${inputErrorMessages.alamatLengkap ? "input_error" : "input"}
@@ -606,7 +612,10 @@ const FormPeserta = ({
                   value={data.tempatLahir}
                   type="text"
                   onChange={(e) =>
-                    setData({ ...data, tempatLahir: e.target.value })
+                    setData({
+                      ...data,
+                      tempatLahir: e.target.value,
+                    })
                   }
                   className={`
                 ${inputErrorMessages.tempatLahir ? "input_error" : "input"}
@@ -696,12 +705,14 @@ const FormPeserta = ({
                     });
                   }}
                   className={`
+                  capitalize
                   ${inputErrorMessages.idKontingen ? "input_error" : "input"}
                   `}
                 >
                   {kontingens.length &&
                     kontingens.map((kontingen) => (
                       <option
+                        className="capitalize"
                         value={kontingen.idKontingen}
                         key={kontingen.idKontingen}
                       >

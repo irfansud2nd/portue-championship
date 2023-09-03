@@ -6,7 +6,7 @@ Project Description
 
 ### Todo
 
-- [ ] fix RBA  
+- [ ] false disable on error  
 - [ ] page for bendahara  
 - [ ] page for admin  
 - [ ] image loading  
@@ -17,6 +17,7 @@ Project Description
 
 ### Done ✓
 
+- [x] fix RBA  
 - [x] kecilin logo mobile  
 - [x] ganti proposal  
 - [x] tutup pendaftaran sebelum maghrib  

@@ -11,6 +11,7 @@ import Link from "next/link";
 import Head from "next/head";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
+import { useRouter } from "next/navigation";
 
 const PendaftaranPage = () => {
   const { user, userLoading } = MyContext();
@@ -19,12 +20,14 @@ const PendaftaranPage = () => {
     document.title = "Halaman Pendaftaran - Portue Silat Bandung Championship";
   }, []);
 
+  const router = useRouter();
+
   return (
     <div className="h-full max-w-[100vw]">
       <Head>
         <title>Halaman Pendaftaran - Portue Silat Bandung Championship</title>
       </Head>
-      <Rodal visible={true}>
+      {/* <Rodal visible={true} onClose={() => router.push("/")}>
         <div className="w-full h-full flex flex-col justify-between items-center">
           <h1 className="text-xl font-semibold">Informasi</h1>
           <p>Pendaftaran dimulai dari 4 September, 2023</p>
@@ -32,8 +35,9 @@ const PendaftaranPage = () => {
             Kembali ke halaman utama
           </Link>
         </div>
-      </Rodal>
-      {/* {userLoading ? (
+      </Rodal> */}
+      {/* HOLD PENDAFTARAN */}
+      {userLoading ? (
         <div className="h-full w-full flex justify-center items-center">
           <Image
             src={graphic_portue}
@@ -67,7 +71,8 @@ const PendaftaranPage = () => {
             </div>
           </div>
         </div>
-      )} */}
+      )}
+      {/* HOLD PENDAFTARAN */}
     </div>
   );
 };

@@ -16,7 +16,8 @@ const LoginButton = () => {
 
   return (
     <>
-      {/* {userLoading ? (
+      {/* HOLD PENDAFTARAN */}
+      {userLoading ? (
         <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center">
           <AiOutlineLoading3Quarters className="animate-spin h-7" />
         </div>
@@ -34,11 +35,11 @@ const LoginButton = () => {
         >
           <BsGoogle className="inline mb-1" /> Login Dengan Google
         </button>
-      )} */}
-      <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center px-2 text-center">
-        Pendaftaran dimulai <br className="min-[375px]:hidden" />4 September
-        2023
-      </div>
+      )}
+      {/* HOLD PENDAFTARAN */}
+      {/* <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center px-2 text-center">
+        Website sedang <br className="min-[375px]:hidden" />dalam perbaikan
+      </div> */}
     </>
   );
 };
