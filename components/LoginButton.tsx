@@ -17,7 +17,7 @@ const LoginButton = () => {
   return (
     <>
       {/* HOLD PENDAFTARAN */}
-      {userLoading ? (
+      {/* {userLoading ? (
         <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center">
           <AiOutlineLoading3Quarters className="animate-spin h-7" />
         </div>
@@ -35,11 +35,12 @@ const LoginButton = () => {
         >
           <BsGoogle className="inline mb-1" /> Login Dengan Google
         </button>
-      )}
+      )} */}
       {/* HOLD PENDAFTARAN */}
-      {/* <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center px-2 text-center">
-        Website sedang <br className="min-[375px]:hidden" />dalam perbaikan
-      </div> */}
+      <div className="w-full rounded-full font-semibold text-lg btn_navy_gold flex justify-center px-2 text-center">
+        Website sedang <br className="min-[375px]:hidden" />
+        dalam perbaikan
+      </div>
     </>
   );
 };
