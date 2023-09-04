@@ -20,6 +20,10 @@ import {
   updatePersonKontingen,
   getJumlahPeserta,
   newToast,
+  submitPeserta,
+  deletePeserta,
+  updatePersonKk,
+  updatePersonKkImage,
 } from "@/utils/sharedFunctions";
 import {
   DataKontingenState,
@@ -57,7 +61,8 @@ const FormPeserta = ({
   const [sendClicked, setSendClicked] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [imageSelected, setImageSelected] = useState<File | null>();
+  const [pasFotoSelected, setPasFotoSelected] = useState<File | null>();
+  const [kkSelected, setKkSelected] = useState<File | null>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [inputErrorMessages, setInputErrorMessages] = useState<ErrorPeserta>(
     errorPesertaInitialValue
@@ -73,7 +78,8 @@ const FormPeserta = ({
   const [kuotaLoading, setKuotaLoading] = useState(false);
 
   const toastId = useRef(null);
-  const inputImageRef = useRef<HTMLInputElement>(null);
+  const pasFotoRef = useRef<HTMLInputElement>(null);
+  const kkRef = useRef<HTMLInputElement>(null);
 
   const { user, disable, setDisable } = MyContext();
 
@@ -120,26 +126,36 @@ const FormPeserta = ({
       });
   };
 
-  // VALIDATE IMAGE
-  const imageChangeHandler = (file: File) => {
+  // VALIDATE PAS FOTO
+  const pasFotoimageChangeHandler = (file: File) => {
     if (limitImage(file, toastId)) {
-      setImageSelected(file);
+      setPasFotoSelected(file);
       setImagePreviewSrc(URL.createObjectURL(file));
     } else {
       clearInputImage();
     }
   };
 
+  // VALIDATE KK
+  const kkChangeHandler = (file: File) => {
+    if (limitImage(file, toastId, true)) {
+      setKkSelected(file);
+    } else {
+      if (kkRef.current) kkRef.current.value = "";
+    }
+  };
+
   // RESET IMAGE INPUT
   const clearInputImage = () => {
-    if (inputImageRef.current) inputImageRef.current.value = "";
+    if (pasFotoRef.current) pasFotoRef.current.value = "";
+    if (kkRef.current) kkRef.current.value = "";
     setImagePreviewSrc("");
   };
 
   // SANITIZE NUMBER
   const sanitizeNumber = (value: string) => {
-    const sanitizedValue = value.replace(/[^\d.e-]*/g, "");
-    return Number(sanitizedValue);
+    const sanitizedValue = value.replace(/[^0-9]/g, "");
+    return sanitizedValue;
   };
 
   // SANITIZE NIK
@@ -158,7 +174,7 @@ const FormPeserta = ({
     let age: string | Date = new Date(
       currentDate.getTime() - birthDate.getTime()
     );
-    age = `${age.getFullYear() - 1970} Tahun, ${age.getMonth()} Bulan`;
+    age = `${age.getFullYear() - 1970}`;
     setData({ ...data, tanggalLahir: date, umur: age });
   };
 
@@ -189,8 +205,10 @@ const FormPeserta = ({
       getInputErrorPeserta(
         data,
         imagePreviewSrc,
+        kkRef.current?.value,
         inputErrorMessages,
-        setInputErrorMessages
+        setInputErrorMessages,
+        updating
       ) &&
       kuotaKelas !== 0
     ) {
@@ -198,15 +216,16 @@ const FormPeserta = ({
         setDisable(true);
         updateDataHandler();
       } else {
-        if (imageSelected) {
+        if (pasFotoSelected && kkSelected) {
           // SEND PERSON
           getJumlahPeserta().then((res) => {
             if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
               setDisable(true);
-              sendPerson(
+              submitPeserta(
                 "peserta",
                 data,
-                imageSelected,
+                pasFotoSelected,
+                kkSelected,
                 kontingens,
                 toastId,
                 afterSendPerson
@@ -230,11 +249,12 @@ const FormPeserta = ({
       getInputErrorPeserta(
         data,
         imagePreviewSrc,
+        kkRef.current?.value,
         inputErrorMessages,
         setInputErrorMessages
       );
     }
-  }, [data, sendClicked, imageSelected]);
+  }, [data, sendClicked, pasFotoSelected, kkRef.current?.value]);
 
   // SEND PERSON CALLBACK
   const afterSendPerson = () => {
@@ -255,6 +275,8 @@ const FormPeserta = ({
     setSendClicked(false);
     setInputErrorMessages(errorPesertaInitialValue);
     clearInputImage();
+    setPasFotoSelected(null);
+    setKkSelected(null);
   };
 
   // DELETE - STEP 1 - DELETE BUTTON
@@ -268,7 +290,7 @@ const FormPeserta = ({
     setModalVisible(false);
     if (dataToDelete) {
       setDisable(true);
-      deletePerson(
+      deletePeserta(
         "pesertas",
         dataToDelete,
         kontingens,
@@ -309,7 +331,7 @@ const FormPeserta = ({
       if (
         imagePreviewSrc !== prevData.downloadFotoUrl &&
         data.idKontingen !== prevData.idKontingen &&
-        imageSelected
+        pasFotoSelected
       ) {
         updatePersonImageKontingen(
           "peserta",
@@ -317,14 +339,28 @@ const FormPeserta = ({
           prevData,
           kontingens,
           toastId,
-          imageSelected,
+          pasFotoSelected,
           resetEdit
         );
       } else if (
         imagePreviewSrc !== prevData.downloadFotoUrl &&
-        imageSelected
+        pasFotoSelected &&
+        kkSelected
       ) {
-        updatePersonImage("peserta", data, toastId, imageSelected, resetEdit);
+        console.log("update image and kk");
+        updatePersonKkImage(
+          "peserta",
+          data,
+          toastId,
+          pasFotoSelected,
+          kkSelected,
+          resetEdit
+        );
+      } else if (
+        imagePreviewSrc !== prevData.downloadFotoUrl &&
+        pasFotoSelected
+      ) {
+        updatePersonImage("peserta", data, toastId, pasFotoSelected, resetEdit);
       } else if (data.idKontingen !== prevData.idKontingen) {
         updatePersonKontingen(
           "peserta",
@@ -334,6 +370,9 @@ const FormPeserta = ({
           toastId,
           resetEdit
         );
+      } else if (kkSelected) {
+        console.log("update KK");
+        updatePersonKk("peserta", data, toastId, kkSelected, resetEdit);
       } else if (
         imagePreviewSrc == prevData.downloadFotoUrl &&
         data.idKontingen == prevData.idKontingen
@@ -429,7 +468,7 @@ const FormPeserta = ({
 
   // INPUT FILE DISABLER
   useEffect(() => {
-    if (inputImageRef.current) inputImageRef.current.disabled = disable;
+    if (pasFotoRef.current) pasFotoRef.current.disabled = disable;
   }, [disable]);
 
   return (
@@ -448,12 +487,12 @@ const FormPeserta = ({
           <div className="h-full w-full flex flex-col justify-between">
             <h1 className="font-semibold text-red-500">Hapus Peserta</h1>
             <p>
-              {dataToDelete?.pembayaran.downdloadBuktiUrl
+              {dataToDelete?.pembayaran
                 ? "Maaf peserta yang terlah diselesaikan pembayarannya tidak dapat dihapus"
                 : "Apakah anda yakin akan menghapus Peserta ini?"}
             </p>
             <div className="self-end flex gap-2">
-              {!dataToDelete?.pembayaran.downdloadBuktiUrl && (
+              {!dataToDelete?.pembayaran && (
                 <button
                   className="btn_red btn_full"
                   onClick={deleteData}
@@ -502,12 +541,12 @@ const FormPeserta = ({
               </div>
               <input
                 disabled={disable}
-                ref={inputImageRef}
+                ref={pasFotoRef}
                 accept=".jpg, .jpeg, .png"
                 type="file"
                 multiple={false}
                 onChange={(e) =>
-                  e.target.files && imageChangeHandler(e.target.files[0])
+                  e.target.files && pasFotoimageChangeHandler(e.target.files[0])
                 }
                 className="input_file mt-1 w-full text-transparent"
               />
@@ -643,6 +682,97 @@ const FormPeserta = ({
               </div>
               {/* TANGGAL LAHIR */}
 
+              {/* EMAIL */}
+              <div className="input_container">
+                <label className="input_label">
+                  Email{" "}
+                  {data.umur >= 17 || data.umur == "" ? (
+                    "Peserta"
+                  ) : (
+                    <span className="bg-yellow-400 rounded-md px-0.5">
+                      Orangtua
+                    </span>
+                  )}
+                </label>
+                <p className="text-xs">
+                  Peserta &lt; 17 tahun gunakan email Orangtua
+                </p>
+                <input
+                  disabled={disable}
+                  value={data.email}
+                  type="email"
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      email: e.target.value,
+                    })
+                  }
+                  className={`
+                ${inputErrorMessages.email ? "input_error" : "input"}
+                `}
+                />
+                <p className="text-red-500">{inputErrorMessages.email}</p>
+              </div>
+              {/* EMAIL */}
+
+              {/* NO HP */}
+              <div className="input_container">
+                <label className="input_label">
+                  Nomor HP{" "}
+                  {data.umur >= 17 || data.umur == "" ? (
+                    "Peserta"
+                  ) : (
+                    <span className="bg-yellow-400 rounded-md px-0.5">
+                      Orangtua
+                    </span>
+                  )}
+                </label>
+                <p className="text-xs">
+                  Peserta &lt; 17 tahun gunakan No HP Orangtua
+                </p>
+                <input
+                  disabled={disable}
+                  value={data.noHp}
+                  type="string"
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      noHp: sanitizeNumber(e.target.value),
+                    })
+                  }
+                  className={`
+                ${inputErrorMessages.noHp ? "input_error" : "input"}
+                `}
+                />
+                <p className="text-red-500">{inputErrorMessages.noHp}</p>
+              </div>
+              {/* NO HP */}
+
+              {/* KARTU KELUARGA */}
+              <div className="input_container">
+                <label className="input_label">
+                  Kartu Keluarga{" "}
+                  <span className="text-sm text-gray-600">Maks. 1MB</span>
+                </label>
+                <input
+                  disabled={disable}
+                  ref={kkRef}
+                  type="file"
+                  accept=".jpg, .jpeg, .png, .pdf"
+                  multiple={false}
+                  onChange={(e) =>
+                    e.target.files && kkChangeHandler(e.target.files[0])
+                  }
+                  className={`input_kk
+                ${inputErrorMessages.kk ? "input_error" : "input"}
+                `}
+                />
+                <p className="text-red-500">
+                  {!updating && inputErrorMessages.kk}
+                </p>
+              </div>
+              {/* KARTU KELUARGA */}
+
               {/* TINGGI BADAN */}
               <div className="input_container">
                 <label className="input_label">
@@ -652,7 +782,7 @@ const FormPeserta = ({
                 <input
                   disabled={disable}
                   value={data.tinggiBadan == 0 ? "" : data.tinggiBadan}
-                  type="number"
+                  type="text"
                   onChange={(e) =>
                     setData({
                       ...data,
@@ -676,7 +806,7 @@ const FormPeserta = ({
                 <input
                   disabled={disable}
                   value={data.beratBadan == 0 ? "" : data.beratBadan}
-                  type="number"
+                  type="text"
                   step={0.1}
                   onChange={(e) =>
                     setData({

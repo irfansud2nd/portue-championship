@@ -269,7 +269,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
       )}
       <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <div className="h-full w-full">
-          {dataToDelete.pembayaran.length ? (
+          {dataToDelete.idPembayaran.length ? (
             <div className="h-full w-full flex flex-col justify-between">
               <h1 className="font-semibold text-red-500">
                 Tidak dapat menghapus kontingen

@@ -18,10 +18,23 @@ const TabelKontingenAdmin = ({
     "Peserta",
     "Official",
     "Pembayaran",
+    "Lunas",
+    "Konfirmasi",
     "Email Pendaftar",
     "Waktu Pendaftaran",
     "Waktu Perubahan",
   ];
+
+  const getUnpaidPeserta = (kontingen: DataKontingenState) => {
+    if (!kontingen.infoPembayaran || !kontingen.pesertas) return 0;
+    let paidNominal = 0;
+    kontingen.infoPembayaran.map(
+      (info) => (paidNominal += Number(info.nominal.replace(/[^0-9]/g, "")))
+    );
+    // kontingen.pesertas.length -
+    return kontingen.pesertas.length - Math.floor(paidNominal / 300000);
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -47,22 +60,52 @@ const TabelKontingenAdmin = ({
               <td>{kontingen.officials.length}</td>
               <td>
                 <ul>
-                  {kontingen.pembayaran
-                    ? kontingen.pembayaran.map((pembayaran) => (
+                  {kontingen.idPembayaran
+                    ? kontingen.idPembayaran.map((idPembayaran) => (
                         <li
-                          key={pembayaran.waktu}
+                          key={idPembayaran}
                           className="border-b border-black last:border-none"
                         >
                           <p className="whitespace-nowrap">
-                            {formatTanggal(pembayaran.waktu, true)} |{" "}
-                            {pembayaran.nominal}
+                            {formatTanggal(
+                              kontingen.infoPembayaran[
+                                kontingen.infoPembayaran.findIndex(
+                                  (info) => info.idPembayaran == idPembayaran
+                                )
+                              ].waktu,
+                              true
+                            )}{" "}
+                            |{" "}
+                            {
+                              kontingen.infoPembayaran[
+                                kontingen.infoPembayaran.findIndex(
+                                  (info) => info.idPembayaran == idPembayaran
+                                )
+                              ].nominal
+                            }
                           </p>
                           <p className="whitespace-nowrap">
-                            {pembayaran.konfirmasi.status ? (
-                              `Confirmed by ${pembayaran.konfirmasi.email}`
+                            {kontingen.confirmedPembayaran.indexOf(
+                              idPembayaran
+                            ) >= 0 ? (
+                              `Confirmed by ${
+                                kontingen.infoKonfirmasi[
+                                  kontingen.infoKonfirmasi.findIndex(
+                                    (info) => info.idPembayaran == idPembayaran
+                                  )
+                                ].email
+                              }`
                             ) : (
                               <TabelAdminActions
-                                pembayaran={pembayaran}
+                                idPembayaran={idPembayaran}
+                                infoPembayaran={
+                                  kontingen.infoPembayaran[
+                                    kontingen.infoPembayaran.findIndex(
+                                      (info) =>
+                                        info.idPembayaran == idPembayaran
+                                    )
+                                  ]
+                                }
                                 data={kontingen}
                               />
                             )}
@@ -71,6 +114,13 @@ const TabelKontingenAdmin = ({
                       ))
                     : "-"}
                 </ul>
+              </td>
+              <td>{getUnpaidPeserta(kontingen)}</td>
+              <td>
+                {kontingen.unconfirmedPembayaran &&
+                kontingen.unconfirmedPembayaran.length
+                  ? "Butuh Konfimasi"
+                  : "Selesai Konfirmasi"}
               </td>
               <td>{kontingen.creatorEmail}</td>
               <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>

@@ -68,8 +68,8 @@ const TabelPeserta = ({
                       handleDelete={() => handleDelete(item)}
                       handleEdit={() => handleEdit(item)}
                     />
-                  ) : item.pembayaran.downdloadBuktiUrl ? (
-                    item.konfirmasiPembayaran.status ? (
+                  ) : item.pembayaran ? (
+                    item.confirmedPembayaran ? (
                       "Pembayaran sudah dikonfirmasi"
                     ) : (
                       "Menunggu konfirmasi dari admin"

@@ -13,33 +13,29 @@ import {
   where,
 } from "firebase/firestore";
 import Image from "next/image";
-import Link from "next/link";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const TabelAdminActions = ({
-  pembayaran,
+  idPembayaran,
+  infoPembayaran,
   data,
 }: {
-  pembayaran: {
-    noHp: string;
-    pesertas: string[];
+  idPembayaran: string;
+  infoPembayaran: {
+    idPembayaran: string;
     nominal: string;
+    noHp: string;
     waktu: string;
-    downloadBuktiUrl: string;
-    konfirmasi: {
-      status: boolean;
-      nama: string;
-      email: string;
-      waktu: string;
-    };
+    buktiUrl: string;
   };
   data: DataKontingenState;
 }) => {
   const [rodalVisible, setRodalVisible] = useState(false);
+  const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
 
   const { user } = MyContext();
 
@@ -47,18 +43,39 @@ const TabelAdminActions = ({
 
   const konfirmasiHandler = () => {
     setRodalVisible(true);
+    getPesertasToConfirm();
   };
 
-  const konfirmasiPembayaran = () => {
-    newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
+  const konfirmasiPembayaran = () => {};
+
+  const getPesertasToConfirm = () => {
+    let container: any[] = [];
+    getDocs(
+      query(
+        collection(firestore, "pesertas"),
+        where("idPembayaran", "==", idPembayaran)
+      )
+    )
+      .then((res) =>
+        res.forEach((doc) => {
+          container.push(doc.data().id);
+        })
+      )
+      .finally(() => {
+        setPesertasToConfirm(container);
+      });
+  };
+
+  const konfirmasi = () => {
     const time = Date.now();
-    konfirmasiPeserta(pembayaran.pesertas.length - 1, time);
+    konfirmasiPeserta(pesertasToConfirm.length - 1, time);
   };
 
   const konfirmasiPeserta = (index: number, time: number) => {
-    updateDoc(doc(firestore, "pesertas", pembayaran.pesertas[index]), {
-      konfirmasiPembayaran: {
-        status: true,
+    newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
+    updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
+      confirmedPembayaran: true,
+      infoKonfirmasi: {
         nama: user.displayName,
         email: user.email,
         waktu: time,
@@ -74,18 +91,17 @@ const TabelAdminActions = ({
 
   const konfirmasiKontingen = (time: number) => {
     updateDoc(doc(firestore, "kontingens", data.idKontingen), {
-      pembayaran: arrayRemove(pembayaran),
+      pembayaran: arrayRemove(idPembayaran),
     })
       .then(() => {
         updateDoc(doc(firestore, "kontingens", data.idKontingen), {
-          pembayaran: arrayUnion({
-            ...pembayaran,
-            konfirmasi: {
-              status: true,
-              nama: user.displayName,
-              email: user.email,
-              waktu: time,
-            },
+          unconfirmedPembayaran: arrayRemove(idPembayaran),
+          confirmedPembayaran: arrayUnion(idPembayaran),
+          infoKonfirmasi: arrayUnion({
+            idPembayaran: idPembayaran,
+            nama: user.displayName,
+            email: user.email,
+            waktu: time,
           }),
         })
           .then(() => updateToast(toastId, "success", "Konfirmasi berhasil"))
@@ -96,6 +112,7 @@ const TabelAdminActions = ({
 
   const resetKonfirmasi = () => {
     setRodalVisible(false);
+    setPesertasToConfirm([]);
   };
 
   return (
@@ -114,12 +131,12 @@ const TabelAdminActions = ({
         }}
       >
         <h1>Konfirmasi Pembayaran</h1>
-        <p>Jumlah Peserta: {pembayaran.pesertas.length}</p>
-        <p>Jumlah Nominal: {pembayaran.nominal}</p>
+        <p>Jumlah Peserta: {pesertasToConfirm.length}</p>
+        <p>Jumlah Nominal: {infoPembayaran.nominal}</p>
         <div className="w-[300px] h-[400px] border-2 border-custom-navy relative">
-          {pembayaran.downloadBuktiUrl ? (
+          {infoPembayaran.buktiUrl ? (
             <Image
-              src={pembayaran.downloadBuktiUrl}
+              src={infoPembayaran.buktiUrl}
               alt="bukti pembayaran"
               fill
               className="object-contain"
@@ -127,9 +144,11 @@ const TabelAdminActions = ({
           ) : null}
         </div>
         <div className="flex w-full justify-center gap-2 mt-1">
-          <button className="btn_green btn_full" onClick={konfirmasiPembayaran}>
-            Konfirmasi
-          </button>
+          {pesertasToConfirm.length && (
+            <button className="btn_green btn_full" onClick={konfirmasi}>
+              Konfirmasi
+            </button>
+          )}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
             Batal
           </button>

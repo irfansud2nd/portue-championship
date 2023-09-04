@@ -158,7 +158,11 @@ export const dataKontingenInitialValue: DataKontingenState = {
   namaKontingen: "",
   pesertas: [],
   officials: [],
-  pembayaran: [],
+  idPembayaran: [],
+  unconfirmedPembayaran: [],
+  confirmedPembayaran: [],
+  infoPembayaran: [],
+  infoKonfirmasi: [],
 };
 
 // DATA OFFICIAL INITIAL VALUE
@@ -198,13 +202,19 @@ export const dataPesertaInitialValue: DataPesertaState = {
   idKontingen: "",
   fotoUrl: "",
   downloadFotoUrl: "",
-  pembayaran: {
+  kkUrl: "",
+  downloadKkUrl: "",
+  email: "",
+  noHp: "",
+  pembayaran: false,
+  idPembayaran: "",
+  confirmedPembayaran: false,
+  infoPembayaran: {
     noHp: "",
     waktu: "",
-    downdloadBuktiUrl: "",
+    buktiUrl: "",
   },
-  konfirmasiPembayaran: {
-    status: false,
+  infoKonfirmasi: {
     nama: "",
     email: "",
     waktu: "",
@@ -235,4 +245,7 @@ export const errorPesertaInitialValue: ErrorPeserta = {
   jenisPertandingan: null,
   kategoriPertandingan: null,
   pasFoto: null,
+  noHp: null,
+  kk: null,
+  email: null,
 };

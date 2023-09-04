@@ -178,13 +178,13 @@ const FormPembayaran = ({
     let tagihan = 0;
     if (pesertas.length >= fetchedPesertas.length) {
       pesertas.map((data, i) => {
-        if (data.pembayaran.downdloadBuktiUrl == "") {
+        if (!data.pembayaran) {
           tagihan += 300000;
         }
       });
     } else {
       fetchedPesertas.map((data, i) => {
-        if (data.pembayaran.downdloadBuktiUrl == "") {
+        if (!data.pembayaran) {
           tagihan += 300000;
         }
       });
@@ -235,6 +235,7 @@ const FormPembayaran = ({
         const url = `buktiPembayarans/${time}-${v4()}.${
           imageSelected.type.split("/")[1]
         }`;
+        const idPembayaran = `${kontingens[0].idKontingen}-${time}`;
         uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadUrl) => {
             updateToast(toastId, "loading", "sending url to pesertas");
@@ -243,7 +244,8 @@ const FormPembayaran = ({
               pesertas.length
                 ? pesertas.length - 1
                 : fetchedPesertas.length - 1,
-              time
+              time,
+              idPembayaran
             );
           })
         );
@@ -259,7 +261,8 @@ const FormPembayaran = ({
   const sendUrlToPesertas = (
     url: string,
     pesertasIndex: number,
-    time: number
+    time: number,
+    idPembayaran: string
   ) => {
     const id =
       pesertas.length >= fetchedPesertas.length
@@ -267,20 +270,27 @@ const FormPembayaran = ({
         : fetchedPesertas[pesertasIndex].id;
     const paid =
       pesertas.length >= fetchedPesertas.length
-        ? pesertas[pesertasIndex].pembayaran.downdloadBuktiUrl
-        : fetchedPesertas[pesertasIndex].pembayaran.downdloadBuktiUrl;
+        ? pesertas[pesertasIndex].pembayaran
+        : fetchedPesertas[pesertasIndex].pembayaran;
     if (pesertasIndex >= 0) {
       if (!paid) {
         if (id) {
           updateDoc(doc(firestore, "pesertas", id), {
-            pembayaran: {
+            pembayaran: true,
+            idPembayaran: idPembayaran,
+            infoPembayaran: {
               noHp: noHp,
               waktu: time,
-              downdloadBuktiUrl: url,
+              buktiUrl: url,
             },
           })
             .then(() => {
-              sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
+              sendUrlToPesertasRepeater(
+                url,
+                pesertasIndex - 1,
+                time,
+                idPembayaran
+              );
             })
             .catch((error) =>
               updateToast(
@@ -293,24 +303,25 @@ const FormPembayaran = ({
           alert("id undefined");
         }
       } else {
-        sendUrlToPesertasRepeater(url, pesertasIndex - 1, time);
+        sendUrlToPesertasRepeater(url, pesertasIndex - 1, time, idPembayaran);
       }
     } else {
       updateToast(toastId, "loading", "sending url to kontingen");
-      sendUrlToKontingen(url, kontingens.length - 1, time);
+      sendUrlToKontingen(url, kontingens.length - 1, time, idPembayaran);
     }
   };
 
   const sendUrlToPesertasRepeater = (
     url: string,
     pesertasIndex: number,
-    time: number
+    time: number,
+    idPembayaran: string
   ) => {
     if (pesertasIndex < 0) {
       updateToast(toastId, "loading", "sending url to kontingen");
-      sendUrlToKontingen(url, kontingens.length - 1, time);
+      sendUrlToKontingen(url, kontingens.length - 1, time, idPembayaran);
     } else {
-      sendUrlToPesertas(url, pesertasIndex, time);
+      sendUrlToPesertas(url, pesertasIndex, time, idPembayaran);
     }
   };
 
@@ -318,29 +329,26 @@ const FormPembayaran = ({
   const sendUrlToKontingen = (
     url: string,
     kontingenIndex: number,
-    time: number
+    time: number,
+    idPembayaran: string
   ) => {
     const id = kontingens[kontingenIndex].idKontingen;
     if (kontingenIndex >= 0) {
       if (id) {
         updateDoc(doc(firestore, "kontingens", id), {
-          pembayaran: arrayUnion({
-            pesertas: getUnpaidPeserta(),
-            waktu: time,
-            noHp: noHp,
+          idPembayaran: arrayUnion(idPembayaran),
+          unconfirmedPembayaran: arrayUnion(idPembayaran),
+          infoPembayaran: arrayUnion({
+            idPembayaran: idPembayaran,
             nominal: `Rp. ${generateNominal(noHp)}`,
-            downloadBuktiUrl: url,
-            konfirmasi: {
-              status: false,
-              nama: "",
-              email: "",
-              waktu: "",
-            },
+            noHp: noHp,
+            waktu: time,
+            buktiUrl: url,
           }),
         })
           .then(() => {
             if (kontingenIndex != 0) {
-              sendUrlToKontingen(url, kontingenIndex - 1, time);
+              sendUrlToKontingen(url, kontingenIndex - 1, time, idPembayaran);
             } else {
               updateToast(
                 toastId,
@@ -367,8 +375,7 @@ const FormPembayaran = ({
   const getUnpaidPeserta = (override?: boolean) => {
     let unpaidPeserta: string[] = [];
     selectedPesertas.map((peserta) => {
-      if (peserta.pembayaran.downdloadBuktiUrl == "")
-        unpaidPeserta.push(peserta.id);
+      if (!peserta.pembayaran) unpaidPeserta.push(peserta.id);
     });
     return unpaidPeserta;
   };

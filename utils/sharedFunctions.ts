@@ -25,6 +25,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { User } from "firebase/auth";
+import { error } from "console";
 
 //COMPARE FOR DATA SORTER
 export const compare = (query: string, type: "asc" | "desc") => {
@@ -126,15 +127,18 @@ export const findNamaKontingen = (
 // IMAGE LIMITER
 export const limitImage = (
   file: File,
-  toastId: React.MutableRefObject<Id | null>
+  toastId: React.MutableRefObject<Id | null>,
+  pdf?: boolean
 ) => {
+  if (!file) return;
   const maxSize = 1 * 1024 * 1024; //1MB
   const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
+  if (pdf) allowedTypes.push("application/pdf");
   if (!allowedTypes.includes(file.type)) {
     newToast(
       toastId,
       "error",
-      "File yang dipilih tidak valid (harus png, jpg, jpeg)"
+      `File yang dipilih tidak valid (harus png, jpg, jpeg${pdf && ", pdf"})`
     );
     return false;
   }
@@ -149,8 +153,10 @@ export const limitImage = (
 export const getInputErrorPeserta = (
   data: DataPesertaState | DocumentData,
   imageUrl: string | null,
+  kkRef: string | undefined,
   error: ErrorPeserta,
-  setError: React.Dispatch<React.SetStateAction<ErrorPeserta>>
+  setError: React.Dispatch<React.SetStateAction<ErrorPeserta>>,
+  ignoreKk?: boolean
 ) => {
   setError({
     ...error,
@@ -181,6 +187,9 @@ export const getInputErrorPeserta = (
       data.kategoriPertandingan == ""
         ? "Tolong lengkapi kategori Pertandingan"
         : null,
+    email: data.email == "" ? "Tolong lengkapi email" : null,
+    noHp: data.noHp == "" ? "Tolong lengkapi nomor HP" : null,
+    kk: kkRef ? null : "Lengkapi Kartu Keluarga",
   });
   if (
     imageUrl &&
@@ -195,7 +204,10 @@ export const getInputErrorPeserta = (
     data.idKontingen &&
     data.tingkatanPertandingan &&
     data.jenisPertandingan &&
-    data.kategoriPertandingan
+    data.kategoriPertandingan &&
+    data.email &&
+    data.noHp &&
+    (kkRef || ignoreKk)
   ) {
     return true;
   } else {
@@ -320,6 +332,155 @@ export const updatePersonImage = async (
     })
     .catch((error) => {
       updateToast(toastId, "error", `Gagal Menghapus Foto Lama. ${error.code}`);
+    });
+};
+
+// PERSON UPDATER - KK CHANGED
+export const updatePersonKk = async (
+  tipe: "peserta" | "official",
+  data: DataPesertaState | DocumentData,
+  toastId: React.MutableRefObject<Id | null>,
+  kk: File,
+  callback?: () => void
+) => {
+  // DELETE OLD IMAGE
+  newToast(toastId, "loading", "Menghapus Kartu Keluarga Lama");
+  return deleteObject(ref(storage, data.kkUrl))
+    .then(() => {
+      // UPLOAD NEW IMAGE
+      updateToast(toastId, "loading", "Mengunggah Kartu Keluarga Baru");
+      uploadBytes(ref(storage, data.kkUrl), kk)
+        .then((snapshot) => {
+          // UPLOAD PERSON
+          getDownloadURL(snapshot.ref).then((downloadUrl) => {
+            updateToast(
+              toastId,
+              "loading",
+              `Meniympan perubahan data ${data.namaLengkap}`
+            );
+            updateDoc(doc(firestore, `${tipe}s`, data.id), {
+              ...data,
+              downloadFotoUrl: downloadUrl,
+              waktuPerubahan: Date.now(),
+            })
+              .then(() => {
+                // FINISH
+                updateToast(
+                  toastId,
+                  "success",
+                  `Perubahan data ${data.namaLengkap} berhasil disimpan`
+                );
+                callback && callback();
+              })
+              .catch((error) => {
+                updateToast(
+                  toastId,
+                  "error",
+                  `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
+                );
+              });
+          });
+        })
+        .catch((error) => {
+          updateToast(
+            toastId,
+            "error",
+            `Gagal mengunngah Kartu Keluarga baru. ${error.code}`
+          );
+        });
+    })
+    .catch((error) => {
+      updateToast(
+        toastId,
+        "error",
+        `Gagal Menghapus Kartu Keluarga Lama. ${error.code}`
+      );
+    });
+};
+
+// PERSON UPDATER - KK AND IMAGE CHANGED
+export const updatePersonKkImage = async (
+  tipe: "peserta" | "official",
+  data: DataPesertaState | DocumentData,
+  toastId: React.MutableRefObject<Id | null>,
+  pasFoto: File,
+  kk: File,
+  callback?: () => void
+) => {
+  // DELETE OLD KK
+  newToast(toastId, "loading", "Menghapus Kartu Keluarga Lama");
+  return deleteObject(ref(storage, data.kkUrl))
+    .then(() => {
+      // UPLOAD NEW KK
+      updateToast(toastId, "loading", "Mengunggah Kartu Keluarga Baru");
+      uploadBytes(ref(storage, data.kkUrl), kk)
+        .then((snapshot) => {
+          getDownloadURL(snapshot.ref).then((downloadKkUrl) => {
+            // DELETE OLD IMAGE
+            updateToast(toastId, "loading", "Menhapus Pas Foto Lama");
+            deleteObject(ref(storage, data.fotoUrl))
+              .then(() => {
+                // UPLOAD NEW IMAGE
+                uploadBytes(ref(storage, data.fotoUrl), pasFoto)
+                  .then((snapshot) => {
+                    getDownloadURL(snapshot.ref).then((downloadFotoUrl) => {
+                      // UPDATE PERSON
+                      updateToast(
+                        toastId,
+                        "loading",
+                        `Meniympan perubahan data ${data.namaLengkap}`
+                      );
+                      updateDoc(doc(firestore, `${tipe}s`, data.id), {
+                        ...data,
+                        downloadFotoUrl: downloadFotoUrl,
+                        downloadKkUrl: downloadKkUrl,
+                        waktuPerubahan: Date.now(),
+                      })
+                        .then(() => {
+                          // FINISH
+                          updateToast(
+                            toastId,
+                            "success",
+                            `Perubahan data ${data.namaLengkap} berhasil disimpan`
+                          );
+                          callback && callback();
+                        })
+                        .catch((error) => {
+                          updateToast(
+                            toastId,
+                            "error",
+                            `Perubahan data ${data.namaLengkap} gagal disimpan. ${error.code}`
+                          );
+                        });
+                    });
+                  })
+                  .catch((error) => {
+                    // error upload foto batu
+                  });
+              })
+              .catch((error) => {
+                updateToast(
+                  toastId,
+                  "error",
+                  `Pas Foto Baru gagal diunggah. ${error.code}`
+                );
+              });
+          });
+        })
+        .catch((error) => {
+          updateToast(
+            toastId,
+            "error",
+            `Gagal mengunngah Kartu Keluarga baru. ${error.code}`
+          );
+        });
+    })
+    .catch((error) => {
+      updateToast(
+        toastId,
+        "error",
+        `Gagal Menghapus Kartu Keluarga Lama. ${error.code}`
+      );
     });
 };
 
@@ -556,11 +717,183 @@ export const deletePerson = async (
     });
 };
 
+// PERSON DELETER
+export const deletePeserta = async (
+  query: "officials" | "pesertas",
+  data: DataPesertaState | DocumentData,
+  kontingens: DataKontingenState[],
+  toastId: React.MutableRefObject<Id | null>,
+  callback?: () => void
+) => {
+  const namaKontingen = findNamaKontingen(kontingens, data.idKontingen);
+  // DELETE KK
+  newToast(toastId, "loading", `Menghapus Kartu Keluarga ${data.namaLengkap}`);
+  return deleteObject(ref(storage, data.kkUrl))
+    .then(() => {
+      // DELETE IMAGE
+      updateToast(toastId, "loading", `Menghapus foto ${data.namaLengkap}`);
+      deleteObject(ref(storage, data.fotoUrl))
+        .then(() => {
+          // DELETE PERSON FROM KONTINGEN
+          updateToast(
+            toastId,
+            "loading",
+            `Menghapus ${data.namaLengkap} dari Kontingen ${namaKontingen}`
+          );
+          updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+            [`${query}`]: arrayRemove(data.id),
+          })
+            .then(() => {
+              // DELETE DATA
+              updateToast(
+                toastId,
+                "loading",
+                `Menghapus Data ${data.namaLengkap} `
+              );
+              deleteDoc(doc(firestore, query, data.id))
+                .then(() => {
+                  updateToast(
+                    toastId,
+                    "success",
+                    `Data ${data.namaLengkap} berhasil dihapus`
+                  );
+                  callback && callback();
+                })
+                .catch((error) => {
+                  updateToast(
+                    toastId,
+                    "error",
+                    `Data ${data.namaLengkap} gagal dihapus. ${error.code}`
+                  );
+                });
+            })
+            .catch((error) => {
+              updateToast(
+                toastId,
+                "error",
+                `${data.namaLengkap} gagal dihapus dari kontingen ${namaKontingen}. ${error.code}`
+              );
+            });
+        })
+        .catch((error) => {
+          updateToast(
+            toastId,
+            "error",
+            `gagal Menghapus foto ${data.namaLengkap}. ${error.code}`
+          );
+        });
+    })
+    .catch((error) => {
+      updateToast(
+        toastId,
+        "error",
+        `gagal Menghapus kartu keluarga ${data.namaLengkap}. ${error.code}`
+      );
+    });
+};
+
+// SEND PESERTA
+export const submitPeserta = async (
+  tipe: "peserta" | "official",
+  data: DataPesertaState | DataOfficialState | DocumentData,
+  pasFoto: File,
+  kk: File,
+  kontingens: DataKontingenState[],
+  toastId: React.MutableRefObject<Id | null>,
+  callback?: () => void
+) => {
+  const namaKontingen = findNamaKontingen(kontingens, data.idKontingen);
+  const newDocRef = doc(collection(firestore, `${tipe}s`));
+
+  // UPLOAD KK
+  newToast(toastId, "loading", `Mengunggah Kartu Keluarga ${data.namaLengkap}`);
+  const kkUrl = `${tipe}s/${newDocRef.id}-kk`;
+  let downloadKkUrl = "";
+  return uploadBytes(ref(storage, kkUrl), kk)
+    .then((snapshot) => {
+      getDownloadURL(snapshot.ref).then((link) => {
+        downloadKkUrl = link;
+        // UPLOAD IMAGE
+        updateToast(toastId, "loading", `Mengunggah foto ${data.namaLengkap}`);
+        const pasFotoUrl = `${tipe}s/${newDocRef.id}-image`;
+        uploadBytes(ref(storage, pasFotoUrl), pasFoto)
+          .then((snapshot) => {
+            getDownloadURL(snapshot.ref).then((downloadUrl) => {
+              // UPLOAD PERSON
+              updateToast(
+                toastId,
+                "loading",
+                `Mendaftarkan ${data.namaLengkap} sebagai ${tipe}`
+              );
+              setDoc(newDocRef, {
+                ...data,
+                id: newDocRef.id,
+                waktuPendaftaran: Date.now(),
+                downloadFotoUrl: downloadUrl,
+                fotoUrl: pasFotoUrl,
+                downloadKkUrl: downloadKkUrl,
+                kkUrl: kkUrl,
+              })
+                .then(() => {
+                  // ADD PERSON TO KONTINGEN
+                  updateToast(
+                    toastId,
+                    "loading",
+                    `Mendaftarkan ${data.namaLengkap} sebagai ${tipe} kontingen ${namaKontingen}`
+                  );
+                  updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+                    [`${tipe}s`]: arrayUnion(newDocRef.id),
+                  })
+                    .then(() => {
+                      // FINISH
+                      updateToast(
+                        toastId,
+                        "success",
+                        `${data.namaLengkap} berhasil didaftarkan sebagai ${tipe} kontingen ${namaKontingen}`
+                      );
+                      callback && callback();
+                    })
+                    .catch((error) => {
+                      updateToast(
+                        toastId,
+                        "error",
+                        `${data.namaLengkap} gagal didaftarkan sebagai ${tipe} kontingen ${namaKontingen}. ${error.code}`
+                      );
+                    });
+                })
+                .catch((error) => {
+                  updateToast(
+                    toastId,
+                    "error",
+                    `${data.namaLengkap} gagal didaftarkan sebagai ${tipe}. ${error.code}`
+                  );
+                  return error;
+                });
+            });
+          })
+          .catch((error) => {
+            updateToast(
+              toastId,
+              "error",
+              `Foto ${data.namaLengkap} gagal diunggah. ${error.code}`
+            );
+          });
+      });
+    })
+    .catch((error) =>
+      updateToast(
+        toastId,
+        "error",
+        `Kartu Keluarga ${data.namaLengkap} gagal diunggah. ${error.code}`
+      )
+    );
+};
+
 // SEND PERSON
 export const sendPerson = async (
   tipe: "peserta" | "official",
   data: DataPesertaState | DataOfficialState | DocumentData,
-  imageSelected: File,
+  pasFoto: File,
   kontingens: DataKontingenState[],
   toastId: React.MutableRefObject<Id | null>,
   callback?: () => void
@@ -570,7 +903,7 @@ export const sendPerson = async (
   // UPLOAD IMAGE
   const newDocRef = doc(collection(firestore, `${tipe}s`));
   const url = `${tipe}s/${newDocRef.id}-image`;
-  return uploadBytes(ref(storage, url), imageSelected)
+  return uploadBytes(ref(storage, url), pasFoto)
     .then((snapshot) => {
       getDownloadURL(snapshot.ref).then((downloadUrl) => {
         // UPLOAD PERSON

@@ -27,7 +27,7 @@ const PendaftaranPage = () => {
       <Head>
         <title>Halaman Pendaftaran - Portue Silat Bandung Championship</title>
       </Head>
-      <Rodal visible={true} onClose={() => router.push("/")}>
+      {/* <Rodal visible={true} onClose={() => router.push("/")}>
         <div className="w-full h-full flex flex-col justify-between items-center">
           <h1 className="text-xl font-semibold">Informasi</h1>
           <p> Website sedang dalam perbaikan</p>
@@ -35,9 +35,9 @@ const PendaftaranPage = () => {
             Kembali ke halaman utama
           </Link>
         </div>
-      </Rodal>
+      </Rodal> */}
       {/* HOLD PENDAFTARAN */}
-      {/* {userLoading ? (
+      {userLoading ? (
         <div className="h-full w-full flex justify-center items-center">
           <Image
             src={graphic_portue}
@@ -71,7 +71,7 @@ const PendaftaranPage = () => {
             </div>
           </div>
         </div>
-      )} */}
+      )}
       {/* HOLD PENDAFTARAN */}
     </div>
   );
