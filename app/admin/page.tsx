@@ -19,7 +19,7 @@ const AdminPage = () => {
 
   return (
     <div className="max-w-[100vw] h-full">
-      {adminAuthorized.length ? (
+      {adminAuthorized && adminAuthorized.length ? (
         <Authorized />
       ) : userLoading || adminLoading ? (
         <div className="w-full h-full flex justify-center items-center">
