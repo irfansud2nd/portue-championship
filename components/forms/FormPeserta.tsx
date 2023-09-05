@@ -513,6 +513,14 @@ const FormPeserta = ({
         querySnapshot.forEach((doc) => {
           kuota = kuota - 1;
         });
+        if (
+          updating &&
+          prevData.kategoriPertandingan == data.kategoriPertandingan &&
+          prevData.jenisKelamin == data.jenisKelamin &&
+          prevData.jenisPertandingan == data.jenisPertandingan
+        ) {
+          kuota += 1;
+        }
         return kuota;
       })
       .finally(() => {
