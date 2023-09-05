@@ -232,10 +232,8 @@ const FormPembayaran = ({
         newToast(toastId, "loading", "sending image");
         setDisable(true);
         const time = Date.now();
-        const url = `buktiPembayarans/${time}-${v4()}.${
-          imageSelected.type.split("/")[1]
-        }`;
         const idPembayaran = `${kontingens[0].idKontingen}-${time}`;
+        const url = `${idPembayaran}.${imageSelected.type.split("/")[1]}`;
         uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
           getDownloadURL(snapshot.ref).then((downloadUrl) => {
             updateToast(toastId, "loading", "sending url to pesertas");
