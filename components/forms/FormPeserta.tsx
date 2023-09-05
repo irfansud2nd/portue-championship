@@ -24,6 +24,7 @@ import {
   deletePeserta,
   updatePersonKk,
   updatePersonKkImage,
+  updateToast,
 } from "@/utils/sharedFunctions";
 import {
   DataKontingenState,
@@ -264,11 +265,17 @@ const FormPeserta = ({
       data.tingkatanPertandingan == "Dewasa"
     ) {
       // CEK KUOTA FIRST
+      newToast(toastId, "loading", "Cek Kuota Kategori");
       cekKuota().then((res) => {
         if (res) {
+          updateToast(toastId, "success", "Kuota Tersedia");
           sendPeserta();
         } else {
-          alert("kuota habis");
+          updateToast(
+            toastId,
+            "error",
+            `Kuota Kategori yang dipilih sudah habis (Maks. 8 Orang)`
+          );
         }
       });
     } else {
