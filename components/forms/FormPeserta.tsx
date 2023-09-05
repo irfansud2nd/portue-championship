@@ -182,51 +182,61 @@ const FormPeserta = ({
     let countReguPutri = 0;
     if (pesertas.length) {
       pesertas.map((peserta) => {
-        if (peserta.kategoriPertandingan.split(" ")[0] == "Ganda") {
-          if (peserta.jenisKelamin == "Putra") {
-            countGandaPutra += 1;
-            if (countGandaPutra >= 2) {
-              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+        if (
+          peserta.tingkatanPertandingan == "SMA" ||
+          peserta.tingkatanPertandingan == "Dewasa"
+        ) {
+          if (peserta.kategoriPertandingan.split(" ")[0] == "Ganda") {
+            if (peserta.jenisKelamin == "Putra") {
+              countGandaPutra += 1;
+              if (countGandaPutra >= 2) {
+                kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+              }
+            } else {
+              countGandaPutri += 1;
+              if (countGandaPutri >= 2) {
+                kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+              }
+            }
+          } else if (peserta.kategoriPertandingan.split(" ")[0] == "Regu") {
+            if (peserta.jenisKelamin == "Putra") {
+              countReguPutra += 1;
+              if (countReguPutra >= 3) {
+                kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+              }
+            } else {
+              countReguPutri += 1;
+              if (countReguPutri >= 3) {
+                kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+              }
             }
           } else {
-            countGandaPutri += 1;
-            if (countGandaPutri >= 2) {
-              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
-            }
+            kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
           }
-        } else if (peserta.kategoriPertandingan.split(" ")[0] == "Regu") {
-          if (peserta.jenisKelamin == "Putra") {
-            countReguPutra += 1;
-            if (countReguPutra >= 3) {
-              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
-            }
-          } else {
-            countReguPutri += 1;
-            if (countReguPutri >= 3) {
-              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
-            }
+          if (kategoris.indexOf(kategori) < 0) {
+            kategoris.push(kategori);
           }
-        } else {
-          kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
-        }
-        if (kategoris.indexOf(kategori) < 0) {
-          kategoris.push(kategori);
         }
       });
       if (dataToUpdate?.jenisPertandingan) {
         if (
-          kategoris.indexOf(
-            `${dataToUpdate.jenisPertandingan}-${dataToUpdate.tingkatanPertandingan}-${dataToUpdate.kategoriPertandingan}-${dataToUpdate.jenisKelamin}`
-          ) >= 0
+          dataToUpdate.tingkatanPertandingan == "SMA" ||
+          dataToUpdate.tingkatanPertandingan == "Dewasa"
         ) {
-          kategoris.splice(
+          if (
             kategoris.indexOf(
               `${dataToUpdate.jenisPertandingan}-${dataToUpdate.tingkatanPertandingan}-${dataToUpdate.kategoriPertandingan}-${dataToUpdate.jenisKelamin}`
-            ),
-            1
-          );
+            ) >= 0
+          ) {
+            kategoris.splice(
+              kategoris.indexOf(
+                `${dataToUpdate.jenisPertandingan}-${dataToUpdate.tingkatanPertandingan}-${dataToUpdate.kategoriPertandingan}-${dataToUpdate.jenisKelamin}`
+              ),
+              1
+            );
+          }
+          setKelasTaken(kategoris);
         }
-        setKelasTaken(kategoris);
       } else {
         setKelasTaken(kategoris);
       }
@@ -276,7 +286,7 @@ const FormPeserta = ({
       newToast(
         toastId,
         "error",
-        "1 Kontingen hanya dapat mengirimkan 1 Orang / 1 Nomor per Kategori"
+        "1 Kontingen hanya dapat mengirimkan 1 Orang / 1 Nomor per Kategori di tingkat SMA dan Dewasa"
       );
       return;
     }
