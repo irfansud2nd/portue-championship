@@ -45,6 +45,7 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import TabelPeserta from "../tabel/TabelPeserta";
 import { BiLoader } from "react-icons/bi";
+import { isStringTextContainingNode } from "typescript";
 
 const FormPeserta = ({
   kontingens,
@@ -76,6 +77,7 @@ const FormPeserta = ({
   const [tabelLoading, setTabelLoading] = useState(false);
   const [kuotaKelas, setKuotaKelas] = useState<number>(16);
   const [kuotaLoading, setKuotaLoading] = useState(false);
+  const [kelasTaken, setKelasTaken] = useState<string[]>([]);
 
   const toastId = useRef(null);
   const pasFotoRef = useRef<HTMLInputElement>(null);
@@ -166,6 +168,72 @@ const FormPeserta = ({
     }
   };
 
+  // VALIDATE KATEGORI
+  useEffect(() => {
+    watchKategori();
+  }, [pesertas]);
+
+  const watchKategori = (dataToUpdate?: DataPesertaState) => {
+    let kategoris: string[] = [];
+    let kategori = "";
+    let countGandaPutra = 0;
+    let countGandaPutri = 0;
+    let countReguPutra = 0;
+    let countReguPutri = 0;
+    if (pesertas.length) {
+      pesertas.map((peserta) => {
+        if (peserta.kategoriPertandingan.split(" ")[0] == "Ganda") {
+          if (peserta.jenisKelamin == "Putra") {
+            countGandaPutra += 1;
+            if (countGandaPutra >= 2) {
+              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+            }
+          } else {
+            countGandaPutri += 1;
+            if (countGandaPutri >= 2) {
+              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+            }
+          }
+        } else if (peserta.kategoriPertandingan.split(" ")[0] == "Regu") {
+          if (peserta.jenisKelamin == "Putra") {
+            countReguPutra += 1;
+            if (countReguPutra >= 3) {
+              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+            }
+          } else {
+            countReguPutri += 1;
+            if (countReguPutri >= 3) {
+              kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+            }
+          }
+        } else if (peserta.jenisPertandingan == "Tanding") {
+          kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
+        }
+        if (kategoris.indexOf(kategori) < 0) {
+          kategoris.push(kategori);
+        }
+      });
+      if (dataToUpdate?.jenisPertandingan) {
+        if (
+          kategoris.indexOf(
+            `${dataToUpdate.jenisPertandingan}-${dataToUpdate.tingkatanPertandingan}-${dataToUpdate.kategoriPertandingan}-${dataToUpdate.jenisKelamin}`
+          ) >= 0
+        ) {
+          kategoris.splice(
+            kategoris.indexOf(
+              `${dataToUpdate.jenisPertandingan}-${dataToUpdate.tingkatanPertandingan}-${dataToUpdate.kategoriPertandingan}-${dataToUpdate.jenisKelamin}`
+            ),
+            1
+          );
+        }
+        console.log(kategoris);
+        setKelasTaken(kategoris);
+      } else {
+        setKelasTaken(kategoris);
+      }
+    }
+  };
+
   //  GENERATE AGE
   const calculateAge = (date: any) => {
     const birthDate = new Date(date);
@@ -201,6 +269,18 @@ const FormPeserta = ({
   };
 
   const sendPeserta = () => {
+    if (
+      kelasTaken.indexOf(
+        `${data.jenisPertandingan}-${data.tingkatanPertandingan}-${data.kategoriPertandingan}-${data.jenisKelamin}`
+      ) >= 0
+    ) {
+      newToast(
+        toastId,
+        "error",
+        "1 Kontingen hanya dapat mengirimkan 1 Orang / 1 Nomor per Kategori"
+      );
+      return;
+    }
     if (
       getInputErrorPeserta(
         data,
@@ -277,6 +357,7 @@ const FormPeserta = ({
     clearInputImage();
     setPasFotoSelected(null);
     setKkSelected(null);
+    watchKategori();
   };
 
   // DELETE - STEP 1 - DELETE BUTTON
@@ -318,6 +399,8 @@ const FormPeserta = ({
     setUpdating(true);
     setData(data);
     setPrevData(data);
+    // WATCH KATEGORI
+    watchKategori(data);
   };
 
   // EDIT - STEP 2 - SET IMAGE PREVIEW
@@ -481,6 +564,11 @@ const FormPeserta = ({
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
+      <p>
+        {kelasTaken.map((item) => (
+          <span>{item} | </span>
+        ))}
+      </p>
       {/* RODAL */}
       <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <div className="h-full w-full">
