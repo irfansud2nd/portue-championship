@@ -206,7 +206,7 @@ const FormPeserta = ({
               kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
             }
           }
-        } else if (peserta.jenisPertandingan == "Tanding") {
+        } else {
           kategori = `${peserta.jenisPertandingan}-${peserta.tingkatanPertandingan}-${peserta.kategoriPertandingan}-${peserta.jenisKelamin}`;
         }
         if (kategoris.indexOf(kategori) < 0) {
