@@ -226,7 +226,6 @@ const FormPeserta = ({
             1
           );
         }
-        console.log(kategoris);
         setKelasTaken(kategoris);
       } else {
         setKelasTaken(kategoris);
@@ -430,7 +429,6 @@ const FormPeserta = ({
         pasFotoSelected &&
         kkSelected
       ) {
-        console.log("update image and kk");
         updatePersonKkImage(
           "peserta",
           data,
@@ -454,7 +452,6 @@ const FormPeserta = ({
           resetEdit
         );
       } else if (kkSelected) {
-        console.log("update KK");
         updatePersonKk("peserta", data, toastId, kkSelected, resetEdit);
       } else if (
         imagePreviewSrc == prevData.downloadFotoUrl &&
@@ -564,11 +561,6 @@ const FormPeserta = ({
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
-      <p>
-        {kelasTaken.map((item) => (
-          <span>{item} | </span>
-        ))}
-      </p>
       {/* RODAL */}
       <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <div className="h-full w-full">
