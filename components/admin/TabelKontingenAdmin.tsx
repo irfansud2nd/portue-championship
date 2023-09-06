@@ -18,7 +18,7 @@ const TabelKontingenAdmin = ({
     "Peserta",
     "Official",
     "Pembayaran",
-    "Lunas",
+    "Belum Lunas",
     "Konfirmasi",
     "Email Pendaftar",
     "Waktu Pendaftaran",
