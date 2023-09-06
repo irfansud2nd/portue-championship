@@ -31,6 +31,7 @@ const DownloadButton = () => {
     <button
       className="w-full rounded-full text-lg font-semibold btn_navy_gold"
       onClick={() => FileSaver.saveAs(downloadLink)}
+      disabled={!downloadLink}
     >
       <ToastContainer />
       {errorMessage ? (
