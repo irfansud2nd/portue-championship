@@ -57,7 +57,7 @@ const TabelPesertaAdmin = ({
   });
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <Rodal
         visible={showRodal}
         onClose={() => setKkUrl("")}
