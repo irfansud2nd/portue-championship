@@ -51,8 +51,8 @@ const TabelPesertaAdmin = ({
 
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
-    filename: "Users table",
-    sheet: "Users",
+    filename: "Tabel Peserta",
+    sheet: "Data Peserta",
   });
 
   return (

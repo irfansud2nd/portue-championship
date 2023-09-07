@@ -1,5 +1,7 @@
 import { findNamaKontingen, formatTanggal } from "@/utils/sharedFunctions";
 import { DataKontingenState, DataOfficialState } from "@/utils/types";
+import { useRef } from "react";
+import { useDownloadExcel } from "react-export-table-to-excel";
 
 const TabelOfficialAdmin = ({
   officials,
@@ -20,15 +22,25 @@ const TabelOfficialAdmin = ({
     "Waktu Pendaftaran",
     "Waktu Perubahan",
   ];
+
+  const tabelRef = useRef(null);
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tabelRef.current,
+    filename: "Tabel Official",
+    sheet: "Data Official",
+  });
+
   return (
     <div className="overflow-x-auto">
       <div className="flex gap-2 mt-1">
-        <h1 className="text-xl font-semibold">Tabel Official</h1>
-        {/* <button className="btn_green btn_full mb-1" onClick={() => {}}>
-          Download Tabel
-        </button> */}
+        <div className="flex gap-2 mt-1">
+          <h1 className="text-xl font-semibold">Tabel Official</h1>
+          <button className="btn_green btn_full mb-1" onClick={onDownload}>
+            Download Tabel
+          </button>
+        </div>
       </div>
-      <table className="w-full">
+      <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
             {tabelHead.map((item) => (

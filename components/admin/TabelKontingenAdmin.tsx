@@ -1,6 +1,8 @@
 import { formatTanggal } from "@/utils/sharedFunctions";
 import { DataKontingenState } from "@/utils/types";
 import TabelAdminActions from "./TabelAdminActions";
+import { useRef } from "react";
+import { useDownloadExcel } from "react-export-table-to-excel";
 
 const TabelKontingenAdmin = ({
   kontingens,
@@ -35,9 +37,22 @@ const TabelKontingenAdmin = ({
     return kontingen.pesertas.length - Math.floor(paidNominal / 300000);
   };
 
+  const tabelRef = useRef(null);
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tabelRef.current,
+    filename: "Tabel Kontingen",
+    sheet: "Data Kontingen",
+  });
+
   return (
     <div className="overflow-x-auto">
-      <table className="w-full">
+      <div className="flex gap-2 mt-1">
+        <h1 className="text-xl font-semibold">Tabel Kontingen</h1>
+        <button className="btn_green btn_full mb-1" onClick={onDownload}>
+          Download Tabel
+        </button>
+      </div>
+      <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
             {tabelHead.map((item) => (

@@ -24,6 +24,7 @@ const Authorized = () => {
   // FETCH BASED ON MODE
   useEffect(() => {
     fetchData();
+    getAllKontingen();
   }, [mode]);
 
   // FETCH CONTROLLER
