@@ -1,6 +1,8 @@
 import { findNamaKontingen, formatTanggal } from "@/utils/sharedFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
+import FileSaver from "file-saver";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
@@ -31,7 +33,7 @@ const TabelPesertaAdmin = ({
     "Jenis Pertandingan",
     "Kategori Pertandingan",
     "Nama Kontingen",
-    "Pas Foto URL",
+    "Pas Foto",
     "Status Pembayaran",
     "Waktu Pembayaran",
     "Konfirmai Pembayaran",
@@ -45,10 +47,7 @@ const TabelPesertaAdmin = ({
 
   const [showRodal, setShowRodal] = useState(false);
   const [kkUrl, setKkUrl] = useState("");
-
-  useEffect(() => {
-    setShowRodal(kkUrl !== "");
-  }, [kkUrl]);
+  const [fotoUrl, setFotoUrl] = useState("");
 
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
@@ -57,15 +56,49 @@ const TabelPesertaAdmin = ({
   });
 
   return (
-    <div>
+    <div className="w-fit">
       <Rodal
         visible={showRodal}
-        onClose={() => setKkUrl("")}
+        onClose={() => {
+          setFotoUrl("");
+          setKkUrl("");
+          setShowRodal(false);
+        }}
         customStyles={{ width: "fit-content", height: "fit-content" }}
       >
-        <div className="w-[500px] h-[300px] relative">
-          <Image src={kkUrl} alt="kk" fill className="object-contain" />
-        </div>
+        {kkUrl && (
+          <>
+            <div className="flex justify-center mb-2">
+              <Link href={kkUrl} target="_blank" className="btn_green btn_full">
+                Open in new tab
+              </Link>
+            </div>
+            <div className="w-[500px] h-[500px] relative">
+              <Image
+                src={kkUrl}
+                alt="kk"
+                fill
+                className="object-contain mx-auto"
+              />
+            </div>
+          </>
+        )}
+        {fotoUrl && (
+          <>
+            <div className="flex justify-center mb-2">
+              <Link
+                href={fotoUrl}
+                target="_blank"
+                className="btn_green btn_full"
+              >
+                Open in new tab
+              </Link>
+            </div>
+            <div className="w-[400px] h-[300px] relative">
+              <Image src={fotoUrl} alt="kk" fill className="object-contain" />
+            </div>
+          </>
+        )}
       </Rodal>
       <div className="flex gap-2 mt-1">
         <h1 className="text-xl font-semibold">Tabel Peserta</h1>
@@ -96,14 +129,21 @@ const TabelPesertaAdmin = ({
               <td className="whitespace-nowrap">
                 {formatTanggal(peserta.tanggalLahir)}
               </td>
-              <td>{peserta.noHp}</td>
+              <td>
+                <span className="text-transparent">"</span>
+                {peserta.noHp}
+                <span className="text-transparent">"</span>
+              </td>
               <td>{peserta.email}</td>
               <td>
                 <button
                   className="hover:text-custom-gold transition"
-                  onClick={() => setKkUrl(peserta.downloadKkUrl)}
+                  onClick={() => {
+                    setShowRodal(true);
+                    setKkUrl(peserta.downloadKkUrl);
+                  }}
                 >
-                  show
+                  Show KK
                 </button>
               </td>
               <td className="whitespace-nowrap">{peserta.umur} tahun</td>
@@ -116,7 +156,19 @@ const TabelPesertaAdmin = ({
                 {peserta.kategoriPertandingan}
               </td>
               <td>{findNamaKontingen(kontingens, peserta.idKontingen)}</td>
-              <td>{peserta.downloadFotoUrl ? "Yes" : "No"}</td>
+              <td className="whitespace-nowrap">
+                <button
+                  className="hover:text-custom-gold transition"
+                  onClick={() => {
+                    setShowRodal(true);
+                    setFotoUrl(peserta.downloadFotoUrl);
+                  }}
+                >
+                  Show Foto
+                </button>
+                <br />
+                {/* <span className="hidden">{peserta.downloadFotoUrl}</span> */}
+              </td>
               <td>{peserta.pembayaran ? "Dibayar" : "Belum dibayar"}</td>
               <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
               <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
