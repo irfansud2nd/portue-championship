@@ -11,9 +11,6 @@ import TabelKontingenAdmin from "./TabelKontingenAdmin";
 import { compare } from "@/utils/sharedFunctions";
 import AdminButtons from "./AdminButtons";
 import TabelOfficialAdmin from "./TabelOfficialAdmin";
-import SearchBox from "./SearchBox";
-import { spawn } from "child_process";
-import TablePesertaNew from "./TablePesertaNew";
 
 const Authorized = () => {
   const [kontingens, setKontingens] = useState<DataKontingenState[]>([]);
@@ -32,7 +29,6 @@ const Authorized = () => {
   // FETCH CONTROLLER
   const fetchData = () => {
     if (!selectedKontingen) {
-      alert("masuk");
       if (mode.indexOf("peserta") >= 0) {
         getAllPeserta();
       }
@@ -162,10 +158,6 @@ const Authorized = () => {
                       kontingens={kontingens}
                     />
                   ) : (
-                    // <TablePesertaNew
-                    //   pesertas={pesertas}
-                    //   kontingens={kontingens}
-                    // />
                     <p>Data Peserta Kosong</p>
                   ))}
                 {mode.indexOf("official") >= 0 &&

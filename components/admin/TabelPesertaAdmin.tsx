@@ -85,8 +85,12 @@ const TabelPesertaAdmin = ({
           {pesertas.map((peserta, i) => (
             <tr key={peserta.id}>
               <td>{i + 1}</td>
-              <td>{peserta.namaLengkap}</td>
-              <td>{peserta.NIK.toString()}</td>
+              <td className="capitalize">{peserta.namaLengkap}</td>
+              <td>
+                <span className="text-transparent">"</span>
+                {peserta.NIK.toString()}
+                <span className="text-transparent">"</span>
+              </td>
               <td>{peserta.jenisKelamin}</td>
               <td>{peserta.tempatLahir}</td>
               <td className="whitespace-nowrap">
