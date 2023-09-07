@@ -13,6 +13,7 @@ import AdminButtons from "./AdminButtons";
 import TabelOfficialAdmin from "./TabelOfficialAdmin";
 import SearchBox from "./SearchBox";
 import { spawn } from "child_process";
+import TablePesertaNew from "./TablePesertaNew";
 
 const Authorized = () => {
   const [kontingens, setKontingens] = useState<DataKontingenState[]>([]);
@@ -30,7 +31,8 @@ const Authorized = () => {
 
   // FETCH CONTROLLER
   const fetchData = () => {
-    if (mode) {
+    if (!selectedKontingen) {
+      alert("masuk");
       if (mode.indexOf("peserta") >= 0) {
         getAllPeserta();
       }
@@ -101,10 +103,13 @@ const Authorized = () => {
         )
       )
         .then((querySnapshot) =>
-          querySnapshot.forEach((doc) => container.push(doc.data()))
+          querySnapshot.forEach((doc) => {
+            container.push(doc.data());
+          })
         )
         .catch((error) => alert(error.code))
         .finally(() => {
+          console.log(container);
           setPesertas(container);
           let container2: any = [];
           getDocs(
@@ -119,6 +124,7 @@ const Authorized = () => {
             .catch((error) => alert(error.code))
             .finally(() => {
               setOfficials(container2);
+              setLoading(false);
             });
         });
     }
@@ -156,6 +162,10 @@ const Authorized = () => {
                       kontingens={kontingens}
                     />
                   ) : (
+                    // <TablePesertaNew
+                    //   pesertas={pesertas}
+                    //   kontingens={kontingens}
+                    // />
                     <p>Data Peserta Kosong</p>
                   ))}
                 {mode.indexOf("official") >= 0 &&

@@ -34,6 +34,8 @@ import { v4 } from "uuid";
 import TabelOfficial from "../tabel/TabelOfficial";
 import TabelPeserta from "../tabel/TabelPeserta";
 
+import logo_bjb from "@/public/images/logo-bjb.png";
+
 const FormPembayaran = ({
   kontingens,
   officials,
@@ -610,6 +612,11 @@ const FormPembayaran = ({
               </p>
               <div className="flex items-center justify-center gap-2">
                 <div className="text-center">
+                  <Image
+                    src={logo_bjb}
+                    alt="logo bjb"
+                    className="w-24 h-fit mx-auto bg-white rounded-md p-2"
+                  />
                   <p className="mx-auto">0129228164100 </p>
                   <p>a.n. ANDRA RAMDHAN MALELA POETRA</p>
                 </div>

@@ -86,7 +86,7 @@ const TabelPesertaAdmin = ({
             <tr key={peserta.id}>
               <td>{i + 1}</td>
               <td>{peserta.namaLengkap}</td>
-              <td>{peserta.NIK}</td>
+              <td>{peserta.NIK.toString()}</td>
               <td>{peserta.jenisKelamin}</td>
               <td>{peserta.tempatLahir}</td>
               <td className="whitespace-nowrap">
