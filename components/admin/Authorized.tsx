@@ -142,7 +142,7 @@ const Authorized = () => {
         /> */}
         <div className="max-w-full h-full mt-1">
           {selectedKontingen && (
-            <h1 className="text-2xl font-bold border-b-2 border-b-black">
+            <h1 className="text-2xl font-bold border-b-2 border-b-black capitalize">
               {selectedKontingen.namaKontingen}
             </h1>
           )}
