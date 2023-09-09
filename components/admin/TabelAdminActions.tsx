@@ -46,8 +46,6 @@ const TabelAdminActions = ({
     getPesertasToConfirm();
   };
 
-  const konfirmasiPembayaran = () => {};
-
   const getPesertasToConfirm = () => {
     let container: any[] = [];
     getDocs(

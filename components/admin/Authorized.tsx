@@ -136,11 +136,6 @@ const Authorized = () => {
     <div className="w-full h-full p-2">
       <div className="w-full h-full p-2 bg-gray-200 rounded-md">
         <AdminButtons refresh={fetchData} setMode={setMode} />
-        {/* <SearchBox
-          setMode={setMode}
-          setPesertas={setPesertas}
-          setKontingens={setKontingens}
-        /> */}
         <div className="max-w-full h-full mt-1">
           {selectedKontingen && (
             <h1 className="text-2xl font-bold border-b-2 border-b-black capitalize">
