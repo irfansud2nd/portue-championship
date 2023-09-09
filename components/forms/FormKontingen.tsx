@@ -15,6 +15,7 @@ import { firestore } from "@/utils/firebase";
 import {
   compare,
   deletePerson,
+  deletePeserta,
   newToast,
   updateToast,
 } from "@/utils/sharedFunctions";
@@ -205,7 +206,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   const deletePesertas = (pesertaIndex: number) => {
     if (pesertaIndex >= 0) {
       const id = dataToDelete.pesertas[pesertaIndex];
-      deletePerson(
+      deletePeserta(
         "pesertas",
         {
           namaLengkap: `${dataToDelete.pesertas.length} peserta`,
