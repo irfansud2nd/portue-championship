@@ -163,7 +163,9 @@ export const getInputErrorPeserta = (
     pasFoto: imageUrl ? null : "Tolong lengkapi Pas Foto",
     namaLengkap: data.namaLengkap == "" ? "Tolong lengkapi Nama Lengkap" : null,
     NIK:
-      data.NIK.length != 0 && data.NIK.length != 16 ? "NIK tidak valid" : null,
+      data.NIK.length != 0 && data.NIK.length != 16
+        ? "NIK tidak valid (!6 Digit)"
+        : null,
     jenisKelamin:
       data.jenisKelamin == "" ? "Tolong lengkapi Jenis Kelamin" : null,
     alamatLengkap:
