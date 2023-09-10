@@ -170,7 +170,9 @@ const TabelPesertaAdmin = () => {
               <td className="whitespace-nowrap">
                 {peserta.kategoriPertandingan}
               </td>
-              <td>{findNamaKontingen(kontingens, peserta.idKontingen)}</td>
+              <td className="capitalize">
+                {findNamaKontingen(kontingens, peserta.idKontingen)}
+              </td>
               <td className="whitespace-nowrap">
                 <button
                   className="hover:text-custom-gold transition"

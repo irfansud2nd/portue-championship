@@ -100,7 +100,9 @@ const TabelOfficialAdmin = () => {
               <td>{official.namaLengkap}</td>
               <td>{official.jenisKelamin}</td>
               <td>{official.jabatan}</td>
-              <td>{findNamaKontingen(kontingens, official.idKontingen)}</td>
+              <td className="capitalize">
+                {findNamaKontingen(kontingens, official.idKontingen)}
+              </td>
               <td>
                 {official.downloadFotoUrl ? (
                   <button
