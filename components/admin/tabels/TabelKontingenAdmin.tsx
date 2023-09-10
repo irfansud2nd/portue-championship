@@ -1,18 +1,21 @@
-import { formatTanggal } from "@/utils/sharedFunctions";
-import { DataKontingenState } from "@/utils/types";
-import TabelAdminActions from "./TabelAdminActions";
-import { useRef } from "react";
+import { AdminContext } from "@/context/AdminContext";
+import { formatTanggal, getKontingenUnpaid } from "@/utils/adminFunctions";
 import { useDownloadExcel } from "react-export-table-to-excel";
+import { useRef } from "react";
+import { DataKontingenState } from "@/utils/types";
+import InlineLoading from "../InlineLoading";
+import KonfirmasiButton from "../KonfirmasiButton";
 
-const TabelKontingenAdmin = ({
-  kontingens,
-  setSelectedKontingen,
-}: {
-  kontingens: DataKontingenState[];
-  setSelectedKontingen: React.Dispatch<
-    React.SetStateAction<DataKontingenState | null>
-  >;
-}) => {
+const TabelKontingenAdmin = () => {
+  const {
+    kontingens,
+    setSelectedKontingen,
+    selectedKontingen,
+    refreshKontingens,
+    kontingensLoading,
+    pesertas,
+  } = AdminContext();
+
   const tabelHead = [
     "No",
     "ID Kontingen",
@@ -33,7 +36,6 @@ const TabelKontingenAdmin = ({
     kontingen.infoPembayaran.map(
       (info) => (paidNominal += Number(info.nominal.replace(/[^0-9]/g, "")))
     );
-    // kontingen.pesertas.length -
     return kontingen.pesertas.length - Math.floor(paidNominal / 300000);
   };
 
@@ -45,13 +47,25 @@ const TabelKontingenAdmin = ({
   });
 
   return (
-    <div className="overflow-x-auto">
-      <div className="flex gap-2 mt-1">
-        <h1 className="text-xl font-semibold">Tabel Kontingen</h1>
-        <button className="btn_green btn_full mb-1" onClick={onDownload}>
-          Download Tabel
+    <div>
+      <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
+        Tabel Kontingen
+      </h1>
+
+      {/* BUTTONS */}
+      <div className="flex gap-1 mb-1 items-center">
+        {!selectedKontingen.id && (
+          <button className="btn_green btn_full" onClick={refreshKontingens}>
+            Refresh
+          </button>
+        )}
+        {kontingensLoading && <InlineLoading />}
+        <button className="btn_green btn_full" onClick={onDownload}>
+          Download
         </button>
       </div>
+      {/* BUTTONS */}
+
       <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
@@ -61,12 +75,12 @@ const TabelKontingenAdmin = ({
           </tr>
         </thead>
         <tbody>
-          {kontingens.map((kontingen, i) => (
-            <tr key={kontingen.idKontingen}>
+          {kontingens.map((kontingen: DataKontingenState, i: number) => (
+            <tr key={kontingen.idKontingen} className="border_td">
               <td>{i + 1}</td>
               <td>{kontingen.idKontingen}</td>
               <td
-                className="hover:text-custom-gold cursor-pointer"
+                className="hover:text-green-500 hover:underline transition cursor-pointer"
                 onClick={() => setSelectedKontingen(kontingen)}
               >
                 {kontingen.namaKontingen}
@@ -81,7 +95,7 @@ const TabelKontingenAdmin = ({
                           key={idPembayaran}
                           className="border-b border-black last:border-none"
                         >
-                          <p className="whitespace-nowrap">
+                          <span className="whitespace-nowrap">
                             {formatTanggal(
                               kontingen.infoPembayaran[
                                 kontingen.infoPembayaran.findIndex(
@@ -98,8 +112,9 @@ const TabelKontingenAdmin = ({
                                 )
                               ].nominal
                             }
-                          </p>
-                          <p className="whitespace-nowrap">
+                          </span>
+                          <br />
+                          <span className="whitespace-nowrap">
                             {kontingen.confirmedPembayaran.indexOf(
                               idPembayaran
                             ) >= 0 ? (
@@ -111,7 +126,7 @@ const TabelKontingenAdmin = ({
                                 ].email
                               }`
                             ) : (
-                              <TabelAdminActions
+                              <KonfirmasiButton
                                 idPembayaran={idPembayaran}
                                 infoPembayaran={
                                   kontingen.infoPembayaran[
@@ -124,13 +139,19 @@ const TabelKontingenAdmin = ({
                                 data={kontingen}
                               />
                             )}
-                          </p>
+                          </span>
                         </li>
                       ))
                     : "-"}
                 </ul>
               </td>
-              <td>{getUnpaidPeserta(kontingen)}</td>
+              <td className="whitespace-nowrap">
+                {/* {getKontingenUnpaid(kontingen, pesertas) < 0
+                  ? "0"
+                  : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`} */}
+                Rp.{" "}
+                {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
+              </td>
               <td>
                 {kontingen.unconfirmedPembayaran &&
                 kontingen.unconfirmedPembayaran.length

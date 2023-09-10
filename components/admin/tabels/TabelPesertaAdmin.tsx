@@ -1,3 +1,4 @@
+import { AdminContext } from "@/context/AdminContext";
 import { findNamaKontingen, formatTanggal } from "@/utils/sharedFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import FileSaver from "file-saver";
@@ -7,14 +8,17 @@ import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
+import InlineLoading from "../InlineLoading";
 
-const TabelPesertaAdmin = ({
-  pesertas,
-  kontingens,
-}: {
-  pesertas: DataPesertaState[];
-  kontingens: DataKontingenState[];
-}) => {
+const TabelPesertaAdmin = () => {
+  const {
+    pesertas,
+    kontingens,
+    refreshPesertas,
+    pesertasLoading,
+    selectedKontingen,
+  } = AdminContext();
+
   const tabelHead = [
     "No",
     "Nama Lengkap",
@@ -100,12 +104,23 @@ const TabelPesertaAdmin = ({
           </>
         )}
       </Rodal>
-      <div className="flex gap-2 mt-1">
-        <h1 className="text-xl font-semibold">Tabel Peserta</h1>
-        <button className="btn_green btn_full mb-1" onClick={onDownload}>
-          Download Tabel
+      <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
+        Tabel Peserta
+      </h1>
+
+      {/* BUTTONS */}
+      <div className="flex gap-1 mb-1 items-center">
+        {!selectedKontingen.id && (
+          <button className="btn_green btn_full" onClick={refreshPesertas}>
+            Refresh
+          </button>
+        )}
+        {pesertasLoading && <InlineLoading />}
+        <button className="btn_green btn_full" onClick={onDownload}>
+          Download
         </button>
       </div>
+      {/* BUTTONS */}
       <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
@@ -115,7 +130,7 @@ const TabelPesertaAdmin = ({
           </tr>
         </thead>
         <tbody>
-          {pesertas.map((peserta, i) => (
+          {pesertas.map((peserta: DataPesertaState, i: number) => (
             <tr key={peserta.id}>
               <td>{i + 1}</td>
               <td className="capitalize">{peserta.namaLengkap}</td>
