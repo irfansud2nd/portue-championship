@@ -460,6 +460,17 @@ const FormPembayaran = ({
       </div>
       {/* DATA SUMMARY */}
 
+      <div className="bg-gray-200 rounded-md p-2 mb-2">
+        <Link
+          href="https://chat.whatsapp.com/G10dT5i2t4OCrOXyhK5LR5"
+          className="text-xl font-bold hover:underline"
+          target="_blank"
+        >
+          Link Whatsapp Group Untuk Official
+          <BsWhatsapp className="inline ml-2" />
+        </Link>
+      </div>
+
       {/* TOTAL TAGIHAN */}
       <div className="bg-gray-200 rounded-md p-2">
         <h1 className="text-2xl sm:text-3xl font-bold border-b-2 border-b-gray-700 pb-2 mb-2 w-fit">
