@@ -51,7 +51,6 @@ export const AdminContextProvider = ({
   // GET KONTINGEN
   const refreshKontingens = () => {
     setSelectedKontingen(dataKontingenInitialValue);
-    console.log("refreshKontingen");
     setKontingensLoading(true);
     getAllKontingen()
       .then((res: any) => {
@@ -64,7 +63,6 @@ export const AdminContextProvider = ({
   // GET OFFICIALS
   const refreshOfficials = () => {
     setSelectedKontingen(dataKontingenInitialValue);
-    console.log("refreshOfficials");
     setOfficialsLoading(true);
     getAllOfficial()
       .then((res: any) => {
@@ -77,7 +75,6 @@ export const AdminContextProvider = ({
   // GET PESERTA
   const refreshPesertas = () => {
     setSelectedKontingen(dataKontingenInitialValue);
-    console.log("refreshPesertas");
     setPesertasLoading(true);
     getAllPeserta()
       .then((res: any) => {

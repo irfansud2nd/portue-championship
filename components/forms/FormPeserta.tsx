@@ -10,10 +10,8 @@ import {
 import { firestore } from "@/utils/firebase";
 import {
   compare,
-  deletePerson,
   limitImage,
   getInputErrorPeserta,
-  sendPerson,
   updatePerson,
   updatePersonImage,
   updatePersonImageKontingen,
@@ -46,7 +44,6 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import TabelPeserta from "../tabel/TabelPeserta";
 import { BiLoader } from "react-icons/bi";
-import { isStringTextContainingNode } from "typescript";
 
 const FormPeserta = ({
   kontingens,
