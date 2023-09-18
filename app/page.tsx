@@ -9,15 +9,17 @@ import DownloadButton from "@/components/DownloadButton";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import Link from "next/link";
 import { IoLocationSharp } from "react-icons/io5";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 
+export const metadata: Metadata = {
+  title: "Portue Silat Bandung Championship",
+};
+
 export default function Home() {
   const [rodalVisible, setRodalVisible] = useState(true);
-  useEffect(() => {
-    document.title = "Halaman Pendaftaran - Portue Silat Bandung Championship";
-  }, []);
+
   return (
     <div className="h-full w-full flex justify-center items-center relative">
       <Rodal visible={rodalVisible} onClose={() => setRodalVisible(false)}>
