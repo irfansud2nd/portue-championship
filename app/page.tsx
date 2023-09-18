@@ -9,19 +9,20 @@ import DownloadButton from "@/components/DownloadButton";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import Link from "next/link";
 import { IoLocationSharp } from "react-icons/io5";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 
-export const metadata: Metadata = {
-  title: "Portue Silat Bandung Championship",
-};
-
 export default function Home() {
   const [rodalVisible, setRodalVisible] = useState(true);
-
+  useEffect(() => {
+    document.title = "Portue Silat Bandung Championship";
+  }, []);
   return (
     <div className="h-full w-full flex justify-center items-center relative">
+      <Head>
+        <title>Portue Silat Bandung Championship</title>
+      </Head>
       <Rodal visible={rodalVisible} onClose={() => setRodalVisible(false)}>
         <div className="w-full h-full flex flex-col justify-between items-center text-justify">
           <h1 className="text-xl font-semibold">INFO PENTING</h1>
@@ -40,9 +41,6 @@ export default function Home() {
           </button>
         </div>
       </Rodal>
-      <Head>
-        <title>Portue Silat Bandung Championship</title>
-      </Head>
       <BackgroundLogo />
       <div className="w-fit flex flex-col items-center gap-3 -translate-y-5">
         <Image src={logo_portue} alt="logo-portue" className="max-w-[80vw]" />
