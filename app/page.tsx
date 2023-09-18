@@ -26,9 +26,9 @@ export default function Home() {
       <Rodal
         visible={rodalVisible}
         onClose={() => setRodalVisible(false)}
-        customStyles={{ height: "fit-content", maxHeight: "100vh" }}
+        customStyles={{ height: "500px" }}
       >
-        <div className="w-full h-full flex flex-col justify-between items-center text-justify mt-4 overflow-y-auto">
+        <div className="w-full h-full flex flex-col justify-between items-center text-justify py-4 overflow-y-auto">
           <h1 className="text-xl font-semibold text-center">
             Info PORTUE Bandung Championship 2023 Cabor Pencak Silat.
           </h1>
