@@ -4,7 +4,7 @@ import Pendaftaran from "@/components/Pendaftaran";
 import { MyContext } from "@/context/Context";
 import { AiOutlineRollback } from "react-icons/ai";
 import { PiWarningBold } from "react-icons/pi";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import graphic_portue from "@/public/images/graphic-portue.png";
 import Image from "next/image";
 import Link from "next/link";
