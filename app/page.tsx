@@ -44,7 +44,7 @@ export default function Home() {
       <BackgroundLogo />
       <div className="w-fit flex flex-col items-center gap-3 -translate-y-5">
         <Image src={logo_portue} alt="logo-portue" className="max-w-[80vw]" />
-        <p>
+        <p className="text-center">
           <FaRegCalendarAlt className="inline mb-1 mr-1" /> 23 - 26 Oktober 2023
           <span className="hidden min-[480px]:inline"> | </span>
           <br className="min-[480px]:hidden" />
