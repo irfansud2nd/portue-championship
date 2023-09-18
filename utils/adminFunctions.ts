@@ -109,7 +109,7 @@ export const getKontingenUnpaid = (
 
   kontingen.infoPembayaran.map((info) => {
     paidNominal += Math.floor(
-      Number(info.nominal.replace("Rp. ", "").replace(".", "")) / 1000
+      Number(info.nominal.replace(/[^0-9]/g, "")) / 1000
     );
   });
 

@@ -687,7 +687,13 @@ const FormPembayaran = ({
               >
                 Simpan
               </button>
+              {/* IMPORTANT NOTES */}
             </form>
+            <p className="p-2 bg-gray-100 rounded-md font-bold text-center mt-1">
+              <PiWarningCircleBold className="inline text-xl text-yellow-600 mr-1 animate-pulse" />
+              REFRESH HALAMAN SETELAH UPLOAD BUKTI PEMBAYARAN
+            </p>
+            {/* IMPORTANT NOTES */}
             {/* UPLOAD BUKTI PEMBAYARAN */}
           </div>
         </div>
