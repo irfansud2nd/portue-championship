@@ -300,7 +300,7 @@ const FormOfficial = ({
 
       <TabelOfficial
         loading={tabelLoading}
-        data={officials.sort(compare("namaLengkap", "asc"))}
+        data={officials.sort(compare("waktuPendaftaran", "asc"))}
         kontingens={kontingens}
         handleDelete={handleDelete}
         handleEdit={handleEdit}

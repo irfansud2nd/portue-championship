@@ -578,7 +578,7 @@ const FormPeserta = ({
       <ToastContainer />
       <TabelPeserta
         loading={tabelLoading}
-        data={pesertas.sort(compare("namaLengkap", "asc"))}
+        data={pesertas.sort(compare("waktuPendaftaran", "asc"))}
         kontingens={kontingens}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
