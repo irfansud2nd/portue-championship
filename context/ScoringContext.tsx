@@ -57,7 +57,6 @@ export const ScoringContextProvider = ({
     namaKontingen: string,
     sdEmas: number,
     sdPerak: number,
-    sdPerunggu: number,
     smpEmas: number,
     smpPerak: number,
     smpPerunggu: number,
@@ -71,7 +70,7 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-        sdPerunggu,
+
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -84,7 +83,7 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak,
-            sdPerunggu,
+
             smpEmas: desc ? smpEmas - 1 : smpEmas + 1,
             smpPerak,
             smpPerunggu,
@@ -111,7 +110,6 @@ export const ScoringContextProvider = ({
     namaKontingen: string,
     sdEmas: number,
     sdPerak: number,
-    sdPerunggu: number,
     smpEmas: number,
     smpPerak: number,
     smpPerunggu: number,
@@ -125,7 +123,7 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-        sdPerunggu,
+
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -138,7 +136,7 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak,
-            sdPerunggu,
+
             smpEmas,
             smpPerak: desc ? smpPerak - 1 : smpPerak + 1,
             smpPerunggu,
@@ -165,7 +163,6 @@ export const ScoringContextProvider = ({
     namaKontingen: string,
     sdEmas: number,
     sdPerak: number,
-    sdPerunggu: number,
     smpEmas: number,
     smpPerak: number,
     smpPerunggu: number,
@@ -179,7 +176,7 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-        sdPerunggu,
+
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -192,7 +189,7 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak,
-            sdPerunggu,
+
             smpEmas,
             smpPerak,
             smpPerunggu: desc ? smpPerunggu - 1 : smpPerunggu + 1,
@@ -219,7 +216,6 @@ export const ScoringContextProvider = ({
     namaKontingen: string,
     sdEmas: number,
     sdPerak: number,
-    sdPerunggu: number,
     smpEmas: number,
     smpPerak: number,
     smpPerunggu: number,
@@ -233,7 +229,7 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-        sdPerunggu,
+
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -246,7 +242,7 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas: desc ? sdEmas - 1 : sdEmas + 1,
             sdPerak,
-            sdPerunggu,
+
             smpEmas,
             smpPerak,
             smpPerunggu,
@@ -273,7 +269,6 @@ export const ScoringContextProvider = ({
     namaKontingen: string,
     sdEmas: number,
     sdPerak: number,
-    sdPerunggu: number,
     smpEmas: number,
     smpPerak: number,
     smpPerunggu: number,
@@ -287,7 +282,7 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-        sdPerunggu,
+
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -300,7 +295,7 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak: desc ? sdPerak - 1 : sdPerak + 1,
-            sdPerunggu,
+
             smpEmas,
             smpPerak,
             smpPerunggu,
@@ -311,60 +306,6 @@ export const ScoringContextProvider = ({
               toastId,
               "success",
               "Berhasil Mengubah Jumlah Medali Perak"
-            );
-            refreshKontingens();
-          })
-          .catch((error) => alert(`adding - ${error}`))
-      )
-      .catch((error) => alert(`removing - ${error}`))
-      .finally(() => setDisable(false));
-  };
-
-  const changePerungguSd = (
-    toastId: React.MutableRefObject<Id | null>,
-    documentId: string,
-    idKontingen: string,
-    namaKontingen: string,
-    sdEmas: number,
-    sdPerak: number,
-    sdPerunggu: number,
-    smpEmas: number,
-    smpPerak: number,
-    smpPerunggu: number,
-    desc: boolean = false
-  ) => {
-    setDisable(true);
-    newToast(toastId, "loading", "Mengubah Jumlah Medali Perunggu");
-    updateDoc(doc(firestore, "kontingenScores", documentId), {
-      scores: arrayRemove({
-        idKontingen,
-        namaKontingen,
-        sdEmas,
-        sdPerak,
-        sdPerunggu,
-        smpEmas,
-        smpPerak,
-        smpPerunggu,
-      }),
-    })
-      .then(() =>
-        updateDoc(doc(firestore, "kontingenScores", documentId), {
-          scores: arrayUnion({
-            idKontingen,
-            namaKontingen,
-            sdEmas,
-            sdPerak,
-            sdPerunggu: desc ? sdPerunggu - 1 : sdPerunggu + 1,
-            smpEmas,
-            smpPerak,
-            smpPerunggu,
-          }),
-        })
-          .then(() => {
-            updateToast(
-              toastId,
-              "success",
-              "Berhasil Mengubah Jumlah Medali Perunggu"
             );
             refreshKontingens();
           })
@@ -387,7 +328,6 @@ export const ScoringContextProvider = ({
         changePerungguSmp,
         changeEmasSd,
         changePerakSd,
-        changePerungguSd,
         disable,
       }}
     >

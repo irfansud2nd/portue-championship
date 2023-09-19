@@ -20,7 +20,6 @@ export type KontingenScore = {
     namaKontingen: string;
     sdEmas: number;
     sdPerak: number;
-    sdPerunggu: number;
     smpEmas: number;
     smpPerak: number;
     smpPerunggu: number;
@@ -52,7 +51,6 @@ export const writeAllKontingen = async (user: User) => {
     namaKontingen: string;
     sdEmas: number;
     sdPerak: number;
-    sdPerunggu: number;
     smpEmas: number;
     smpPerak: number;
     smpPerunggu: number;
@@ -69,7 +67,6 @@ export const writeAllKontingen = async (user: User) => {
           namaKontingen: kontingen.namaKontingen,
           sdEmas: 0,
           sdPerak: 0,
-          sdPerunggu: 0,
           smpEmas: 0,
           smpPerak: 0,
           smpPerunggu: 0,

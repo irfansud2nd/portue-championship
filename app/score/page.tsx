@@ -14,7 +14,6 @@ const ScorePage = () => {
       namaKontingen: string;
       sdEmas: number;
       sdPerak: number;
-      sdPerunggu: number;
       smpEmas: number;
       smpPerak: number;
       smpPerunggu: number;
@@ -45,7 +44,6 @@ const ScorePage = () => {
       namaKontingen: string;
       sdEmas: number;
       sdPerak: number;
-      sdPerunggu: number;
       smpEmas: number;
       smpPerak: number;
       smpPerunggu: number;
@@ -61,7 +59,6 @@ const ScorePage = () => {
         namaKontingen,
         sdEmas,
         sdPerak,
-        sdPerunggu,
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -73,7 +70,6 @@ const ScorePage = () => {
           namaKontingen,
           sdEmas,
           sdPerak,
-          sdPerunggu,
           smpEmas,
           smpPerak,
           smpPerunggu,
@@ -81,7 +77,6 @@ const ScorePage = () => {
       } else {
         result[key].sdEmas += sdEmas;
         result[key].sdPerak += sdPerak;
-        result[key].sdPerunggu += sdPerunggu;
         result[key].smpEmas += smpEmas;
         result[key].smpPerak += smpPerak;
         result[key].smpPerunggu += smpPerunggu;
@@ -106,13 +101,12 @@ const ScorePage = () => {
         </button>
         {loading && <InlineLoading />}
         {kontingenScores.length ? (
-          <table>
+          <table className="w-full">
             <thead>
               <tr>
                 <th>Nama Kontingen</th>
                 <th>SD Emas</th>
                 <th>SD Perak</th>
-                <th>SD Perunggu</th>
                 <th>SMP Emas</th>
                 <th>SMP Perak</th>
                 <th>SMP Perunggu</th>
@@ -126,7 +120,6 @@ const ScorePage = () => {
                     <td className="uppercase">{kontingen.namaKontingen}</td>
                     <td>{kontingen.sdEmas}</td>
                     <td>{kontingen.sdPerak}</td>
-                    <td>{kontingen.sdPerunggu}</td>
                     <td>{kontingen.smpEmas}</td>
                     <td>{kontingen.smpPerak}</td>
                     <td>{kontingen.smpPerunggu}</td>

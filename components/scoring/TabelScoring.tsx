@@ -14,7 +14,6 @@ type AddScore = (
   namaKontingen: string,
   sdEmas: number,
   sdPerak: number,
-  sdPerunggu: number,
   smpEmas: number,
   smpPerak: number,
   smpPerunggu: number,
@@ -26,7 +25,6 @@ const TabelScoring = () => {
     kontingens,
     changeEmasSd,
     changePerakSd,
-    changePerungguSd,
     changeEmasSmp,
     changePerakSmp,
     changePerungguSmp,
@@ -35,7 +33,6 @@ const TabelScoring = () => {
     kontingens: KontingenScore;
     changeEmasSd: AddScore;
     changePerakSd: AddScore;
-    changePerungguSd: AddScore;
     changeEmasSmp: AddScore;
     changePerakSmp: AddScore;
     changePerungguSmp: AddScore;
@@ -53,7 +50,6 @@ const TabelScoring = () => {
             <th>Nama Kontingen</th>
             <th>SD Emas</th>
             <th>SD Perak</th>
-            <th>SD Perunggu</th>
             <th>SMP Emas</th>
             <th>SMP Perak</th>
             <th>SMP Perunggu</th>
@@ -79,7 +75,6 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu
@@ -100,7 +95,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu,
@@ -125,7 +120,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu
@@ -146,53 +141,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
-                          kontingen.smpEmas,
-                          kontingen.smpPerak,
-                          kontingen.smpPerunggu,
-                          true
-                        )
-                      }
-                    >
-                      <HiMiniMinus />
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <div className="flex gap-2">
-                    <button
-                      disabled={disable}
-                      className="btn_green btn_full"
-                      onClick={() =>
-                        changePerungguSd(
-                          toastId,
-                          kontingens.documentId,
-                          kontingen.idKontingen,
-                          kontingen.namaKontingen,
-                          kontingen.sdEmas,
-                          kontingen.sdPerak,
-                          kontingen.sdPerunggu,
-                          kontingen.smpEmas,
-                          kontingen.smpPerak,
-                          kontingen.smpPerunggu
-                        )
-                      }
-                    >
-                      <BsPlusLg />
-                    </button>
-                    <span className="font-bold">{kontingen.sdPerunggu}</span>
-                    <button
-                      disabled={disable}
-                      className="btn_red btn_full"
-                      onClick={() =>
-                        changePerungguSd(
-                          toastId,
-                          kontingens.documentId,
-                          kontingen.idKontingen,
-                          kontingen.namaKontingen,
-                          kontingen.sdEmas,
-                          kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu,
@@ -218,7 +167,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu
@@ -239,7 +188,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu,
@@ -264,7 +213,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu
@@ -285,7 +234,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu,
@@ -310,7 +259,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu
@@ -331,7 +280,7 @@ const TabelScoring = () => {
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
                           kontingen.sdPerak,
-                          kontingen.sdPerunggu,
+
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu,
