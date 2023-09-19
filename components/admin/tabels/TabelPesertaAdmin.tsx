@@ -28,7 +28,9 @@ const TabelPesertaAdmin = () => {
     "Tanggal Lahir",
     "No HP",
     "Email",
+    "Pas Foto",
     "Kartu Keluarga",
+    "KTP",
     "Umur",
     "Berat Badan",
     "Tinggi Badan",
@@ -37,7 +39,6 @@ const TabelPesertaAdmin = () => {
     "Jenis Pertandingan",
     "Kategori Pertandingan",
     "Nama Kontingen",
-    "Pas Foto",
     "Status Pembayaran",
     "Waktu Pembayaran",
     "Konfirmai Pembayaran",
@@ -51,6 +52,7 @@ const TabelPesertaAdmin = () => {
 
   const [showRodal, setShowRodal] = useState(false);
   const [kkUrl, setKkUrl] = useState("");
+  const [ktpUrl, setKtpUrl] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
 
   const { onDownload } = useDownloadExcel({
@@ -66,6 +68,7 @@ const TabelPesertaAdmin = () => {
         onClose={() => {
           setFotoUrl("");
           setKkUrl("");
+          setKtpUrl("");
           setShowRodal(false);
         }}
         customStyles={{ width: "fit-content", height: "fit-content" }}
@@ -100,6 +103,22 @@ const TabelPesertaAdmin = () => {
             </div>
             <div className="w-[400px] h-[300px] relative">
               <Image src={fotoUrl} alt="kk" fill className="object-contain" />
+            </div>
+          </>
+        )}
+        {ktpUrl && (
+          <>
+            <div className="flex justify-center mb-2">
+              <Link
+                href={ktpUrl}
+                target="_blank"
+                className="btn_green btn_full"
+              >
+                Open in new tab
+              </Link>
+            </div>
+            <div className="w-[400px] h-[300px] relative">
+              <Image src={ktpUrl} alt="kk" fill className="object-contain" />
             </div>
           </>
         )}
@@ -150,16 +169,52 @@ const TabelPesertaAdmin = () => {
                 <span className="text-transparent">"</span>
               </td>
               <td>{peserta.email}</td>
+              <td className="whitespace-nowrap">
+                {peserta.downloadFotoUrl ? (
+                  <button
+                    className="hover:text-custom-gold transition"
+                    onClick={() => {
+                      setShowRodal(true);
+                      setFotoUrl(peserta.downloadFotoUrl);
+                    }}
+                  >
+                    Show Foto
+                  </button>
+                ) : (
+                  <span className="text-red-500 font-bold">
+                    Pas Foto not found
+                  </span>
+                )}
+              </td>
               <td>
-                <button
-                  className="hover:text-custom-gold transition"
-                  onClick={() => {
-                    setShowRodal(true);
-                    setKkUrl(peserta.downloadKkUrl);
-                  }}
-                >
-                  Show KK
-                </button>
+                {peserta.downloadKkUrl ? (
+                  <button
+                    className="hover:text-custom-gold transition"
+                    onClick={() => {
+                      setShowRodal(true);
+                      setKkUrl(peserta.downloadKkUrl);
+                    }}
+                  >
+                    Show KK
+                  </button>
+                ) : (
+                  <span className="text-red-500 font-bold">KK not found</span>
+                )}
+              </td>
+              <td className="whitespace-nowrap">
+                {peserta.downloadKtpUrl ? (
+                  <button
+                    className="hover:text-custom-gold transition"
+                    onClick={() => {
+                      setShowRodal(true);
+                      setKtpUrl(peserta.downloadKtpUrl);
+                    }}
+                  >
+                    Show KTP
+                  </button>
+                ) : (
+                  <span className="text-red-500 font-bold">KTP not found</span>
+                )}
               </td>
               <td className="whitespace-nowrap">{peserta.umur} tahun</td>
               <td>{peserta.beratBadan} KG</td>
@@ -172,19 +227,6 @@ const TabelPesertaAdmin = () => {
               </td>
               <td className="capitalize">
                 {findNamaKontingen(kontingens, peserta.idKontingen)}
-              </td>
-              <td className="whitespace-nowrap">
-                <button
-                  className="hover:text-custom-gold transition"
-                  onClick={() => {
-                    setShowRodal(true);
-                    setFotoUrl(peserta.downloadFotoUrl);
-                  }}
-                >
-                  Show Foto
-                </button>
-                <br />
-                {/* <span className="hidden">{peserta.downloadFotoUrl}</span> */}
               </td>
               <td>{peserta.pembayaran ? "Dibayar" : "Belum dibayar"}</td>
               <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>

@@ -204,6 +204,8 @@ export const dataPesertaInitialValue: DataPesertaState = {
   downloadFotoUrl: "",
   kkUrl: "",
   downloadKkUrl: "",
+  ktpUrl: "",
+  downloadKtpUrl: "",
   email: "",
   noHp: "",
   pembayaran: false,
@@ -247,5 +249,6 @@ export const errorPesertaInitialValue: ErrorPeserta = {
   pasFoto: null,
   noHp: null,
   kk: null,
+  ktp: null,
   email: null,
 };

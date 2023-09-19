@@ -331,7 +331,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
             <div className="flex flex-wrap gap-y-2 gap-x-5">
               <input
                 type="text"
-                className="input capitalize"
+                className="input uppercase"
                 value={data.namaKontingen}
                 onChange={(e) =>
                   setData({

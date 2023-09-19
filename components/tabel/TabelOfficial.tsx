@@ -58,7 +58,9 @@ const TabelOfficial = ({
                   <td>{item.namaLengkap}</td>
                   <td>{item.jenisKelamin}</td>
                   <td className="capitalize">{item.jabatan}</td>
-                  <td>{findNamaKontingen(kontingens, item.idKontingen)}</td>
+                  <td className="uppercase">
+                    {findNamaKontingen(kontingens, item.idKontingen)}
+                  </td>
                   {handleDelete && handleEdit && (
                     <td>
                       <TabelActionButtons

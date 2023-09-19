@@ -90,6 +90,8 @@ export type DataPesertaState = {
   fotoUrl: string;
   downloadKkUrl: string;
   kkUrl: string;
+  ktpUrl: string;
+  downloadKtpUrl: string;
   email: string;
   noHp: string;
   pembayaran: boolean;
@@ -130,6 +132,7 @@ export type ErrorPeserta = {
   kategoriPertandingan: string | null;
   pasFoto: string | null;
   kk: string | null;
+  ktp: string | null;
   noHp: string | null;
   email: string | null;
 };

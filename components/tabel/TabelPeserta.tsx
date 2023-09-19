@@ -54,7 +54,7 @@ const TabelPeserta = ({
               <tr key={item.id}>
                 <td>{i + 1}</td>
                 <td className="capitalize">{item.namaLengkap}</td>
-                <td className="capitalize">
+                <td className="uppercase">
                   {findNamaKontingen(kontingens, item.idKontingen)}
                 </td>
                 <td>{item.tingkatanPertandingan}</td>

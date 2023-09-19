@@ -80,7 +80,7 @@ const TabelKontingenAdmin = () => {
               <td>{i + 1}</td>
               <td>{kontingen.idKontingen}</td>
               <td
-                className="hover:text-green-500 hover:underline transition cursor-pointer capitalize"
+                className="hover:text-green-500 hover:underline transition cursor-pointer uppercase"
                 onClick={() => setSelectedKontingen(kontingen)}
               >
                 {kontingen.namaKontingen}

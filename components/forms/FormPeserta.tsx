@@ -23,6 +23,10 @@ import {
   updatePersonKk,
   updatePersonKkImage,
   updateToast,
+  updatePersonKkKtpImage,
+  updatePersonKtpImage,
+  updatePersonKkKtp,
+  updatePersonKtp,
 } from "@/utils/sharedFunctions";
 import {
   DataKontingenState,
@@ -62,6 +66,7 @@ const FormPeserta = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [pasFotoSelected, setPasFotoSelected] = useState<File | null>();
   const [kkSelected, setKkSelected] = useState<File | null>();
+  const [ktpSelected, setKtpSelected] = useState<File | null>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [inputErrorMessages, setInputErrorMessages] = useState<ErrorPeserta>(
     errorPesertaInitialValue
@@ -80,6 +85,7 @@ const FormPeserta = ({
   const toastId = useRef(null);
   const pasFotoRef = useRef<HTMLInputElement>(null);
   const kkRef = useRef<HTMLInputElement>(null);
+  const ktpRef = useRef<HTMLInputElement>(null);
 
   const { user, disable, setDisable } = MyContext();
 
@@ -145,10 +151,20 @@ const FormPeserta = ({
     }
   };
 
+  // VALIDATE KTP
+  const ktpChangeHandler = (file: File) => {
+    if (limitImage(file, toastId, true)) {
+      setKtpSelected(file);
+    } else {
+      if (ktpRef.current) ktpRef.current.value = "";
+    }
+  };
+
   // RESET IMAGE INPUT
   const clearInputImage = () => {
     if (pasFotoRef.current) pasFotoRef.current.value = "";
     if (kkRef.current) kkRef.current.value = "";
+    if (ktpRef.current) ktpRef.current.value = "";
     setImagePreviewSrc("");
   };
 
@@ -299,8 +315,10 @@ const FormPeserta = ({
         data,
         imagePreviewSrc,
         kkRef.current?.value,
+        ktpRef.current?.value,
         inputErrorMessages,
         setInputErrorMessages,
+        updating,
         updating
       ) &&
       kuotaKelas !== 0
@@ -309,7 +327,7 @@ const FormPeserta = ({
         setDisable(true);
         updateDataHandler();
       } else {
-        if (pasFotoSelected && kkSelected) {
+        if (pasFotoSelected && kkSelected && ktpSelected) {
           // SEND PERSON
           getJumlahPeserta().then((res) => {
             if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
@@ -319,6 +337,7 @@ const FormPeserta = ({
                 data,
                 pasFotoSelected,
                 kkSelected,
+                ktpSelected,
                 kontingens,
                 toastId,
                 afterSendPerson
@@ -343,11 +362,18 @@ const FormPeserta = ({
         data,
         imagePreviewSrc,
         kkRef.current?.value,
+        ktpRef.current?.value,
         inputErrorMessages,
         setInputErrorMessages
       );
     }
-  }, [data, sendClicked, pasFotoSelected, kkRef.current?.value]);
+  }, [
+    data,
+    sendClicked,
+    pasFotoSelected,
+    kkRef.current?.value,
+    ktpRef.current?.value,
+  ]);
 
   // SEND PERSON CALLBACK
   const afterSendPerson = () => {
@@ -370,6 +396,7 @@ const FormPeserta = ({
     clearInputImage();
     setPasFotoSelected(null);
     setKkSelected(null);
+    setKtpSelected(null);
     watchKategori();
   };
 
@@ -424,18 +451,34 @@ const FormPeserta = ({
   // EDIT - STEP 3 - UPDATE CONTROLLER
   const updateDataHandler = () => {
     if (updating) {
+      // if (
+      //   imagePreviewSrc !== prevData.downloadFotoUrl &&
+      //   data.idKontingen !== prevData.idKontingen &&
+      //   pasFotoSelected
+      // ) {
+      //   updatePersonImageKontingen(
+      //     "peserta",
+      //     data,
+      //     prevData,
+      //     kontingens,
+      //     toastId,
+      //     pasFotoSelected,
+      //     resetEdit
+      //   );
+      // } else
       if (
         imagePreviewSrc !== prevData.downloadFotoUrl &&
-        data.idKontingen !== prevData.idKontingen &&
-        pasFotoSelected
+        pasFotoSelected &&
+        kkSelected &&
+        ktpSelected
       ) {
-        updatePersonImageKontingen(
+        updatePersonKkKtpImage(
           "peserta",
           data,
-          prevData,
-          kontingens,
           toastId,
           pasFotoSelected,
+          kkSelected,
+          ktpSelected,
           resetEdit
         );
       } else if (
@@ -453,18 +496,44 @@ const FormPeserta = ({
         );
       } else if (
         imagePreviewSrc !== prevData.downloadFotoUrl &&
+        pasFotoSelected &&
+        ktpSelected
+      ) {
+        updatePersonKtpImage(
+          "peserta",
+          data,
+          toastId,
+          pasFotoSelected,
+          ktpSelected,
+          resetEdit
+        );
+      } else if (kkSelected && ktpSelected) {
+        updatePersonKkKtp(
+          "peserta",
+          data,
+          toastId,
+          kkSelected,
+          ktpSelected,
+          resetEdit
+        );
+      } else if (
+        imagePreviewSrc !== prevData.downloadFotoUrl &&
         pasFotoSelected
       ) {
         updatePersonImage("peserta", data, toastId, pasFotoSelected, resetEdit);
-      } else if (data.idKontingen !== prevData.idKontingen) {
-        updatePersonKontingen(
-          "peserta",
-          data,
-          prevData,
-          kontingens,
-          toastId,
-          resetEdit
-        );
+      }
+      // else if (data.idKontingen !== prevData.idKontingen) {
+      //   updatePersonKontingen(
+      //     "peserta",
+      //     data,
+      //     prevData,
+      //     kontingens,
+      //     toastId,
+      //     resetEdit
+      //   );
+      // }
+      else if (ktpSelected) {
+        updatePersonKtp("peserta", data, toastId, ktpSelected, resetEdit);
       } else if (kkSelected) {
         updatePersonKk("peserta", data, toastId, kkSelected, resetEdit);
       } else if (
@@ -850,6 +919,41 @@ const FormPeserta = ({
               </div>
               {/* NO HP */}
 
+              {/* KTP */}
+              <div className="input_container">
+                <label className="input_label">
+                  KTP{" "}
+                  {data.umur >= 17 || data.umur == "" ? (
+                    "Peserta"
+                  ) : (
+                    <span className="bg-yellow-400 rounded-md px-0.5">
+                      Orangtua
+                    </span>
+                  )}{" "}
+                  <span className="text-sm text-gray-600">Maks. 1MB</span>
+                </label>
+                <p className="text-xs">
+                  Peserta &lt; 17 tahun gunakan KTP Orangtua
+                </p>
+                <input
+                  disabled={disable}
+                  ref={ktpRef}
+                  type="file"
+                  accept=".jpg, .jpeg, .png, .pdf"
+                  multiple={false}
+                  onChange={(e) =>
+                    e.target.files && ktpChangeHandler(e.target.files[0])
+                  }
+                  className={`input_kk
+                ${inputErrorMessages.ktp ? "input_error" : "input"}
+                `}
+                />
+                <p className="text-red-500">
+                  {!updating && inputErrorMessages.ktp}
+                </p>
+              </div>
+              {/* KTP */}
+
               {/* KARTU KELUARGA */}
               <div className="input_container">
                 <label className="input_label">
@@ -937,14 +1041,14 @@ const FormPeserta = ({
                     });
                   }}
                   className={`
-                  capitalize
+                  uppercase
                   ${inputErrorMessages.idKontingen ? "input_error" : "input"}
                   `}
                 >
                   {kontingens.length &&
                     kontingens.map((kontingen) => (
                       <option
-                        className="capitalize"
+                        className="uppercase"
                         value={kontingen.idKontingen}
                         key={kontingen.idKontingen}
                       >

@@ -3,6 +3,7 @@ import LoginButton from "@/components/LoginButton";
 import Authorized from "@/components/admin/Authorized";
 import { AdminContextProvider } from "@/context/AdminContext";
 import { MyContext } from "@/context/Context";
+import Head from "next/head";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -28,8 +29,15 @@ const AdminPage = () => {
     if (user) checkAdminAuthorized(user);
   }, [user]);
 
+  useEffect(() => {
+    document.title = "Halaman Admin - Portue Silat Bandung Championship";
+  }, []);
+
   return (
     <div className="w-full h-full">
+      <Head>
+        <title>Halaman Admin - Portue Silat Bandung Championship</title>
+      </Head>
       {adminAuthorized && adminAuthorized.length ? (
         <AdminContextProvider>
           <Authorized />
