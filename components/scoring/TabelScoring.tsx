@@ -44,15 +44,13 @@ const TabelScoring = () => {
   return (
     <div>
       <ToastContainer />
+      <h1 className="text-2xl font-bold">REKAPITULASI PEROLEHAN MEDALI SD</h1>
       <table className="w-full">
         <thead>
           <tr>
             <th>Nama Kontingen</th>
-            <th>SD Emas</th>
-            <th>SD Perak</th>
-            <th>SMP Emas</th>
-            <th>SMP Perak</th>
-            <th>SMP Perunggu</th>
+            <th>Emas</th>
+            <th>Perak</th>
           </tr>
         </thead>
         <tbody>
@@ -153,7 +151,29 @@ const TabelScoring = () => {
                     </button>
                   </div>
                 </td>
+              </tr>
+            ))}
+        </tbody>
+      </table>
+      <h1 className="text-2xl font-bold mt-2">
+        REKAPITULASI PEROLEHAN MEDALI SMP
+      </h1>
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>Nama Kontingen</th>
+            <th>Emas</th>
+            <th>Perak</th>
+            <th>Perunggu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {kontingens.scores
+            .sort(compare("namaKontingen", "asc"))
+            .map((kontingen) => (
+              <tr>
                 {/* SMP */}
+                <td className="uppercase">{kontingen.namaKontingen}</td>
                 <td>
                   <div className="flex gap-2">
                     <button

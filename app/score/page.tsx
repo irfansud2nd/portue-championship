@@ -101,32 +101,56 @@ const ScorePage = () => {
         </button>
         {loading && <InlineLoading />}
         {kontingenScores.length ? (
-          <table className="w-full">
-            <thead>
-              <tr>
-                <th>Nama Kontingen</th>
-                <th>SD Emas</th>
-                <th>SD Perak</th>
-                <th>SMP Emas</th>
-                <th>SMP Perak</th>
-                <th>SMP Perunggu</th>
-              </tr>
-            </thead>
-            <tbody>
-              {kontingenScores
-                .sort(compare("namaKontingen", "asc"))
-                .map((kontingen) => (
-                  <tr>
-                    <td className="uppercase">{kontingen.namaKontingen}</td>
-                    <td>{kontingen.sdEmas}</td>
-                    <td>{kontingen.sdPerak}</td>
-                    <td>{kontingen.smpEmas}</td>
-                    <td>{kontingen.smpPerak}</td>
-                    <td>{kontingen.smpPerunggu}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
+          <>
+            <h1 className="text-2xl font-bold">
+              REKAPITULASI PEROLEHAN MEDALI SD
+            </h1>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th>Nama Kontingen</th>
+                  <th>Emas</th>
+                  <th>Perak</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kontingenScores
+                  .sort(compare("namaKontingen", "asc"))
+                  .map((kontingen) => (
+                    <tr>
+                      <td className="uppercase">{kontingen.namaKontingen}</td>
+                      <td>{kontingen.sdEmas}</td>
+                      <td>{kontingen.sdPerak}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+            <h1 className="text-2xl font-bold mt-2">
+              REKAPITULASI PEROLEHAN MEDALI SMP
+            </h1>
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th>Nama Kontingen</th>
+                  <th>Emas</th>
+                  <th>Perak</th>
+                  <th>Perunggu</th>
+                </tr>
+              </thead>
+              <tbody>
+                {kontingenScores
+                  .sort(compare("namaKontingen", "asc"))
+                  .map((kontingen) => (
+                    <tr>
+                      <td className="uppercase">{kontingen.namaKontingen}</td>
+                      <td>{kontingen.smpEmas}</td>
+                      <td>{kontingen.smpPerak}</td>
+                      <td>{kontingen.smpPerunggu}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </>
         ) : (
           <InlineLoading />
         )}
