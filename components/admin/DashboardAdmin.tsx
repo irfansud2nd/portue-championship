@@ -2,6 +2,7 @@ import { AdminContext } from "@/context/AdminContext";
 import { getKontingenUnpaid } from "@/utils/adminFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import InlineLoading from "./InlineLoading";
+import { tingkatanKategori } from "@/utils/constants";
 
 const DashboardAdmin = () => {
   const {
@@ -17,6 +18,7 @@ const DashboardAdmin = () => {
     refreshAll,
     setMode,
     getUnconfirmesKontingens,
+    cekKuota,
   } = AdminContext();
 
   const getPesertasPayment = (pesertas: DataPesertaState[]) => {
@@ -116,48 +118,42 @@ const DashboardAdmin = () => {
       </div>
 
       {/* SECOND ROW */}
-      <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit mt-2">
-        <p className="font-semibold text-lg">Pembayaran</p>
-        <div className="grid grid-cols-3 gap-2">
-          <div className="flex flex-col gap-1">
-            <p className="font-semibold text-lg">Keterangan</p>
-            <p className="text-2xl font-extrabold text-green-500">Confirmed</p>
-            <p className="text-2xl font-extrabold text-yellow-500">
-              Unconfirmed
+      <div>
+        <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit mt-2">
+          <p className="font-semibold text-lg">Pembayaran</p>
+          <div className="grid grid-cols-[repeat(3,_auto)] grid-rows-[repeat(4,_auto)] w-fit">
+            <p className="font-semibold text-lg border-r-2 border-r-white">
+              Keterangan
             </p>
-            <p className="text-2xl font-extrabold text-red-500">Unpaid</p>
-          </div>
-          <div className="flex flex-col gap-1 border-l-2 border-white-500">
-            <p className="font-semibold text-lg ">Peserta</p>
-            <p className="text-2xl font-extrabold text-green-500">
+            <p className="font-semibold text-lg border-r-2 border-r-white px-2">
+              Peserta
+            </p>
+            <p className="font-semibold text-lg px-2">Kontingen</p>
+            <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
+              Confirmed
+            </p>
+            <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
               {pesertasLoading ? (
                 <InlineLoading />
               ) : (
                 getPesertasPayment(pesertas).confirmed
               )}
             </p>
-            <p className="text-2xl font-extrabold text-yellow-500">
-              {pesertasLoading ? (
-                <InlineLoading />
-              ) : (
-                getPesertasPayment(pesertas).unconfirmed
-              )}
-            </p>
-            <p className="text-2xl font-extrabold text-red-500">
-              {pesertasLoading ? (
-                <InlineLoading />
-              ) : (
-                getPesertasPayment(pesertas).unpaid
-              )}
-            </p>
-          </div>
-          <div className="flex flex-col gap-1 border-l-2 border-white-500 px-2">
-            <p className="font-semibold text-lg">Kontingen</p>
             <p className="text-2xl font-extrabold text-green-500">
               {kontingensLoading ? (
                 <InlineLoading />
               ) : (
                 getKontingensPayment().confirmed
+              )}
+            </p>
+            <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white px-2">
+              Unconfirmed
+            </p>
+            <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
+              {pesertasLoading ? (
+                <InlineLoading />
+              ) : (
+                getPesertasPayment(pesertas).unconfirmed
               )}
             </p>
             <button
@@ -170,6 +166,16 @@ const DashboardAdmin = () => {
                 getKontingensPayment().unconfirmed
               )}
             </button>
+            <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
+              Unpaid
+            </p>
+            <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
+              {pesertasLoading ? (
+                <InlineLoading />
+              ) : (
+                getPesertasPayment(pesertas).unpaid
+              )}
+            </p>
             <p className="text-2xl font-extrabold text-red-500">
               {kontingensLoading ? (
                 <InlineLoading />
@@ -177,6 +183,179 @@ const DashboardAdmin = () => {
                 getKontingensPayment().unpaid
               )}
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* THIRD ROW */}
+      <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit min-w-[500px] mt-2">
+        <p className="font-semibold text-lg">Sisa Kuota</p>
+        <div className="grid grid-rows-[repeat(4,_auto)] grid-cols-[repeat(4,_auto)] ">
+          <p className="text-lg font-semibold tracking-wide border-r-2 border-white border-b-2 border-b-yellow-500">
+            Tingkatan
+          </p>
+          <p className="text-lg font-semibold tracking-wide border-r-2 border-white border-b-2 border-b-yellow-500">
+            Kategori
+          </p>
+          <p className="text-lg font-semibold tracking-wide border-r-2 border-white border-b-2 border-b-yellow-500 px-2">
+            Putra
+          </p>
+          <p className="text-lg font-semibold tracking-wide border-r-2 border-white border-b-2 border-b-yellow-500 px-2">
+            Putri
+          </p>
+          <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
+            SMA Tanding
+          </p>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
+            ].kategoriTanding.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800 px-2 whitespace-nowrap"
+                key={item}
+              >
+                {item}
+              </p>
+            ))}
+          </div>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
+            ].kategoriTanding.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("SMA", item, "Putra")}
+              </p>
+            ))}
+          </div>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
+            ].kategoriTanding.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("SMA", item, "Putri")}
+              </p>
+            ))}
+          </div>
+          <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
+            SMA Seni
+          </p>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
+            ].kategoriSeni.putra.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 odd:bg-gray-800"
+                key={item}
+              >
+                {item.replace(" Putra", "")}
+              </p>
+            ))}
+          </div>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
+            ].kategoriSeni.putra.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 odd:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("SMA", item, "Putra")}
+              </p>
+            ))}
+          </div>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
+            ].kategoriSeni.putri.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 odd:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("SMA", item, "Putri")}
+              </p>
+            ))}
+          </div>
+          <p className="border-r-2 border-white  border-b-2 border-b-yellow-500">
+            Dewasa Tanding
+          </p>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "Dewasa")
+            ].kategoriTanding.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {item}
+              </p>
+            ))}
+          </div>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "Dewasa")
+            ].kategoriTanding.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("Dewasa", item, "Putra")}
+              </p>
+            ))}
+          </div>
+          <div className="border-b-2 border-b-yellow-500">
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "Dewasa")
+            ].kategoriTanding.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("Dewasa", item, "Putri")}
+              </p>
+            ))}
+          </div>
+          <p className="border-r-2 border-white">Dewasa Seni</p>
+          <div>
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "Dewasa")
+            ].kategoriSeni.putra.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {item.replace(" Putra", "")}
+              </p>
+            ))}
+          </div>
+          <div>
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "Dewasa")
+            ].kategoriSeni.putra.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("Dewasa", item, "Putra")}
+              </p>
+            ))}
+          </div>
+          <div>
+            {tingkatanKategori[
+              tingkatanKategori.findIndex((item) => item.tingkatan == "Dewasa")
+            ].kategoriSeni.putri.map((item) => (
+              <p
+                className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800"
+                key={item}
+              >
+                {cekKuota("Dewasa", item, "Putri")}
+              </p>
+            ))}
           </div>
         </div>
       </div>

@@ -15,6 +15,9 @@ import {
   DataPesertaState,
 } from "@/utils/types";
 import { dataKontingenInitialValue } from "@/utils/constants";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { firestore } from "@/utils/firebase";
+import InlineLoading from "@/components/admin/InlineLoading";
 
 const Context = createContext<any>(null);
 
@@ -107,6 +110,33 @@ export const AdminContextProvider = ({
     setKontingens(selected);
   };
 
+  // CEK KUOTA
+  const cekKuota = (
+    tingkatanPertandingan: string,
+    kategoriPertandingan: string,
+    jenisKelamin: string
+  ) => {
+    let kuota = 16;
+    if (!pesertasLoading) {
+      pesertas.map((peserta) => {
+        if (
+          peserta.jenisKelamin == jenisKelamin &&
+          peserta.kategoriPertandingan == kategoriPertandingan &&
+          peserta.tingkatanPertandingan == tingkatanPertandingan
+        ) {
+          kuota -= 1;
+        }
+      });
+      return (
+        <span>
+          {kuota}
+          {/* <span className="text-gray-500"> / 16</span> */}
+        </span>
+      );
+    }
+    return <InlineLoading />;
+  };
+
   return (
     <Context.Provider
       value={{
@@ -129,6 +159,7 @@ export const AdminContextProvider = ({
         selectedKontingen,
         setSelectedKontingen,
         getUnconfirmesKontingens,
+        cekKuota,
       }}
     >
       {children}

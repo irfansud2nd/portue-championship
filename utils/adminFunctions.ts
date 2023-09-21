@@ -1,6 +1,12 @@
 // DATA FETCHER - START
 
-import { DocumentData, collection, getDocs } from "firebase/firestore";
+import {
+  DocumentData,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { firestore } from "./firebase";
 import {
   DataKontingenState,
