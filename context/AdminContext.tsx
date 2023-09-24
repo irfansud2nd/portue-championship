@@ -14,9 +14,7 @@ import {
   DataOfficialState,
   DataPesertaState,
 } from "@/utils/types";
-import { dataKontingenInitialValue } from "@/utils/constants";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { firestore } from "@/utils/firebase";
+import { dataKontingenInitialValue, jenisKelamin } from "@/utils/constants";
 import InlineLoading from "@/components/admin/InlineLoading";
 
 const Context = createContext<any>(null);
@@ -29,6 +27,9 @@ export const AdminContextProvider = ({
   const [error, setError] = useState<string | null>(null);
   const [kontingens, setKontingens] = useState<DataKontingenState[]>([]);
   const [pesertas, setPesertas] = useState<DataPesertaState[]>([]);
+  const [selectedPesertas, setselectedPesertas] = useState<DataPesertaState[]>(
+    []
+  );
   const [officials, setOfficials] = useState<DataOfficialState[]>([]);
   const [kontingensLoading, setKontingensLoading] = useState(true);
   const [officialsLoading, setOfficialsLoading] = useState(true);
@@ -36,6 +37,7 @@ export const AdminContextProvider = ({
   const [mode, setMode] = useState("");
   const [selectedKontingen, setSelectedKontingen] =
     useState<DataKontingenState>(dataKontingenInitialValue);
+  const [selectedKategori, setSelectedKategori] = useState("");
 
   const { user } = MyContext();
 
@@ -49,6 +51,8 @@ export const AdminContextProvider = ({
     refreshKontingens();
     refreshOfficials();
     refreshPesertas();
+    setSelectedKategori("");
+    setselectedPesertas([]);
   };
 
   // GET KONTINGEN
@@ -87,6 +91,7 @@ export const AdminContextProvider = ({
       .catch((error) => setError(error));
   };
 
+  // GET PESERTAS AND OFFICIALS BASED ON KONTINGEN ID
   useEffect(() => {
     if (selectedKontingen.idKontingen) {
       setKontingens([selectedKontingen]);
@@ -101,7 +106,8 @@ export const AdminContextProvider = ({
     }
   }, [selectedKontingen]);
 
-  const getUnconfirmesKontingens = () => {
+  // GET UNCORFIMED KONTINGENS
+  const getUnconfirmedKontingens = () => {
     setMode("kontingen");
     let selected: DataKontingenState[] = [];
     kontingens.map((kontingen) => {
@@ -137,6 +143,24 @@ export const AdminContextProvider = ({
     return <InlineLoading />;
   };
 
+  // GET PESERTAS BASED ON KATEGORI
+  useEffect(() => {
+    let result: DataPesertaState[] = [];
+    const tingkatan = selectedKategori.split(",")[0];
+    const kategori = selectedKategori.split(",")[1];
+    const gender = selectedKategori.split(",")[2];
+    pesertas.map((peserta) => {
+      if (
+        peserta.tingkatanPertandingan == tingkatan &&
+        peserta.kategoriPertandingan == kategori &&
+        peserta.jenisKelamin == gender
+      ) {
+        result.push(peserta);
+      }
+    });
+    setselectedPesertas(result);
+  }, [selectedKategori]);
+
   return (
     <Context.Provider
       value={{
@@ -158,8 +182,12 @@ export const AdminContextProvider = ({
         setMode,
         selectedKontingen,
         setSelectedKontingen,
-        getUnconfirmesKontingens,
+        getUnconfirmedKontingens,
         cekKuota,
+        selectedKategori,
+        setSelectedKategori,
+        selectedPesertas,
+        setselectedPesertas,
       }}
     >
       {children}

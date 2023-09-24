@@ -17,6 +17,8 @@ const TabelPesertaAdmin = () => {
     refreshPesertas,
     pesertasLoading,
     selectedKontingen,
+    selectedKategori,
+    selectedPesertas,
   } = AdminContext();
 
   const tabelHead = [
@@ -51,15 +53,29 @@ const TabelPesertaAdmin = () => {
   const tabelRef = useRef(null);
 
   const [showRodal, setShowRodal] = useState(false);
+  const [pesertaToMap, setPesertaToMap] =
+    useState<DataPesertaState[]>(pesertas);
   const [kkUrl, setKkUrl] = useState("");
   const [ktpUrl, setKtpUrl] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
 
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
-    filename: "Tabel Peserta",
+    filename: selectedKategori
+      ? `Tabel Peserta ${selectedKategori.split(",").join(" - ")}`
+      : selectedKontingen
+      ? `Tabel Peserta ${selectedKontingen.namaKontingen}`
+      : "Tabel Semua Peserta",
     sheet: "Data Peserta",
   });
+
+  useEffect(() => {
+    if (selectedPesertas.length) {
+      setPesertaToMap(selectedPesertas);
+    } else {
+      setPesertaToMap(pesertas);
+    }
+  }, [selectedPesertas]);
 
   return (
     <div className="w-fit">
@@ -124,7 +140,8 @@ const TabelPesertaAdmin = () => {
         )}
       </Rodal>
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
-        Tabel Peserta
+        Tabel Peserta{" "}
+        {selectedKategori ? selectedKategori.split(",").join(" - ") : null}
       </h1>
 
       {/* BUTTONS */}
@@ -149,7 +166,7 @@ const TabelPesertaAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {pesertas.map((peserta: DataPesertaState, i: number) => (
+          {pesertaToMap.map((peserta: DataPesertaState, i: number) => (
             <tr key={peserta.id}>
               <td>{i + 1}</td>
               <td className="capitalize">{peserta.namaLengkap}</td>

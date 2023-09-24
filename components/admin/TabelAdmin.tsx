@@ -3,10 +3,17 @@ import { dataKontingenInitialValue } from "@/utils/constants";
 import TabelPesertaAdmin from "./tabels/TabelPesertaAdmin";
 import TabelKontingenAdmin from "./tabels/TabelKontingenAdmin";
 import TabelOfficialAdmin from "./tabels/TabelOfficialAdmin";
+import CustomTabel from "./tabels/CustomTabel";
 
 const TabelAdmin = () => {
-  const { mode, setMode, selectedKontingen, setSelectedKontingen, refreshAll } =
-    AdminContext();
+  const {
+    mode,
+    setMode,
+    selectedKontingen,
+    setSelectedKontingen,
+    selectedPesertas,
+    refreshAll,
+  } = AdminContext();
   return (
     <div className="bg-gray-200 rounded-md p-2">
       <button
@@ -25,6 +32,8 @@ const TabelAdmin = () => {
           Kontingen {selectedKontingen.namaKontingen}
         </h1>
       )}
+
+      {mode == "custom" && <CustomTabel />}
 
       {mode == "kontingen" && <TabelKontingenAdmin />}
       {(mode == "peserta" || selectedKontingen.idKontingen) && (
