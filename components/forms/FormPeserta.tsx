@@ -287,7 +287,7 @@ const FormPeserta = ({
           updateToast(
             toastId,
             "error",
-            `Kuota Kategori yang dipilih sudah habis (Maks. 8 Orang)`
+            `Kuota Kategori yang dipilih sudah habis (Maks. 16 Nomor)`
           );
         }
       });
@@ -573,7 +573,9 @@ const FormPeserta = ({
 
   // CEK KUOTA TINGKATAN SMA DAN DEWASA
   const cekKuota = async () => {
-    let kuota = 16;
+    let kuota = 2;
+    let kuotaGanda = kuota * 2;
+    let kuotaRegu = kuota * 3;
     setKuotaLoading(true);
     const q = query(
       collection(firestore, "pesertas"),
@@ -584,7 +586,13 @@ const FormPeserta = ({
     return getDocs(q)
       .then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-          kuota = kuota - 1;
+          if (data.kategoriPertandingan.includes("Regu")) {
+            kuotaRegu -= 1;
+          } else if (data.kategoriPertandingan.includes("Ganda")) {
+            kuotaGanda -= 1;
+          } else {
+            kuota -= 1;
+          }
         });
         if (
           updating &&
@@ -592,12 +600,31 @@ const FormPeserta = ({
           prevData.jenisKelamin == data.jenisKelamin &&
           prevData.jenisPertandingan == data.jenisPertandingan
         ) {
-          kuota += 1;
+          if (data.kategoriPertandingan.includes("Regu")) {
+            kuotaRegu += 1;
+          } else if (data.kategoriPertandingan.includes("Ganda")) {
+            kuotaGanda += 1;
+          } else {
+            kuota += 1;
+          }
         }
-        return kuota;
+        if (data.kategoriPertandingan.includes("Regu")) {
+          return kuotaRegu;
+        } else if (data.kategoriPertandingan.includes("Ganda")) {
+          return kuotaGanda;
+        } else {
+          return kuota;
+        }
       })
       .finally(() => {
-        setKuotaKelas(kuota);
+        if (data.kategoriPertandingan.includes("Regu")) {
+          setKuotaKelas(kuotaRegu);
+        } else if (data.kategoriPertandingan.includes("Ganda")) {
+          setKuotaKelas(kuotaGanda);
+        } else {
+          setKuotaKelas(kuota);
+        }
+        // setKuotaKelas(kuota);
         setKuotaLoading(false);
       });
   };
