@@ -123,6 +123,8 @@ export const AdminContextProvider = ({
     jenisKelamin: string
   ) => {
     let kuota = 16;
+    let kuotaGanda = kuota * 2;
+    let kuotaRegu = kuota * 3;
     if (!pesertasLoading) {
       pesertas.map((peserta) => {
         if (
@@ -130,12 +132,22 @@ export const AdminContextProvider = ({
           peserta.kategoriPertandingan == kategoriPertandingan &&
           peserta.tingkatanPertandingan == tingkatanPertandingan
         ) {
-          kuota -= 1;
+          if (kategoriPertandingan.includes("Regu")) {
+            kuotaRegu -= 1;
+          } else if (kategoriPertandingan.includes("Ganda")) {
+            kuotaGanda -= 1;
+          } else {
+            kuota -= 1;
+          }
         }
       });
       return (
         <span>
-          {kuota}
+          {kategoriPertandingan.includes("Regu")
+            ? kuotaRegu
+            : kategoriPertandingan.includes("Ganda")
+            ? kuotaGanda
+            : kuota}
           {/* <span className="text-gray-500"> / 16</span> */}
         </span>
       );
