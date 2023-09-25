@@ -2,8 +2,6 @@ import { AdminContext } from "@/context/AdminContext";
 import { getKontingenUnpaid } from "@/utils/adminFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import InlineLoading from "./InlineLoading";
-import { tingkatanKategori } from "@/utils/constants";
-import CustomTabelSelector from "./CustomTabelSelector";
 import TabelKuota from "./tabels/TabelKuota";
 
 const DashboardAdmin = () => {

@@ -51,8 +51,6 @@ export const AdminContextProvider = ({
     refreshKontingens();
     refreshOfficials();
     refreshPesertas();
-    setSelectedKategori("");
-    setselectedPesertas([]);
   };
 
   // GET KONTINGEN

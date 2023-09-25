@@ -11,8 +11,8 @@ const TabelAdmin = () => {
     setMode,
     selectedKontingen,
     setSelectedKontingen,
-    selectedPesertas,
-    refreshAll,
+    setSelectedKategori,
+    setselectedPesertas,
   } = AdminContext();
   return (
     <div className="bg-gray-200 rounded-md p-2">
@@ -20,8 +20,9 @@ const TabelAdmin = () => {
         className="btn_green btn_full mb-1"
         onClick={() => {
           setMode("");
-          refreshAll();
           setSelectedKontingen(dataKontingenInitialValue);
+          setSelectedKategori("");
+          setselectedPesertas([]);
         }}
       >
         Dashboard
