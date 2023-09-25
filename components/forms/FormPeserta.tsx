@@ -573,7 +573,7 @@ const FormPeserta = ({
 
   // CEK KUOTA TINGKATAN SMA DAN DEWASA
   const cekKuota = async () => {
-    let kuota = 2;
+    let kuota = 16;
     let kuotaGanda = kuota * 2;
     let kuotaRegu = kuota * 3;
     setKuotaLoading(true);
