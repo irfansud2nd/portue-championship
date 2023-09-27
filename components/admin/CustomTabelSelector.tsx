@@ -43,6 +43,16 @@ const CustomTabelSelector = () => {
           ))}
         </select>
         <select
+          value={gender}
+          className="text-black"
+          onChange={(e) => setGender(e.target.value)}
+          disabled={kategori.includes("Putra") || kategori.includes("Putri")}
+        >
+          {jenisKelamin.map((item) => (
+            <option value={item}>{item}</option>
+          ))}
+        </select>
+        <select
           value={kategori}
           className="text-black"
           onChange={(e) => setKategori(e.target.value)}
@@ -63,17 +73,6 @@ const CustomTabelSelector = () => {
             <option value={item}>{item}</option>
           ))}
         </select>
-
-        <select
-          value={gender}
-          className="text-black"
-          onChange={(e) => setGender(e.target.value)}
-          disabled={kategori.includes("Putra") || kategori.includes("Putri")}
-        >
-          {jenisKelamin.map((item) => (
-            <option value={item}>{item}</option>
-          ))}
-        </select>
       </div>
       <button
         className="btn_green btn_full mt-1 text-black"
@@ -83,6 +82,9 @@ const CustomTabelSelector = () => {
       >
         Generate Table
       </button>
+      {/* <p>
+        {tingkatan},{kategori},{gender}
+      </p> */}
     </div>
   );
 };
