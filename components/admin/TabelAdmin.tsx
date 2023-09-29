@@ -12,7 +12,9 @@ const TabelAdmin = () => {
     selectedKontingen,
     setSelectedKontingen,
     setSelectedKategori,
-    setselectedPesertas,
+    setSelectedPesertas,
+    setSelectedOfficials,
+    setUncofirmedKontingens,
   } = AdminContext();
   return (
     <div className="bg-gray-200 rounded-md p-2">
@@ -22,7 +24,9 @@ const TabelAdmin = () => {
           setMode("");
           setSelectedKontingen(dataKontingenInitialValue);
           setSelectedKategori("");
-          setselectedPesertas([]);
+          setSelectedPesertas([]);
+          setSelectedOfficials([]);
+          setUncofirmedKontingens([]);
         }}
       >
         Dashboard
@@ -36,7 +40,9 @@ const TabelAdmin = () => {
 
       {mode == "custom" && <CustomTabel />}
 
-      {mode == "kontingen" && <TabelKontingenAdmin />}
+      {(mode == "kontingen" || selectedKontingen.idKontingen) && (
+        <TabelKontingenAdmin />
+      )}
       {(mode == "peserta" || selectedKontingen.idKontingen) && (
         <TabelPesertaAdmin />
       )}

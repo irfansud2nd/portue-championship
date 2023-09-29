@@ -1,7 +1,7 @@
 import { AdminContext } from "@/context/AdminContext";
 import { formatTanggal, getKontingenUnpaid } from "@/utils/adminFunctions";
 import { useDownloadExcel } from "react-export-table-to-excel";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataKontingenState } from "@/utils/types";
 import InlineLoading from "../InlineLoading";
 import KonfirmasiButton from "../KonfirmasiButton";
@@ -14,6 +14,7 @@ const TabelKontingenAdmin = () => {
     refreshKontingens,
     kontingensLoading,
     pesertas,
+    unconfirmedKongtingens,
   } = AdminContext();
 
   const tabelHead = [
@@ -30,6 +31,10 @@ const TabelKontingenAdmin = () => {
     "Waktu Perubahan",
   ];
 
+  const [kontingensToMap, setKontingensToMap] = useState<DataKontingenState[]>(
+    []
+  );
+
   const getUnpaidPeserta = (kontingen: DataKontingenState) => {
     if (!kontingen.infoPembayaran || !kontingen.pesertas) return 0;
     let paidNominal = 0;
@@ -45,6 +50,16 @@ const TabelKontingenAdmin = () => {
     filename: "Tabel Kontingen",
     sheet: "Data Kontingen",
   });
+
+  useEffect(() => {
+    if (selectedKontingen.idKontingen) {
+      setKontingensToMap([selectedKontingen]);
+    } else if (unconfirmedKongtingens.length) {
+      setKontingensToMap(unconfirmedKongtingens);
+    } else {
+      setKontingensToMap(kontingens);
+    }
+  }, [selectedKontingen, unconfirmedKongtingens]);
 
   return (
     <div>
@@ -75,7 +90,7 @@ const TabelKontingenAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {kontingens.map((kontingen: DataKontingenState, i: number) => (
+          {kontingensToMap.map((kontingen: DataKontingenState, i: number) => (
             <tr key={kontingen.idKontingen} className="border_td">
               <td>{i + 1}</td>
               <td>{kontingen.idKontingen}</td>

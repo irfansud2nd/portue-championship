@@ -26,11 +26,17 @@ export const AdminContextProvider = ({
 }) => {
   const [error, setError] = useState<string | null>(null);
   const [kontingens, setKontingens] = useState<DataKontingenState[]>([]);
+  const [unconfirmedKongtingens, setUncofirmedKontingens] = useState<
+    DataKontingenState[]
+  >([]);
   const [pesertas, setPesertas] = useState<DataPesertaState[]>([]);
-  const [selectedPesertas, setselectedPesertas] = useState<DataPesertaState[]>(
+  const [selectedPesertas, setSelectedPesertas] = useState<DataPesertaState[]>(
     []
   );
   const [officials, setOfficials] = useState<DataOfficialState[]>([]);
+  const [selectedOfficials, setSelectedOfficials] = useState<
+    DataOfficialState[]
+  >([]);
   const [kontingensLoading, setKontingensLoading] = useState(true);
   const [officialsLoading, setOfficialsLoading] = useState(true);
   const [pesertasLoading, setPesertasLoading] = useState(true);
@@ -92,15 +98,17 @@ export const AdminContextProvider = ({
   // GET PESERTAS AND OFFICIALS BASED ON KONTINGEN ID
   useEffect(() => {
     if (selectedKontingen.idKontingen) {
-      setKontingens([selectedKontingen]);
-      setOfficials(
+      setSelectedKategori("");
+      setUncofirmedKontingens([]);
+      setSelectedOfficials(
         getOfficialsByKontingen(selectedKontingen.idKontingen, officials)
       );
-      setPesertas(
+      setSelectedPesertas(
         getPesertasByKontingen(selectedKontingen.idKontingen, pesertas)
       );
     } else {
-      refreshAll();
+      setSelectedOfficials([]);
+      setSelectedPesertas([]);
     }
   }, [selectedKontingen]);
 
@@ -111,7 +119,7 @@ export const AdminContextProvider = ({
     kontingens.map((kontingen) => {
       if (kontingen.unconfirmedPembayaran.length) selected.push(kontingen);
     });
-    setKontingens(selected);
+    setUncofirmedKontingens(selected);
   };
 
   // CEK KUOTA
@@ -168,7 +176,7 @@ export const AdminContextProvider = ({
         result.push(peserta);
       }
     });
-    setselectedPesertas(result);
+    setSelectedPesertas(result);
   }, [selectedKategori]);
 
   return (
@@ -197,7 +205,11 @@ export const AdminContextProvider = ({
         selectedKategori,
         setSelectedKategori,
         selectedPesertas,
-        setselectedPesertas,
+        setSelectedPesertas,
+        selectedOfficials,
+        setSelectedOfficials,
+        unconfirmedKongtingens,
+        setUncofirmedKontingens,
       }}
     >
       {children}

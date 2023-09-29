@@ -3,7 +3,7 @@ import { findNamaKontingen, formatTanggal } from "@/utils/adminFunctions";
 import { DataOfficialState } from "@/utils/types";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
@@ -16,6 +16,7 @@ const TabelOfficialAdmin = () => {
     refreshOfficials,
     officialsLoading,
     selectedKontingen,
+    selectedOfficials,
   } = AdminContext();
 
   const tabelHead = [
@@ -31,15 +32,27 @@ const TabelOfficialAdmin = () => {
     "Waktu Perubahan",
   ];
 
+  const [officialsToMap, setOfficialsToMap] = useState<DataOfficialState[]>([]);
   const [showRodal, setShowRodal] = useState(false);
   const [fotoUrl, setFotoUrl] = useState("");
 
   const tabelRef = useRef(null);
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
-    filename: "Tabel Official",
+    filename: `Tabel Official${
+      selectedKontingen.id ? selectedKontingen.namaKontingen : null
+    }`,
     sheet: "Data Official",
   });
+
+  useEffect(() => {
+    if (selectedOfficials.length) {
+      setOfficialsToMap(selectedOfficials);
+    } else {
+      setOfficialsToMap(officials);
+    }
+  }, [selectedOfficials]);
+
   return (
     <div>
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
@@ -93,7 +106,7 @@ const TabelOfficialAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {officials.map((official: DataOfficialState, i: number) => (
+          {officialsToMap.map((official: DataOfficialState, i: number) => (
             <tr key={official.id} className="border_td">
               <td>{i + 1}</td>
               <td>{official.id}</td>

@@ -18,6 +18,8 @@ const DashboardAdmin = () => {
     refreshAll,
     setMode,
     getUnconfirmedKontingens,
+    setUncofirmedKontingens,
+    unconfirmedKongtingens,
   } = AdminContext();
 
   const getPesertasPayment = (pesertas: DataPesertaState[]) => {
@@ -41,11 +43,13 @@ const DashboardAdmin = () => {
   const getKontingensPayment = () => {
     let unpaid = 0;
     let unconfirmed = 0;
+    let unconfirmedData: DataKontingenState[] = [];
     let confirmed = 0;
     kontingens.map((kontingen: DataKontingenState) => {
       if (getKontingenUnpaid(kontingen, pesertas) > 0) unpaid += 1;
       if (kontingen.unconfirmedPembayaran.length) {
         unconfirmed += 1;
+        unconfirmedData.push(kontingen);
       }
       if (kontingen.confirmedPembayaran.length) {
         confirmed += 1;
