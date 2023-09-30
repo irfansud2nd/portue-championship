@@ -48,7 +48,9 @@ const TabelKontingenAdmin = () => {
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
     filename: "Tabel Kontingen",
-    sheet: "Data Kontingen",
+    sheet: `Data Kontingen ${
+      selectedKontingen.idKontingen ? selectedKontingen.namaKontingen : null
+    }`,
   });
 
   useEffect(() => {
