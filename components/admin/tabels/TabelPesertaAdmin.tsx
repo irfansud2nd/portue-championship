@@ -245,7 +245,13 @@ const TabelPesertaAdmin = () => {
               <td className="capitalize">
                 {findNamaKontingen(kontingens, peserta.idKontingen)}
               </td>
-              <td>{peserta.pembayaran ? "Dibayar" : "Belum dibayar"}</td>
+              <td>
+                {peserta.pembayaran ? (
+                  "Dibayar"
+                ) : (
+                  <span className="text-red-500">Belum dibayar</span>
+                )}
+              </td>
               <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
               <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
               <td>
