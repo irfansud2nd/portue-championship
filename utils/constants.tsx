@@ -101,9 +101,15 @@ export const tingkatanKategori = [
   },
   {
     tingkatan: "SD II",
-    kategoriTanding: generateKategoriPertandingan("O", 26, 2, {
-      namaKelas: "<A",
-    }),
+    kategoriTanding: generateKategoriPertandingan(
+      "O",
+      26,
+      2,
+      {
+        namaKelas: "<A",
+      },
+      { namaKelas: "Bebas" }
+    ),
     kategoriSeni: seniTunggal,
   },
   {
