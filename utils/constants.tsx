@@ -84,6 +84,10 @@ const seniLengkap = {
   putra: ["Tunggal Putra", "Ganda Putra", "Regu Putra"],
   putri: ["Tunggal Putri", "Ganda Putri", "Regu Putri"],
 };
+const seniSma = {
+  putra: ["Tunggal Putra", "Ganda Putra", "Regu Putra"],
+  putri: ["Ganda Putri", "Regu Putri"],
+};
 // KATEGORI GENERATOR - END
 
 // JENIS PERTANDINGAN OPTION
@@ -128,7 +132,7 @@ export const tingkatanKategori = [
       { namaKelas: "<39" },
       { namaKelas: "Bebas" }
     ),
-    kategoriSeni: seniLengkap,
+    kategoriSeni: seniSma,
   },
   {
     tingkatan: "Dewasa",
