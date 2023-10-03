@@ -98,6 +98,15 @@ const TabelKuota = () => {
           ))}
         </div>
         <div className="border-b-2 border-b-yellow-500">
+          <button
+            className="border-r-2 border-white border-b-2 last:border-b-0 even:bg-gray-800 block w-full hover:text-yellow-500 transition"
+            onClick={() => {
+              setMode("custom");
+              setSelectedKategori(`SMA,Tunggal Putri,Putri`);
+            }}
+          >
+            {cekKuota("SMA", "Tunggal Putri", "Putri")}
+          </button>
           {tingkatanKategori[
             tingkatanKategori.findIndex((item) => item.tingkatan == "SMA")
           ].kategoriSeni.putri.map((item) => (
