@@ -1,5 +1,9 @@
 import { AdminContext } from "@/context/AdminContext";
-import { findNamaKontingen, formatTanggal } from "@/utils/sharedFunctions";
+import {
+  compare,
+  findNamaKontingen,
+  formatTanggal,
+} from "@/utils/sharedFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import FileSaver from "file-saver";
 import Image from "next/image";
@@ -9,6 +13,7 @@ import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import InlineLoading from "../InlineLoading";
+import { triggerAsyncId } from "async_hooks";
 
 const TabelPesertaAdmin = () => {
   const {
@@ -166,104 +171,108 @@ const TabelPesertaAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {pesertaToMap.map((peserta: DataPesertaState, i: number) => (
-            <tr key={peserta.id}>
-              <td>{i + 1}</td>
-              <td className="capitalize">{peserta.namaLengkap}</td>
-              <td>
-                <span className="text-transparent">"</span>
-                {peserta.NIK.toString()}
-                <span className="text-transparent">"</span>
-              </td>
-              <td>{peserta.jenisKelamin}</td>
-              <td>{peserta.tempatLahir}</td>
-              <td className="whitespace-nowrap">
-                {formatTanggal(peserta.tanggalLahir)}
-              </td>
-              <td>
-                <span className="text-transparent">"</span>
-                {peserta.noHp}
-                <span className="text-transparent">"</span>
-              </td>
-              <td>{peserta.email}</td>
-              <td className="whitespace-nowrap">
-                {peserta.downloadFotoUrl ? (
-                  <button
-                    className="hover:text-custom-gold transition"
-                    onClick={() => {
-                      setShowRodal(true);
-                      setFotoUrl(peserta.downloadFotoUrl);
-                    }}
-                  >
-                    Show Foto
-                  </button>
-                ) : (
-                  <span className="text-red-500 font-bold">
-                    Pas Foto not found
-                  </span>
-                )}
-              </td>
-              <td>
-                {peserta.downloadKkUrl ? (
-                  <button
-                    className="hover:text-custom-gold transition"
-                    onClick={() => {
-                      setShowRodal(true);
-                      setKkUrl(peserta.downloadKkUrl);
-                    }}
-                  >
-                    Show KK
-                  </button>
-                ) : (
-                  <span className="text-red-500 font-bold">KK not found</span>
-                )}
-              </td>
-              <td className="whitespace-nowrap">
-                {peserta.downloadKtpUrl ? (
-                  <button
-                    className="hover:text-custom-gold transition"
-                    onClick={() => {
-                      setShowRodal(true);
-                      setKtpUrl(peserta.downloadKtpUrl);
-                    }}
-                  >
-                    Show KTP
-                  </button>
-                ) : (
-                  <span className="text-red-500 font-bold">KTP not found</span>
-                )}
-              </td>
-              <td className="whitespace-nowrap">{peserta.umur} tahun</td>
-              <td>{peserta.beratBadan} KG</td>
-              <td>{peserta.tinggiBadan} CM</td>
-              <td>{peserta.alamatLengkap}</td>
-              <td>{peserta.tingkatanPertandingan}</td>
-              <td>{peserta.jenisPertandingan}</td>
-              <td className="whitespace-nowrap">
-                {peserta.kategoriPertandingan}
-              </td>
-              <td className="capitalize">
-                {findNamaKontingen(kontingens, peserta.idKontingen)}
-              </td>
-              <td>
-                {peserta.pembayaran ? (
-                  "Dibayar"
-                ) : (
-                  <span className="text-red-500">Belum dibayar</span>
-                )}
-              </td>
-              <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
-              <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
-              <td>
-                {peserta.infoKonfirmasi ? peserta.infoKonfirmasi.email : "-"}
-              </td>
-              <td>{peserta.creatorEmail}</td>
-              <td>{formatTanggal(peserta.waktuPendaftaran)}</td>
-              <td className="whitespace-nowrap">
-                {formatTanggal(peserta.waktuPerubahan)}
-              </td>
-            </tr>
-          ))}
+          {pesertaToMap
+            .sort(compare("waktuPendaftaran", "asc"))
+            .map((peserta: DataPesertaState, i: number) => (
+              <tr key={peserta.id}>
+                <td>{i + 1}</td>
+                <td className="capitalize">{peserta.namaLengkap}</td>
+                <td>
+                  <span className="text-transparent">"</span>
+                  {peserta.NIK.toString()}
+                  <span className="text-transparent">"</span>
+                </td>
+                <td>{peserta.jenisKelamin}</td>
+                <td>{peserta.tempatLahir}</td>
+                <td className="whitespace-nowrap">
+                  {formatTanggal(peserta.tanggalLahir)}
+                </td>
+                <td>
+                  <span className="text-transparent">"</span>
+                  {peserta.noHp}
+                  <span className="text-transparent">"</span>
+                </td>
+                <td>{peserta.email}</td>
+                <td className="whitespace-nowrap">
+                  {peserta.downloadFotoUrl ? (
+                    <button
+                      className="hover:text-custom-gold transition"
+                      onClick={() => {
+                        setShowRodal(true);
+                        setFotoUrl(peserta.downloadFotoUrl);
+                      }}
+                    >
+                      Show Foto
+                    </button>
+                  ) : (
+                    <span className="text-red-500 font-bold">
+                      Pas Foto not found
+                    </span>
+                  )}
+                </td>
+                <td>
+                  {peserta.downloadKkUrl ? (
+                    <button
+                      className="hover:text-custom-gold transition"
+                      onClick={() => {
+                        setShowRodal(true);
+                        setKkUrl(peserta.downloadKkUrl);
+                      }}
+                    >
+                      Show KK
+                    </button>
+                  ) : (
+                    <span className="text-red-500 font-bold">KK not found</span>
+                  )}
+                </td>
+                <td className="whitespace-nowrap">
+                  {peserta.downloadKtpUrl ? (
+                    <button
+                      className="hover:text-custom-gold transition"
+                      onClick={() => {
+                        setShowRodal(true);
+                        setKtpUrl(peserta.downloadKtpUrl);
+                      }}
+                    >
+                      Show KTP
+                    </button>
+                  ) : (
+                    <span className="text-red-500 font-bold">
+                      KTP not found
+                    </span>
+                  )}
+                </td>
+                <td className="whitespace-nowrap">{peserta.umur} tahun</td>
+                <td>{peserta.beratBadan} KG</td>
+                <td>{peserta.tinggiBadan} CM</td>
+                <td>{peserta.alamatLengkap}</td>
+                <td>{peserta.tingkatanPertandingan}</td>
+                <td>{peserta.jenisPertandingan}</td>
+                <td className="whitespace-nowrap">
+                  {peserta.kategoriPertandingan}
+                </td>
+                <td className="capitalize">
+                  {findNamaKontingen(kontingens, peserta.idKontingen)}
+                </td>
+                <td>
+                  {peserta.pembayaran ? (
+                    "Dibayar"
+                  ) : (
+                    <span className="text-red-500">Belum dibayar</span>
+                  )}
+                </td>
+                <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
+                <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
+                <td>
+                  {peserta.infoKonfirmasi ? peserta.infoKonfirmasi.email : "-"}
+                </td>
+                <td>{peserta.creatorEmail}</td>
+                <td>{formatTanggal(peserta.waktuPendaftaran, true)}</td>
+                <td className="whitespace-nowrap">
+                  {formatTanggal(peserta.waktuPerubahan, true)}
+                </td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>
