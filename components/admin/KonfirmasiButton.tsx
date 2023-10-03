@@ -19,6 +19,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
 import { DataKontingenState } from "@/utils/types";
+import Link from "next/link";
 
 const KonfirmasiButton = ({
   idPembayaran,
@@ -136,7 +137,16 @@ const KonfirmasiButton = ({
         <h1>Konfirmasi Pembayaran</h1>
         <p>Jumlah Peserta: {pesertasToConfirm.length}</p>
         <p>Jumlah Nominal: {infoPembayaran.nominal}</p>
-        <div className="w-[300px] h-[400px] border-2 border-custom-navy relative">
+        <div className="flex justify-center">
+          <Link
+            href={infoPembayaran.buktiUrl}
+            target="_blank"
+            className="btn_green btn_full"
+          >
+            Open Image in New Tab
+          </Link>
+        </div>
+        <div className="w-[300px] h-[400px] mt-1 border-2 border-custom-navy relative">
           {infoPembayaran.buktiUrl ? (
             <Image
               src={infoPembayaran.buktiUrl}
