@@ -132,30 +132,45 @@ const TabelKontingenAdmin = () => {
                           </span>
                           <br />
                           <span className="whitespace-nowrap">
-                            {kontingen.confirmedPembayaran.indexOf(
+                            {/* {kontingen.confirmedPembayaran.indexOf(
                               idPembayaran
                             ) >= 0 ? (
-                              `Confirmed by ${
+                              <button className="hover:underline">
+                                Confirmed by{" "}
+                                {
+                                  kontingen.infoKonfirmasi[
+                                    kontingen.infoKonfirmasi.findIndex(
+                                      (info) =>
+                                        info.idPembayaran == idPembayaran
+                                    )
+                                  ].email
+                                }
+                              </button>
+                            ) : ( */}
+                            <KonfirmasiButton
+                              idPembayaran={idPembayaran}
+                              infoPembayaran={
+                                kontingen.infoPembayaran[
+                                  kontingen.infoPembayaran.findIndex(
+                                    (info) => info.idPembayaran == idPembayaran
+                                  )
+                                ]
+                              }
+                              data={kontingen}
+                              infoKonfirmasi={
                                 kontingen.infoKonfirmasi[
                                   kontingen.infoKonfirmasi.findIndex(
                                     (info) => info.idPembayaran == idPembayaran
                                   )
-                                ].email
-                              }`
-                            ) : (
-                              <KonfirmasiButton
-                                idPembayaran={idPembayaran}
-                                infoPembayaran={
-                                  kontingen.infoPembayaran[
-                                    kontingen.infoPembayaran.findIndex(
-                                      (info) =>
-                                        info.idPembayaran == idPembayaran
-                                    )
-                                  ]
-                                }
-                                data={kontingen}
-                              />
-                            )}
+                                ]
+                              }
+                              paid={
+                                kontingen.confirmedPembayaran.indexOf(
+                                  idPembayaran
+                                ) >= 0
+                              }
+                            />
+                            {/* )} */}
                           </span>
                         </li>
                       ))

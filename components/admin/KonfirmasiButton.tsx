@@ -1,3 +1,4 @@
+"use client";
 import { MyContext } from "@/context/Context";
 import { firestore } from "@/utils/firebase";
 import { newToast, updateToast } from "@/utils/sharedFunctions";
@@ -25,6 +26,8 @@ const KonfirmasiButton = ({
   idPembayaran,
   infoPembayaran,
   data,
+  paid,
+  infoKonfirmasi,
 }: {
   idPembayaran: string;
   infoPembayaran: {
@@ -35,6 +38,13 @@ const KonfirmasiButton = ({
     buktiUrl: string;
   };
   data: DataKontingenState;
+  paid: boolean;
+  infoKonfirmasi: {
+    idPembayaran: string;
+    nama: string;
+    email: string;
+    waktu: string;
+  };
 }) => {
   const [rodalVisible, setRodalVisible] = useState(false);
   const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
@@ -135,7 +145,12 @@ const KonfirmasiButton = ({
         }}
       >
         <h1>Konfirmasi Pembayaran</h1>
-        <p>Jumlah Peserta: {pesertasToConfirm.length}</p>
+        <div>
+          Jumlah Peserta:{" "}
+          {/* <button className="mr-1 btn_green rounded-full px-1.5">+</button> */}
+          {pesertasToConfirm.length}
+          {/* <button className="ml-1 btn_red rounded-full px-1.5">-</button> */}
+        </div>
         <p>Jumlah Nominal: {infoPembayaran.nominal}</p>
         <div className="flex justify-center">
           <Link
@@ -157,13 +172,13 @@ const KonfirmasiButton = ({
           ) : null}
         </div>
         <div className="flex w-full justify-center gap-2 mt-1">
-          {pesertasToConfirm.length && (
+          {pesertasToConfirm.length && !paid && (
             <button className="btn_green btn_full" onClick={konfirmasi}>
               Konfirmasi
             </button>
           )}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
-            Batal
+            {paid ? "Close" : "Batal"}
           </button>
         </div>
       </Rodal>
@@ -172,7 +187,7 @@ const KonfirmasiButton = ({
           onClick={konfirmasiHandler}
           className="hover:text-green-500 hover:underline transition"
         >
-          Konfirmasi
+          {paid ? `Confirmed by ${infoKonfirmasi.email}` : "Konfirmasi"}
         </button>
       </div>
     </>
