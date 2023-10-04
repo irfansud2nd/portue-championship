@@ -174,19 +174,23 @@ const KonfirmasiButton = ({
             />
           ) : null}
         </div>
-        <div className="flex w-full justify-center gap-2 mt-1">
-          {pesertasToConfirm.length && !paid && (
+        <div className="flex flex-col w-full justify-center gap-1 mt-1 ">
+          {pesertasToConfirm.length && !paid ? (
             <>
-              {/* <Link
+              <Link
                 href={`/konfirmasi-pembayaran/${idPembayaran}`}
-                className="btn_green btn_full"
+                className="btn_green btn_full text-center"
               >
                 Konfirmasi Sebagian
-              </Link> */}
+              </Link>
               <button className="btn_green btn_full" onClick={konfirmasi}>
                 Konfirmasi Semua
               </button>
             </>
+          ) : (
+            <div className="mx-auto">
+              <InlineLoading />
+            </div>
           )}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
             {paid ? "Close" : "Batal"}
