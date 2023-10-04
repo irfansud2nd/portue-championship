@@ -19,6 +19,7 @@ import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import Image from "next/image";
 import { AdminContext } from "@/context/AdminContext";
 import { MyContext } from "@/context/Context";
+import Link from "next/link";
 
 const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
   const {
@@ -86,13 +87,8 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
   };
 
   useEffect(() => {
-    console.log("to confirm", pesertasToConfirm);
     getPesertasToUnpaid();
   }, [pesertasToConfirm]);
-
-  useEffect(() => {
-    console.log("to unpaid", pesertasToUnpaid);
-  }, [pesertasToUnpaid]);
 
   useEffect(() => {
     if (user) checkAdminAuthorized(user);
@@ -257,24 +253,39 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
         Reset
       </button> */}
       <div className="flex gap-2 flex-wrap">
-        <div className="w-[300px] h-[400px] relative">
-          {kontingen.idKontingen ? (
-            <Image
-              src={
+        {kontingen.idKontingen ? (
+          <div className="flex flex-col gap-1">
+            <Link
+              href={
                 kontingen.infoPembayaran[
                   kontingen.infoPembayaran.findIndex(
                     (item) => item.idPembayaran == idPembayaran
                   )
                 ].buktiUrl
               }
-              alt="buktiPembayaran"
-              fill
-              className="rounded-md"
-            />
-          ) : (
-            <InlineLoading />
-          )}
-        </div>
+              target="_blank"
+              className="btn_green btn_full text-center"
+            >
+              Open Image in New Tab
+            </Link>
+            <div className="w-[300px] h-[400px] relative">
+              <Image
+                src={
+                  kontingen.infoPembayaran[
+                    kontingen.infoPembayaran.findIndex(
+                      (item) => item.idPembayaran == idPembayaran
+                    )
+                  ].buktiUrl
+                }
+                alt="buktiPembayaran"
+                fill
+                className="rounded-md"
+              />
+            </div>
+          </div>
+        ) : (
+          <InlineLoading />
+        )}
         <table>
           <thead>
             <tr>
