@@ -50,8 +50,6 @@ const KonfirmasiButton = ({
 }) => {
   const [rodalVisible, setRodalVisible] = useState(false);
   const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
-  const [imageLoading, setImageLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState("");
 
   const { user } = MyContext();
   const { refreshKontingens } = AdminContext();
@@ -59,7 +57,6 @@ const KonfirmasiButton = ({
   const toastId = useRef(null);
 
   const konfirmasiHandler = () => {
-    getImage();
     setRodalVisible(true);
     getPesertasToConfirm();
   };
@@ -133,21 +130,8 @@ const KonfirmasiButton = ({
   const resetKonfirmasi = () => {
     setRodalVisible(false);
     setPesertasToConfirm([]);
-    setImageUrl("");
   };
 
-  const getImage = () => {
-    setImageLoading(true);
-    getDownloadURL(ref(storage, `buktiPembayarans/${idPembayaran}.jpeg`))
-      .then((url) => {
-        setImageUrl(url);
-        console.log(url);
-      })
-      .catch((error) => {
-        newToast(toastId, "error", "Image tidak tersedia");
-      })
-      .finally(() => setImageLoading(false));
-  };
   return (
     <>
       <ToastContainer />
@@ -181,36 +165,24 @@ const KonfirmasiButton = ({
           </Link>
         </div>
         <div className="w-[300px] h-[400px] mt-1 border-2 border-custom-navy relative mx-auto flex justify-center items-center">
-          {/* {infoPembayaran.buktiUrl ? (
+          {infoPembayaran.buktiUrl ? (
             <Image
               src={infoPembayaran.buktiUrl}
               alt="bukti pembayaran"
               fill
               className="object-contain"
             />
-          ) : null} */}
-          {imageLoading ? (
-            <InlineLoading />
-          ) : imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt="bukti pembayaran"
-              fill
-              className="object-contain"
-            />
-          ) : (
-            "Image not found please open in new tab"
-          )}
+          ) : null}
         </div>
         <div className="flex w-full justify-center gap-2 mt-1">
           {pesertasToConfirm.length && !paid && (
             <>
-              <Link
+              {/* <Link
                 href={`/konfirmasi-pembayaran/${idPembayaran}`}
                 className="btn_green btn_full"
               >
                 Konfirmasi Sebagian
-              </Link>
+              </Link> */}
               <button className="btn_green btn_full" onClick={konfirmasi}>
                 Konfirmasi Semua
               </button>
