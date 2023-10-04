@@ -1,6 +1,6 @@
 "use client";
 import { MyContext } from "@/context/Context";
-import { firestore } from "@/utils/firebase";
+import { firestore, storage } from "@/utils/firebase";
 import { newToast, updateToast } from "@/utils/sharedFunctions";
 import {
   arrayRemove,
@@ -21,6 +21,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
 import { DataKontingenState } from "@/utils/types";
 import Link from "next/link";
+import { getDownloadURL, ref } from "firebase/storage";
+import InlineLoading from "./InlineLoading";
 
 const KonfirmasiButton = ({
   idPembayaran,
@@ -48,6 +50,8 @@ const KonfirmasiButton = ({
 }) => {
   const [rodalVisible, setRodalVisible] = useState(false);
   const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState("");
 
   const { user } = MyContext();
   const { refreshKontingens } = AdminContext();
@@ -55,6 +59,7 @@ const KonfirmasiButton = ({
   const toastId = useRef(null);
 
   const konfirmasiHandler = () => {
+    getImage();
     setRodalVisible(true);
     getPesertasToConfirm();
   };
@@ -128,6 +133,20 @@ const KonfirmasiButton = ({
   const resetKonfirmasi = () => {
     setRodalVisible(false);
     setPesertasToConfirm([]);
+    setImageUrl("");
+  };
+
+  const getImage = () => {
+    setImageLoading(true);
+    getDownloadURL(ref(storage, `buktiPembayarans/${idPembayaran}.jpeg`))
+      .then((url) => {
+        setImageUrl(url);
+        console.log(url);
+      })
+      .catch((error) => {
+        newToast(toastId, "error", "Image tidak tersedia");
+      })
+      .finally(() => setImageLoading(false));
   };
   return (
     <>
@@ -161,21 +180,41 @@ const KonfirmasiButton = ({
             Open Image in New Tab
           </Link>
         </div>
-        <div className="w-[300px] h-[400px] mt-1 border-2 border-custom-navy relative">
-          {infoPembayaran.buktiUrl ? (
+        <div className="w-[300px] h-[400px] mt-1 border-2 border-custom-navy relative mx-auto flex justify-center items-center">
+          {/* {infoPembayaran.buktiUrl ? (
             <Image
               src={infoPembayaran.buktiUrl}
               alt="bukti pembayaran"
               fill
               className="object-contain"
             />
-          ) : null}
+          ) : null} */}
+          {imageLoading ? (
+            <InlineLoading />
+          ) : imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt="bukti pembayaran"
+              fill
+              className="object-contain"
+            />
+          ) : (
+            "Image not found please open in new tab"
+          )}
         </div>
         <div className="flex w-full justify-center gap-2 mt-1">
           {pesertasToConfirm.length && !paid && (
-            <button className="btn_green btn_full" onClick={konfirmasi}>
-              Konfirmasi
-            </button>
+            <>
+              <Link
+                href={`/konfirmasi-pembayaran/${idPembayaran}`}
+                className="btn_green btn_full"
+              >
+                Konfirmasi Sebagian
+              </Link>
+              <button className="btn_green btn_full" onClick={konfirmasi}>
+                Konfirmasi Semua
+              </button>
+            </>
           )}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
             {paid ? "Close" : "Batal"}
