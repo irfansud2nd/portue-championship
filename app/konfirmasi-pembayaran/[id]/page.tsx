@@ -4,7 +4,6 @@ import { dataKontingenInitialValue } from "@/utils/constants";
 import { firestore } from "@/utils/firebase";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import {
-  DocumentData,
   arrayRemove,
   arrayUnion,
   collection,
@@ -14,12 +13,14 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImCheckboxChecked, ImCheckboxUnchecked } from "react-icons/im";
 import Image from "next/image";
-import { AdminContext } from "@/context/AdminContext";
 import { MyContext } from "@/context/Context";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
+import { newToast, updateToast } from "@/utils/sharedFunctions";
 
 const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
   const {
@@ -108,7 +109,10 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
     }
   };
 
+  const toastId = useRef(null);
+
   const handleKonfirmasi = () => {
+    newToast(toastId, "loading", "Mengkonfirmasi");
     deletePembayaranPeserta(pesertasToUnpaid.length - 1);
   };
 
@@ -184,6 +188,7 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
         }),
       }).then(() => {
         // DONE
+        updateToast(toastId, "success", "Konfirmasi selesai");
       });
     });
   };
@@ -217,6 +222,7 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="p-2 bg-gray-200 m-2 rounded-md">
+      <ToastContainer />
       <p className="uppercase font-bold text-2xl">{kontingen.namaKontingen}</p>
       <p>
         Jumlah Peserta yang akan dikonfirmasi: <b>{pesertasToConfirm.length}</b>
