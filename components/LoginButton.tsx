@@ -1,6 +1,6 @@
 "use client";
 import { MyContext } from "@/context/Context";
-import { getPaidPeserta } from "@/utils/sharedFunctions";
+import { getJumlahPeserta } from "@/utils/sharedFunctions";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -9,7 +9,7 @@ import InlineLoading from "./admin/InlineLoading";
 
 const LoginButton = () => {
   const { user, googleSignIn, userLoading } = MyContext();
-  const [paidPeserta, setPaidPeserta] = useState<number | null>(null);
+  const [kuota, setKuota] = useState<number | null>(null);
 
   const handleLogin = async () => {
     try {
@@ -20,7 +20,7 @@ const LoginButton = () => {
   };
 
   useEffect(() => {
-    getPaidPeserta().then((res) => setPaidPeserta(res));
+    getJumlahPeserta().then((res) => setKuota(res));
   }, []);
 
   return (
@@ -31,11 +31,11 @@ const LoginButton = () => {
           <AiOutlineLoading3Quarters className="animate-spin h-7" />
         </div>
       ) : user ? (
-        !paidPeserta ? (
+        !kuota ? (
           <div className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center">
             <InlineLoading />
           </div>
-        ) : paidPeserta < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
+        ) : kuota < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
           <Link
             href="/halaman-pendaftaran"
             className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"

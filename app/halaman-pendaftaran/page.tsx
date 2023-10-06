@@ -9,21 +9,17 @@ import graphic_portue from "@/public/images/graphic-portue.png";
 import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
-import Rodal from "rodal";
 import "rodal/lib/rodal.css";
-import { useRouter } from "next/navigation";
-import { getPaidPeserta } from "@/utils/sharedFunctions";
+import { getJumlahPeserta } from "@/utils/sharedFunctions";
 
 const PendaftaranPage = () => {
   const { user, userLoading } = MyContext();
-  const [paidPeserta, setPaidPeserta] = useState<number | string>("loading");
+  const [kuota, setKuota] = useState<number | string>("loading");
 
   useEffect(() => {
     document.title = "Halaman Pendaftaran - Portue Silat Bandung Championship";
-    getPaidPeserta().then((res) => setPaidPeserta(res));
+    getJumlahPeserta().then((res) => setKuota(res));
   }, []);
-
-  const router = useRouter();
 
   return (
     <div className="h-full max-w-[100vw]">
@@ -40,7 +36,7 @@ const PendaftaranPage = () => {
         </div>
       </Rodal> */}
       {/* HOLD PENDAFTARAN */}
-      {userLoading || paidPeserta == "loading" ? (
+      {userLoading || kuota == "loading" ? (
         <div className="h-full w-full flex justify-center items-center">
           <Image
             src={graphic_portue}
@@ -49,7 +45,7 @@ const PendaftaranPage = () => {
           />
         </div>
       ) : user &&
-        Number(paidPeserta) < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
+        Number(kuota) < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
         <div className="h-full w-full justify-center items-center p-2">
           <div>
             <Pendaftaran />
@@ -61,8 +57,7 @@ const PendaftaranPage = () => {
             <h1 className="text-2xl font-bold">
               <PiWarningBold className="mb-0.5 inline text-red-500" />
               <span className="mx-2">
-                {Number(paidPeserta) <
-                Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)
+                {Number(kuota) < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)
                   ? "Anda belum melakukan Login"
                   : "Kuota Peserta telah habis"}
               </span>

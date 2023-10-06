@@ -330,7 +330,7 @@ const FormPeserta = ({
       } else {
         if (pasFotoSelected && kkSelected && ktpSelected) {
           // SEND PERSON
-          getPaidPeserta().then((res) => {
+          getJumlahPeserta().then((res) => {
             if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
               setDisable(true);
               submitPeserta(
