@@ -128,7 +128,7 @@ const DashboardAdmin = () => {
       {/* SECOND ROW */}
       <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit mt-2">
         <p className="font-semibold text-lg">Pembayaran</p>
-        <div className="grid grid-cols-[repeat(3,_auto)] grid-rows-[repeat(4,_auto)] w-fit">
+        <div className="grid grid-cols-[repeat(3,_auto)] grid-rows-[repeat(5,_auto)] w-fit">
           <p className="font-semibold text-lg border-r-2 border-r-white">
             Keterangan
           </p>
@@ -173,6 +173,25 @@ const DashboardAdmin = () => {
               getKontingensPayment().unconfirmed
             )}
           </button>
+          <p className="text-2xl font-extrabold text-blue-500  border-r-2 border-r-white">
+            Paid
+          </p>
+          <p className="text-2xl font-extrabold text-blue-500  border-r-2 border-r-white">
+            {pesertasLoading ? (
+              <InlineLoading />
+            ) : (
+              getPesertasPayment(pesertas).confirmed +
+              getPesertasPayment(pesertas).unconfirmed
+            )}
+          </p>
+          <p className="text-2xl font-extrabold text-blue-500">
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getKontingensPayment().unconfirmed +
+              getKontingensPayment().confirmed
+            )}
+          </p>
           <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
             Unpaid
           </p>
