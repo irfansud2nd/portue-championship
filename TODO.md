@@ -6,6 +6,7 @@ Project Description
 
 ### Todo
 
+- [ ] getpaidpeserta on halaman pendaftaran  
 - [ ] false disable on error  
 - [ ] page for bendahara  
 - [ ] page for admin  

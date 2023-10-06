@@ -21,8 +21,10 @@ import {
   deleteDoc,
   doc,
   getCountFromServer,
+  query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { error } from "console";
@@ -64,6 +66,14 @@ export const formatTanggal = (
 // GET JUMLAH PESERTA
 export const getJumlahPeserta = async () => {
   const snapshot = await getCountFromServer(collection(firestore, "pesertas"));
+  return snapshot.data().count;
+};
+
+// GET JUMLAH PESERTA
+export const getPaidPeserta = async () => {
+  const snapshot = await getCountFromServer(
+    query(collection(firestore, "pesertas"), where("pembayaran", "==", true))
+  );
   return snapshot.data().count;
 };
 

@@ -132,6 +132,92 @@ const KonfirmasiButton = ({
     setPesertasToConfirm([]);
   };
 
+  const cancelPayment = () => {
+    newToast(toastId, "loading", "Membatalkan Pembayaran");
+    deletePaymentPeserta(pesertasToConfirm.length - 1);
+  };
+
+  const deletePaymentPeserta = (index: number) => {
+    if (index < 0) {
+      deletePaymentKontingen();
+    } else {
+      updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
+        idPembayaran: "",
+        pembayaran: false,
+        infoPembayaran: {
+          noHp: "",
+          waktu: "",
+          buktiUrl: "",
+        },
+      })
+        .then(() => deletePaymentPeserta(index - 1))
+        .catch((error) => alert(error));
+    }
+  };
+
+  const deletePaymentKontingen = () => {
+    updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+      idPembayaran: arrayRemove(idPembayaran),
+      unconfirmedPembayaran: arrayRemove(idPembayaran),
+      infoPembayaran: arrayRemove({
+        idPembayaran: idPembayaran,
+        nominal: infoPembayaran.nominal,
+        noHp: infoPembayaran.noHp,
+        waktu: infoPembayaran.waktu,
+        buktiUrl: infoPembayaran.buktiUrl,
+      }),
+    })
+      .then(() =>
+        updateToast(toastId, "success", "Pembayaran Berhasil dibatalkan")
+      )
+      .catch((error) => alert(error));
+  };
+
+  const cancelKonfirmasi = () => {
+    newToast(toastId, "loading", "Membatalkan Konfirmasi");
+    deleteKonfirmasiPeserta(pesertasToConfirm.length - 1);
+  };
+
+  const deleteKonfirmasiPeserta = (index: number) => {
+    if (index < 0) {
+      deleteKonfirmasiKontingen();
+    } else {
+      updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
+        confirmedPembayaran: false,
+        infoKonfirmasi: {
+          nama: "",
+          email: "",
+          waktu: "",
+        },
+      })
+        .then(() => deleteKonfirmasiPeserta(index - 1))
+        .catch((error) => alert(error));
+    }
+  };
+
+  const deleteKonfirmasiKontingen = () => {
+    const infoKonfirmasi =
+      data.infoKonfirmasi[
+        data.infoKonfirmasi.findIndex(
+          (item) => item.idPembayaran == idPembayaran
+        )
+      ];
+    updateDoc(doc(firestore, "kontingens", data.idKontingen), {
+      confirmedPembayaran: arrayRemove(idPembayaran),
+      unconfirmedPembayaran: arrayUnion(idPembayaran),
+      infoKonfirmasi: arrayRemove({
+        idPembayaran: idPembayaran,
+        nama: infoKonfirmasi.nama,
+        email: infoKonfirmasi.email,
+        waktu: infoKonfirmasi.waktu,
+      }),
+    })
+      .then(() =>
+        updateToast(toastId, "success", "Konfirmasi Berhasil dibatalkan")
+      )
+      .catch((error) => alert(error));
+  };
+
   return (
     <>
       <ToastContainer />
@@ -151,7 +237,11 @@ const KonfirmasiButton = ({
         <div>
           Jumlah Peserta:{" "}
           {/* <button className="mr-1 btn_green rounded-full px-1.5">+</button> */}
-          {pesertasToConfirm.length}
+          {pesertasToConfirm.length ? (
+            pesertasToConfirm.length
+          ) : (
+            <InlineLoading />
+          )}
           {/* <button className="ml-1 btn_red rounded-full px-1.5">-</button> */}
         </div>
         <p>Jumlah Nominal: {infoPembayaran.nominal}</p>
@@ -175,7 +265,11 @@ const KonfirmasiButton = ({
           ) : null}
         </div>
         <div className="flex flex-col w-full justify-center gap-1 mt-1 ">
-          {pesertasToConfirm.length && !paid ? (
+          {!pesertasToConfirm.length ? (
+            <div className="mx-auto">
+              <InlineLoading />
+            </div>
+          ) : !paid ? (
             <>
               <Link
                 href={`/konfirmasi-pembayaran/${idPembayaran}`}
@@ -186,11 +280,14 @@ const KonfirmasiButton = ({
               <button className="btn_green btn_full" onClick={konfirmasi}>
                 Konfirmasi Semua
               </button>
+              <button className="btn_green btn_full" onClick={cancelPayment}>
+                Batalkan Pembayaran
+              </button>
             </>
           ) : (
-            <div className="mx-auto">
-              <InlineLoading />
-            </div>
+            <button className="btn_green btn_full" onClick={cancelKonfirmasi}>
+              Batalkan Konfirmasi
+            </button>
           )}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
             {paid ? "Close" : "Batal"}

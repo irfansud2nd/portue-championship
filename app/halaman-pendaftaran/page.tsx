@@ -12,12 +12,15 @@ import Head from "next/head";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import { useRouter } from "next/navigation";
+import { getPaidPeserta } from "@/utils/sharedFunctions";
 
 const PendaftaranPage = () => {
   const { user, userLoading } = MyContext();
+  const [paidPeserta, setPaidPeserta] = useState<number | string>("loading");
 
   useEffect(() => {
     document.title = "Halaman Pendaftaran - Portue Silat Bandung Championship";
+    getPaidPeserta().then((res) => setPaidPeserta(res));
   }, []);
 
   const router = useRouter();
@@ -37,7 +40,7 @@ const PendaftaranPage = () => {
         </div>
       </Rodal> */}
       {/* HOLD PENDAFTARAN */}
-      {userLoading ? (
+      {userLoading || paidPeserta == "loading" ? (
         <div className="h-full w-full flex justify-center items-center">
           <Image
             src={graphic_portue}
@@ -45,7 +48,8 @@ const PendaftaranPage = () => {
             className="w-[200px] animate-[spin_5s_linear_infinite]"
           />
         </div>
-      ) : user ? (
+      ) : user &&
+        Number(paidPeserta) < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
         <div className="h-full w-full justify-center items-center p-2">
           <div>
             <Pendaftaran />
@@ -56,7 +60,12 @@ const PendaftaranPage = () => {
           <div className="text-center w-fit bg-gray-200 p-2 h-[150px] rounded-md flex flex-col justify-around">
             <h1 className="text-2xl font-bold">
               <PiWarningBold className="mb-0.5 inline text-red-500" />
-              <span className="mx-2">Anda belum melakukan Login</span>
+              <span className="mx-2">
+                {Number(paidPeserta) <
+                Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)
+                  ? "Anda belum melakukan Login"
+                  : "Kuota Peserta telah habis"}
+              </span>
               <PiWarningBold className="mb-0.5 inline text-red-500" />
             </h1>
             <div>

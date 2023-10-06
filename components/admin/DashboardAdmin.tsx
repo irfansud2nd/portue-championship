@@ -3,6 +3,7 @@ import { getKontingenUnpaid } from "@/utils/adminFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import InlineLoading from "./InlineLoading";
 import TabelKuota from "./tabels/TabelKuota";
+import TabelTingkatan from "./TabelTingkatan";
 
 const DashboardAdmin = () => {
   const {
@@ -18,8 +19,6 @@ const DashboardAdmin = () => {
     refreshAll,
     setMode,
     getUnconfirmedKontingens,
-    setUncofirmedKontingens,
-    unconfirmedKongtingens,
   } = AdminContext();
 
   const getPesertasPayment = (pesertas: DataPesertaState[]) => {
@@ -196,6 +195,9 @@ const DashboardAdmin = () => {
 
       {/* THIRD ROW */}
       <TabelKuota />
+
+      {/* FOURTH ROW */}
+      <TabelTingkatan />
     </div>
   );
 };
