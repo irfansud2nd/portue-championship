@@ -27,6 +27,7 @@ import {
   updatePersonKtpImage,
   updatePersonKkKtp,
   updatePersonKtp,
+  getPaidPeserta,
 } from "@/utils/sharedFunctions";
 import {
   DataKontingenState,
@@ -329,7 +330,7 @@ const FormPeserta = ({
       } else {
         if (pasFotoSelected && kkSelected && ktpSelected) {
           // SEND PERSON
-          getJumlahPeserta().then((res) => {
+          getPaidPeserta().then((res) => {
             if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
               setDisable(true);
               submitPeserta(
