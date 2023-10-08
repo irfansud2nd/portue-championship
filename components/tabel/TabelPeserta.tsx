@@ -19,6 +19,7 @@ const TabelPeserta = ({
   const tableHead = [
     "No",
     "Nama Lengkap",
+    "Jenis Kelamin",
     "Nama Kontingen",
     "Tingkatan",
     "Jenis Pertandingan",
@@ -54,6 +55,7 @@ const TabelPeserta = ({
               <tr key={item.id}>
                 <td>{i + 1}</td>
                 <td className="capitalize">{item.namaLengkap}</td>
+                <td>{item.jenisKelamin}</td>
                 <td className="uppercase">
                   {findNamaKontingen(kontingens, item.idKontingen)}
                 </td>
