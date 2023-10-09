@@ -19,9 +19,8 @@ import "rodal/lib/rodal.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
-import { DataKontingenState } from "@/utils/types";
+import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import Link from "next/link";
-import { getDownloadURL, ref } from "firebase/storage";
 import InlineLoading from "./InlineLoading";
 
 const KonfirmasiButton = ({
@@ -52,9 +51,19 @@ const KonfirmasiButton = ({
   const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
 
   const { user } = MyContext();
-  const { refreshKontingens } = AdminContext();
+  const { refreshKontingens, pesertas } = AdminContext();
 
   const toastId = useRef(null);
+
+  const getConfirmedPesertas = () => {
+    let length = 0;
+    pesertas.map((peserta: DataPesertaState) => {
+      if (peserta.idPembayaran == idPembayaran && peserta.confirmedPembayaran) {
+        length += 1;
+      }
+    });
+    return length;
+  };
 
   const konfirmasiHandler = () => {
     setRodalVisible(true);
@@ -81,11 +90,11 @@ const KonfirmasiButton = ({
 
   const konfirmasi = () => {
     const time = Date.now();
+    newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
     konfirmasiPeserta(pesertasToConfirm.length - 1, time);
   };
 
   const konfirmasiPeserta = (index: number, time: number) => {
-    newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
     updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
       confirmedPembayaran: true,
       infoKonfirmasi: {
@@ -256,39 +265,39 @@ const KonfirmasiButton = ({
         </div>
         <div className="w-[300px] h-[400px] mt-1 border-2 border-custom-navy relative mx-auto flex justify-center items-center">
           {infoPembayaran.buktiUrl ? (
-            <Image
+            <img
               src={infoPembayaran.buktiUrl}
               alt="bukti pembayaran"
-              fill
-              className="object-contain"
+              // fill
+              className="object-contain w-[300px] h-[400px]"
             />
           ) : null}
         </div>
         <div className="flex flex-col w-full justify-center gap-1 mt-1 ">
-          {!pesertasToConfirm.length ? (
+          {/* {pesertasToConfirm.length ? (
             <div className="mx-auto">
               <InlineLoading />
             </div>
-          ) : !paid ? (
-            <>
-              <Link
-                href={`/konfirmasi-pembayaran/${idPembayaran}`}
-                className="btn_green btn_full text-center"
-              >
-                Konfirmasi Sebagian
-              </Link>
-              <button className="btn_green btn_full" onClick={konfirmasi}>
-                Konfirmasi Semua
-              </button>
-              <button className="btn_green btn_full" onClick={cancelPayment}>
-                Batalkan Pembayaran
-              </button>
-            </>
-          ) : (
-            <button className="btn_green btn_full" onClick={cancelKonfirmasi}>
-              Batalkan Konfirmasi
+          ) : !infoKonfirmasi.idPembayaran ? ( */}
+          <>
+            <Link
+              href={`/konfirmasi-pembayaran/${idPembayaran}`}
+              className="btn_green btn_full text-center"
+            >
+              Konfirmasi Sebagian
+            </Link>
+            <button className="btn_green btn_full" onClick={konfirmasi}>
+              Konfirmasi Semua
             </button>
-          )}
+            <button className="btn_green btn_full" onClick={cancelPayment}>
+              Batalkan Pembayaran
+            </button>
+          </>
+          {/* ) : ( */}
+          <button className="btn_green btn_full" onClick={cancelKonfirmasi}>
+            Batalkan Konfirmasi
+          </button>
+          {/* )} */}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
             {paid ? "Close" : "Batal"}
           </button>
@@ -299,7 +308,11 @@ const KonfirmasiButton = ({
           onClick={konfirmasiHandler}
           className="hover:text-green-500 hover:underline transition"
         >
-          {paid ? `Confirmed by ${infoKonfirmasi.email}` : "Konfirmasi"}
+          {paid
+            ? `Confirmed by ${infoKonfirmasi.email} | ${(
+                getConfirmedPesertas() * 300000
+              ).toLocaleString("id")}`
+            : "Konfirmasi"}
         </button>
       </div>
     </>
