@@ -24,7 +24,7 @@ const DeleteKontingenButton = ({
 }: {
   kontingen: DataKontingenState;
 }) => {
-  const { pesertas, officials } = AdminContext();
+  const { pesertas, officials, refreshKontingens } = AdminContext();
 
   const [kontingenToDelete, setKontingenToDelete] =
     useState<DataKontingenState>(dataKontingenInitialValue);
@@ -176,6 +176,7 @@ const DeleteKontingenButton = ({
     deleteDoc(doc(firestore, "kontingens", kontingenToDelete.idKontingen))
       .then(() => {
         updateToast(toastId, "success", `Data Kontingen Berhasil dihapus`);
+        refreshKontingens();
         cancelDelete();
       })
       .catch((error) =>
