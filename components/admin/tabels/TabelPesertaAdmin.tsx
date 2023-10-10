@@ -60,6 +60,7 @@ const TabelPesertaAdmin = () => {
     "Konfirmai Pembayaran",
     "Dikonfirmasi oleh",
     "Email Pendaftar",
+    "Delete",
     "Waktu Pendaftaran",
     "Waktu Perubahan",
   ];
