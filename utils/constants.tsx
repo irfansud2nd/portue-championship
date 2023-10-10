@@ -132,7 +132,7 @@ export const tingkatanKategori = [
       { namaKelas: "<39" },
       { namaKelas: "Bebas" }
     ),
-    kategoriSeni: seniSma,
+    kategoriSeni: seniLengkap,
   },
   {
     tingkatan: "Dewasa",
