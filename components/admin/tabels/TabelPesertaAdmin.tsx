@@ -3,6 +3,8 @@ import {
   compare,
   findNamaKontingen,
   formatTanggal,
+  newToast,
+  updateToast,
 } from "@/utils/sharedFunctions";
 import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import FileSaver from "file-saver";
@@ -14,6 +16,12 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import InlineLoading from "../InlineLoading";
 import { triggerAsyncId } from "async_hooks";
+import { dataPesertaInitialValue } from "@/utils/constants";
+import { deleteObject, ref } from "firebase/storage";
+import { firestore, storage } from "@/utils/firebase";
+import { deleteDoc, doc } from "firebase/firestore";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const TabelPesertaAdmin = () => {
   const {
@@ -59,6 +67,10 @@ const TabelPesertaAdmin = () => {
   const tabelRef = useRef(null);
 
   const [showRodal, setShowRodal] = useState(false);
+  const [deleteRodal, setDeleteRodal] = useState(false);
+  const [pesertaToDelete, setPesertaToDelete] = useState<DataPesertaState>(
+    dataPesertaInitialValue
+  );
   const [pesertaToMap, setPesertaToMap] =
     useState<DataPesertaState[]>(pesertas);
   const [kkUrl, setKkUrl] = useState("");
@@ -83,8 +95,149 @@ const TabelPesertaAdmin = () => {
     }
   }, [selectedPesertas]);
 
+  const toastId = useRef(null);
+
+  const deleteHandler = (peserta: DataPesertaState) => {
+    setPesertaToDelete(peserta);
+    setDeleteRodal(true);
+  };
+
+  const deletePeserta = () => {
+    setDeleteRodal(false);
+    const stepController = (step: number) => {
+      newToast(toastId, "loading", `Menghapus ${pesertaToDelete.namaLengkap}`);
+      switch (step) {
+        case 1:
+          if (pesertaToDelete.ktpUrl) {
+            // DELETE KTP
+            updateToast(
+              toastId,
+              "loading",
+              `Menghapus KTP ${pesertaToDelete.namaLengkap}`
+            );
+            deleteObject(ref(storage, pesertaToDelete.ktpUrl))
+              .then(() => stepController(2))
+              .catch((error) =>
+                updateToast(
+                  toastId,
+                  "error",
+                  `Gagal Menghapus KTP ${pesertaToDelete.namaLengkap}. ${error.code}`
+                )
+              );
+          } else {
+            stepController(2);
+          }
+          break;
+        case 2:
+          if (pesertaToDelete.kkUrl) {
+            // DELETE KK
+            updateToast(
+              toastId,
+              "loading",
+              `Menghapus KK ${pesertaToDelete.namaLengkap}`
+            );
+            deleteObject(ref(storage, pesertaToDelete.kkUrl))
+              .then(() => stepController(3))
+              .catch((error) =>
+                updateToast(
+                  toastId,
+                  "error",
+                  `Gagal Menghapus KK ${pesertaToDelete.namaLengkap}. ${error.code}`
+                )
+              );
+          } else {
+            stepController(3);
+          }
+          break;
+        case 3:
+          // DELETE FOTO
+          updateToast(
+            toastId,
+            "loading",
+            `Menghapus Foto ${pesertaToDelete.namaLengkap}`
+          );
+          deleteObject(ref(storage, pesertaToDelete.fotoUrl))
+            .then(() => stepController(4))
+            .catch((error) =>
+              updateToast(
+                toastId,
+                "error",
+                `Gagal Menghapus KTP ${pesertaToDelete.namaLengkap}. ${error.code}`
+              )
+            );
+          break;
+        case 4:
+          // DELETE DATA
+          updateToast(
+            toastId,
+            "loading",
+            `Menghapus Data ${pesertaToDelete.namaLengkap}`
+          );
+          deleteDoc(doc(firestore, "pesertas", pesertaToDelete.id))
+            .then(() => {
+              updateToast(
+                toastId,
+                "success",
+                `Data ${pesertaToDelete.namaLengkap} Berhasil dihapus`
+              );
+            })
+            .catch((error) =>
+              updateToast(
+                toastId,
+                "error",
+                `Gagal Menghapus Data ${pesertaToDelete.namaLengkap}. ${error.code}`
+              )
+            );
+          break;
+      }
+    };
+    stepController(1);
+  };
+
+  const cancelDelete = () => {
+    setPesertaToDelete(dataPesertaInitialValue);
+    setDeleteRodal(false);
+  };
+
   return (
     <div className="w-fit">
+      <ToastContainer />
+      {/* DELETE RODAL */}
+      <Rodal visible={deleteRodal} onClose={cancelDelete}>
+        <div className="flex flex-col h-full justify-around items-center">
+          <h1 className="font-bold text-lg">Hapus Peserta</h1>
+          <p>
+            Nama Peserta: <b>{pesertaToDelete.namaLengkap.toUpperCase()}</b>
+          </p>
+          <p>
+            Kelas Pertandingan:{" "}
+            <b>
+              {pesertaToDelete.tingkatanPertandingan} |{" "}
+              {pesertaToDelete.kategoriPertandingan}
+            </b>
+          </p>
+          <p>
+            Nama Kontingen:{" "}
+            <b>
+              {findNamaKontingen(
+                kontingens,
+                pesertaToDelete.idKontingen
+              ).toUpperCase()}
+            </b>
+          </p>
+
+          <div className="flex gap-2">
+            <button className="btn_red btn_full" onClick={deletePeserta}>
+              Delete
+            </button>
+            <button className="btn_green btn_full" onClick={cancelDelete}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </Rodal>
+      {/* DELETE RODAL */}
+
       <Rodal
         visible={showRodal}
         onClose={() => {
@@ -269,6 +422,16 @@ const TabelPesertaAdmin = () => {
                   {peserta.infoKonfirmasi ? peserta.infoKonfirmasi.email : "-"}
                 </td>
                 <td>{peserta.creatorEmail}</td>
+                <td>
+                  {peserta.idPembayaran ? null : (
+                    <button
+                      className="btn_red btn_full text-white"
+                      onClick={() => deleteHandler(peserta)}
+                    >
+                      Delete
+                    </button>
+                  )}
+                </td>
                 <td>{formatTanggal(peserta.waktuPendaftaran, true)}</td>
                 <td className="whitespace-nowrap">
                   {formatTanggal(peserta.waktuPerubahan, true)}

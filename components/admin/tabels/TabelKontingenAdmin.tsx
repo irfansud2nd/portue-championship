@@ -221,8 +221,8 @@ const TabelKontingenAdmin = () => {
               );
             break;
         }
-        stepController(1);
       };
+      stepController(1);
     }
   };
 
@@ -276,8 +276,8 @@ const TabelKontingenAdmin = () => {
               );
             break;
         }
-        stepController(1);
       };
+      stepController(1);
     }
   };
 
@@ -298,6 +298,7 @@ const TabelKontingenAdmin = () => {
 
   return (
     <div>
+      <ToastContainer />
       <Rodal visible={rodalVisible} onClose={cancelDelete}>
         <div className="flex flex-col h-full justify-around items-center">
           <h1 className="font-bold text-lg">Hapus Kontingen</h1>
