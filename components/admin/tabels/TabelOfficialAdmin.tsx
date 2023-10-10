@@ -58,7 +58,6 @@ const TabelOfficialAdmin = () => {
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
         Tabel Official
       </h1>
-      <p>{selectedOfficials.length}</p>
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">

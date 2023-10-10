@@ -105,8 +105,8 @@ const TabelPesertaAdmin = () => {
 
   const deletePeserta = () => {
     setDeleteRodal(false);
+    newToast(toastId, "loading", `Menghapus ${pesertaToDelete.namaLengkap}`);
     const stepController = (step: number) => {
-      newToast(toastId, "loading", `Menghapus ${pesertaToDelete.namaLengkap}`);
       switch (step) {
         case 1:
           if (pesertaToDelete.ktpUrl) {
