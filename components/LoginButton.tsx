@@ -31,24 +31,25 @@ const LoginButton = () => {
           <AiOutlineLoading3Quarters className="animate-spin h-7" />
         </div>
       ) : user ? (
-        !kuota ? (
-          <div className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center">
-            <InlineLoading />
-          </div>
-        ) : kuota < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ? (
-          <Link
-            href="/halaman-pendaftaran"
-            className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"
-          >
-            {/* Halaman Pendaftaran */}
-            Edit Data & Pembayaran
-          </Link>
-        ) : (
-          <p className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center">
-            Kuota Pendaftaran Sudah Habis
-          </p>
-        )
+        // !kuota ? (
+        //   <div className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center">
+        //     <InlineLoading />
+        //   </div>
+        // )
+        // : kuota < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM) ?
+        <Link
+          href="/halaman-pendaftaran"
+          className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"
+        >
+          {/* Halaman Pendaftaran */}
+          Edit Data & Pembayaran
+        </Link>
       ) : (
+        // : (
+        //   <p className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center">
+        //     Kuota Pendaftaran Sudah Habis
+        //   </p>
+        // )
         <button
           className="w-full rounded-full font-semibold text-lg btn_navy_gold"
           onClick={handleLogin}
