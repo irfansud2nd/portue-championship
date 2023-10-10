@@ -355,7 +355,7 @@ const DashboardAdmin = () => {
             ) : (
               getPesertasPayment(pesertas).confirmed
             )}{" "}
-            | {pesertaConfirmed}
+            {/* | {pesertaConfirmed} */}
           </p>
           <button
             className="text-2xl font-extrabold text-green-500"
@@ -377,7 +377,7 @@ const DashboardAdmin = () => {
             ) : (
               getPesertasPayment(pesertas).unconfirmed
             )}{" "}
-            | {pesertaUnconfimed}
+            {/* | {pesertaUnconfimed} */}
           </p>
           <button
             className="text-2xl font-extrabold text-yellow-500 hover:underline"
@@ -400,7 +400,7 @@ const DashboardAdmin = () => {
               getPesertasPayment(pesertas).confirmed +
               getPesertasPayment(pesertas).unconfirmed
             )}{" "}
-            | {pesertaPaid}
+            {/* | {pesertaPaid} */}
           </p>
           <p className="text-2xl font-extrabold text-blue-500">
             {kontingensLoading ? (
@@ -420,7 +420,7 @@ const DashboardAdmin = () => {
             ) : (
               getPesertasPayment(pesertas).unpaid
             )}{" "}
-            | {pesertaUnpaid}
+            {/* | {pesertaUnpaid} */}
           </p>
           <p className="text-2xl font-extrabold text-red-500">
             {kontingensLoading ? (
