@@ -22,7 +22,7 @@ const KategoriPendaftaran = ({
                 : "bg-custom-navy text-custom-yellow"
             }
             ${i == 0 && "rounded-t-md"}
-            ${i == 3 && "rounded-b-md"}
+            ${i == kategoriPendaftaranArray.length - 1 && "rounded-b-md"}
             `}
           >
             {kategori}

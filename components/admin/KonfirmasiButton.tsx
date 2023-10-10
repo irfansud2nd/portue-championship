@@ -274,30 +274,32 @@ const KonfirmasiButton = ({
           ) : null}
         </div>
         <div className="flex flex-col w-full justify-center gap-1 mt-1 ">
-          {/* {pesertasToConfirm.length ? (
+          {!pesertasToConfirm.length ? (
             <div className="mx-auto">
               <InlineLoading />
             </div>
-          ) : !infoKonfirmasi.idPembayaran ? ( */}
-          <>
-            <Link
-              href={`/konfirmasi-pembayaran/${idPembayaran}`}
-              className="btn_green btn_full text-center"
-            >
-              Konfirmasi Sebagian
-            </Link>
-            <button className="btn_green btn_full" onClick={konfirmasi}>
-              Konfirmasi Semua
-            </button>
-            <button className="btn_green btn_full" onClick={cancelPayment}>
-              Batalkan Pembayaran
-            </button>
-          </>
-          {/* ) : ( */}
-          <button className="btn_green btn_full" onClick={cancelKonfirmasi}>
-            Batalkan Konfirmasi
-          </button>
-          {/* )} */}
+          ) : (
+            // !infoKonfirmasi.idPembayaran ?
+            <>
+              <Link
+                href={`/konfirmasi-pembayaran/${idPembayaran}`}
+                className="btn_green btn_full text-center"
+              >
+                Konfirmasi Sebagian
+              </Link>
+              <button className="btn_green btn_full" onClick={konfirmasi}>
+                Konfirmasi Semua
+              </button>
+              <button className="btn_red btn_full" onClick={cancelPayment}>
+                Batalkan Pembayaran
+              </button>
+              {/* </> */}
+              {/* ) : ( */}
+              <button className="btn_red btn_full" onClick={cancelKonfirmasi}>
+                Batalkan Konfirmasi
+              </button>
+            </>
+          )}
           <button className="btn_red btn_full" onClick={resetKonfirmasi}>
             {paid ? "Close" : "Batal"}
           </button>

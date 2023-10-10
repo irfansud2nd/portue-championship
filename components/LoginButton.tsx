@@ -40,7 +40,8 @@ const LoginButton = () => {
             href="/halaman-pendaftaran"
             className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"
           >
-            Halaman Pendaftaran
+            {/* Halaman Pendaftaran */}
+            Edit Data & Pembayaran
           </Link>
         ) : (
           <p className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center">

@@ -10,7 +10,7 @@ const TabelKontingen = ({
   handleDelete: (data: DataKontingenState) => void;
   handleEdit: (data: DataKontingenState) => void;
 }) => {
-  const tableHead = ["No", "Nama Kontingen", "Official", "Peserta", "Aksi"];
+  const tableHead = ["No", "Nama Kontingen", "Official", "Peserta"];
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
@@ -30,12 +30,12 @@ const TabelKontingen = ({
               <td className="uppercase">{item.namaKontingen}</td>
               <td>{item.officials.length}</td>
               <td>{item.pesertas.length}</td>
-              <td>
+              {/* <td>
                 <TabelActionButtons
                   handleDelete={() => handleDelete(item)}
                   handleEdit={() => handleEdit(item)}
                 />
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>

@@ -253,6 +253,7 @@ const FormOfficial = ({
     setPrevData(dataOfficialInitialValue);
     clearInputImage();
     setDisable(false);
+    setUpdating(false);
   };
 
   // DELETE - STEP 1 - DELETE BUTTON
@@ -334,168 +335,183 @@ const FormOfficial = ({
       {/* RODAL */}
 
       {/* FORM */}
-      <form
-        className="grid grid-rows-[1fr_auto] gap-2"
-        onSubmit={(e) => saveOfficial(e)}
-      >
-        {/* BARIS 1 */}
-        <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3">
-          {/* KOLOM KIRI */}
-          {/* PAS FOT0 */}
-          <div className="input_container max-w-[150px]">
-            <label className="input_label text-center">Pas Foto</label>
-            <p className="-mt-2 text-sm text-gray-600 text-center">Maks. 1MB</p>
-            <div
-              className={`
+      {updating ? (
+        <form
+          className="grid grid-rows-[1fr_auto] gap-2"
+          onSubmit={(e) => saveOfficial(e)}
+        >
+          {/* BARIS 1 */}
+          <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3">
+            {/* KOLOM KIRI */}
+            {/* PAS FOT0 */}
+            <div className="input_container max-w-[150px]">
+              <label className="input_label text-center">Pas Foto</label>
+              <p className="-mt-2 text-sm text-gray-600 text-center">
+                Maks. 1MB
+              </p>
+              <div
+                className={`
             ${inputErrorMessages.pasFoto ? "input_error" : "input"}
             bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
-            >
-              {imagePreviewSrc && (
-                <Image
-                  src={imagePreviewSrc}
-                  alt="preview"
-                  fill
-                  className="object-cover rounded-md"
-                />
-              )}
-            </div>
-            <input
-              disabled={disable}
-              ref={inputImageRef}
-              accept=".jpg, .jpeg, .png"
-              type="file"
-              multiple={false}
-              onChange={(e) =>
-                e.target.files && imageChangeHandler(e.target.files[0])
-              }
-              className="input_file mt-1 w-full text-transparent"
-            />
-            <p className="text-red-500 text-center">
-              {inputErrorMessages.pasFoto}
-            </p>
-          </div>
-          {/* PAS FOT0 */}
-          {/* KOLOM KIRI */}
-
-          {/* KOLOM KANAN */}
-          <div className="w-full flex flex-wrap justify-center sm:justify-normal gap-3 h-fit">
-            {/* NAMA LENGKAP */}
-            <div className="input_container">
-              <label className="input_label">Nama Lengkap</label>
+              >
+                {imagePreviewSrc && (
+                  // <Image
+                  //   src={imagePreviewSrc}
+                  //   alt="preview"
+                  //   fill
+                  //   className="object-cover rounded-md"
+                  // />
+                  <img
+                    src={imagePreviewSrc}
+                    alt="preview"
+                    className="w-[150px] h-[200px] object-cover rounded-md"
+                  />
+                )}
+              </div>
               <input
                 disabled={disable}
-                className={`
-                  ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
-                type="text"
-                value={data.namaLengkap}
+                ref={inputImageRef}
+                accept=".jpg, .jpeg, .png"
+                type="file"
+                multiple={false}
                 onChange={(e) =>
-                  setData({ ...data, namaLengkap: e.target.value })
+                  e.target.files && imageChangeHandler(e.target.files[0])
                 }
+                className="input_file mt-1 w-full text-transparent"
               />
-              <p className="text-red-500">{inputErrorMessages.namaLengkap}</p>
+              <p className="text-red-500 text-center">
+                {inputErrorMessages.pasFoto}
+              </p>
             </div>
-            {/* NAMA LENGKAP */}
+            {/* PAS FOT0 */}
+            {/* KOLOM KIRI */}
 
-            {/* JENIS KELAMIN */}
-            <div className="input_container">
-              <label className="input_label">Jenis Kelamin</label>
-              <select
-                disabled={disable}
-                className={`
+            {/* KOLOM KANAN */}
+            <div className="w-full flex flex-wrap justify-center sm:justify-normal gap-3 h-fit">
+              {/* NAMA LENGKAP */}
+              <div className="input_container">
+                <label className="input_label">Nama Lengkap</label>
+                <input
+                  disabled={disable}
+                  className={`
+                  ${inputErrorMessages.namaLengkap ? "input_error" : "input"}`}
+                  type="text"
+                  value={data.namaLengkap}
+                  onChange={(e) =>
+                    setData({ ...data, namaLengkap: e.target.value })
+                  }
+                />
+                <p className="text-red-500">{inputErrorMessages.namaLengkap}</p>
+              </div>
+              {/* NAMA LENGKAP */}
+
+              {/* JENIS KELAMIN */}
+              <div className="input_container">
+                <label className="input_label">Jenis Kelamin</label>
+                <select
+                  disabled={disable}
+                  className={`
                   ${inputErrorMessages.jenisKelamin ? "input_error" : "input"}
                   `}
-                value={data.jenisKelamin}
-                onChange={(e) =>
-                  setData({ ...data, jenisKelamin: e.target.value })
-                }
-              >
-                {jenisKelamin.map((item) => (
-                  <option value={item} key={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-              <p className="text-red-500">{inputErrorMessages.jenisKelamin}</p>
-            </div>
-            {/* JENIS KELAMIN */}
-
-            {/* JABATAN */}
-            <div className="input_container">
-              <label className="input_label">Jabatan</label>
-              <select
-                disabled={disable}
-                className={`
-                  ${inputErrorMessages.jabatan ? "input_error" : "input"}
-                  `}
-                value={data.jabatan}
-                onChange={(e) => setData({ ...data, jabatan: e.target.value })}
-              >
-                {jabatanOfficials.map((item) => (
-                  <option value={item} className="capitalize" key={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-              <p className="text-red-500">{inputErrorMessages.jabatan}</p>
-            </div>
-            {/* JABATAN */}
-
-            {/* NAMA KONTINGEN */}
-            <div className="input_container">
-              <label className="input_label">Nama Kontingen</label>
-              <select
-                disabled={disable}
-                value={data.idKontingen}
-                onChange={(e) => {
-                  setData({
-                    ...data,
-                    idKontingen: e.target.value,
-                  });
-                }}
-                className={`
-                    ${inputErrorMessages.idKontingen ? "input_error" : "input"}
-                  `}
-              >
-                {kontingens.length &&
-                  kontingens.map((kontingen) => (
-                    <option
-                      value={kontingen.idKontingen}
-                      key={kontingen.idKontingen}
-                    >
-                      {kontingen.namaKontingen}
+                  value={data.jenisKelamin}
+                  onChange={(e) =>
+                    setData({ ...data, jenisKelamin: e.target.value })
+                  }
+                >
+                  {jenisKelamin.map((item) => (
+                    <option value={item} key={item}>
+                      {item}
                     </option>
                   ))}
-              </select>
-              <p className="text-red-500">{inputErrorMessages.idKontingen}</p>
-            </div>
-            {/* NAMA KONTINGEN */}
-          </div>
-          {/* KOLOM KANAN */}
-        </div>
-        {/* BARIS 1 */}
+                </select>
+                <p className="text-red-500">
+                  {inputErrorMessages.jenisKelamin}
+                </p>
+              </div>
+              {/* JENIS KELAMIN */}
 
-        {/* BARIS 2 */}
-        {/* BOTTONS */}
-        <div className="mt-2 flex gap-2 justify-end self-end">
-          <button
-            disabled={disable}
-            className="btn_red btn_full"
-            onClick={resetData}
-            type="button"
-          >
-            Batal
-          </button>
-          <button
-            disabled={disable}
-            className="btn_green btn_full"
-            type="submit"
-          >
-            {updating ? "Perbaharui" : "Simpan"}
-          </button>
-        </div>
-        {/* BUTTONS */}
-        {/* BARIS 2 */}
-      </form>
+              {/* JABATAN */}
+              <div className="input_container">
+                <label className="input_label">Jabatan</label>
+                <select
+                  disabled={disable}
+                  className={`
+                  ${inputErrorMessages.jabatan ? "input_error" : "input"}
+                  `}
+                  value={data.jabatan}
+                  onChange={(e) =>
+                    setData({ ...data, jabatan: e.target.value })
+                  }
+                >
+                  {jabatanOfficials.map((item) => (
+                    <option value={item} className="capitalize" key={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-red-500">{inputErrorMessages.jabatan}</p>
+              </div>
+              {/* JABATAN */}
+
+              {/* NAMA KONTINGEN */}
+              <div className="input_container">
+                <label className="input_label">Nama Kontingen</label>
+                <select
+                  disabled={disable}
+                  value={data.idKontingen}
+                  onChange={(e) => {
+                    setData({
+                      ...data,
+                      idKontingen: e.target.value,
+                    });
+                  }}
+                  className={`
+                    ${inputErrorMessages.idKontingen ? "input_error" : "input"}
+                  uppercase
+                    `}
+                >
+                  {kontingens.length &&
+                    kontingens.map((kontingen) => (
+                      <option
+                        value={kontingen.idKontingen}
+                        key={kontingen.idKontingen}
+                        className="uppercase"
+                      >
+                        {kontingen.namaKontingen}
+                      </option>
+                    ))}
+                </select>
+                <p className="text-red-500">{inputErrorMessages.idKontingen}</p>
+              </div>
+              {/* NAMA KONTINGEN */}
+            </div>
+            {/* KOLOM KANAN */}
+          </div>
+          {/* BARIS 1 */}
+
+          {/* BARIS 2 */}
+          {/* BOTTONS */}
+          <div className="mt-2 flex gap-2 justify-end self-end">
+            <button
+              disabled={disable}
+              className="btn_red btn_full"
+              onClick={resetData}
+              type="button"
+            >
+              Batal
+            </button>
+            <button
+              disabled={disable}
+              className="btn_green btn_full"
+              type="submit"
+            >
+              {updating ? "Perbaharui" : "Simpan"}
+            </button>
+          </div>
+          {/* BUTTONS */}
+          {/* BARIS 2 */}
+        </form>
+      ) : null}
       {/* FORM */}
     </div>
   );

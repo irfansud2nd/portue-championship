@@ -44,11 +44,11 @@ const TabelOfficial = ({
                     {item}
                   </th>
                 ))}
-                {handleDelete && handleEdit && (
+                {/* {handleDelete && handleEdit && (
                   <th key="aksi" scope="col">
                     Aksi
                   </th>
-                )}
+                )} */}
               </tr>
             </thead>
             <tbody>
@@ -61,14 +61,14 @@ const TabelOfficial = ({
                   <td className="uppercase">
                     {findNamaKontingen(kontingens, item.idKontingen)}
                   </td>
-                  {handleDelete && handleEdit && (
+                  {/* {handleDelete && handleEdit && (
                     <td>
                       <TabelActionButtons
                         handleDelete={() => handleDelete(item)}
                         handleEdit={() => handleEdit(item)}
                       />
                     </td>
-                  )}
+                  )} */}
                 </tr>
               ))}
             </tbody>

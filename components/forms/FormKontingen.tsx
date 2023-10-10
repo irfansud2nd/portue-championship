@@ -264,9 +264,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           Memuat Data Kontingen... <BiLoader className="animate-spin inline" />
         </p>
       ) : (
-        <p>
-          <p>Belum ada Kontingen yang didaftarkan</p>
-        </p>
+        <p>Belum ada Kontingen yang didaftarkan</p>
       )}
       <Rodal visible={modalVisible} onClose={() => setModalVisible(false)}>
         <div className="h-full w-full">

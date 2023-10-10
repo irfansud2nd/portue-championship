@@ -4,6 +4,7 @@ import TabelPesertaAdmin from "./tabels/TabelPesertaAdmin";
 import TabelKontingenAdmin from "./tabels/TabelKontingenAdmin";
 import TabelOfficialAdmin from "./tabels/TabelOfficialAdmin";
 import CustomTabel from "./tabels/CustomTabel";
+import TabelPembayaran from "./tabels/TabelPembayaran";
 
 const TabelAdmin = () => {
   const {
@@ -15,6 +16,7 @@ const TabelAdmin = () => {
     setSelectedPesertas,
     setSelectedOfficials,
     setUncofirmedKontingens,
+    setCofirmedKontingens,
   } = AdminContext();
   return (
     <div className="bg-gray-200 rounded-md p-2">
@@ -27,6 +29,7 @@ const TabelAdmin = () => {
           setSelectedPesertas([]);
           setSelectedOfficials([]);
           setUncofirmedKontingens([]);
+          setCofirmedKontingens([]);
         }}
       >
         Dashboard
@@ -49,6 +52,7 @@ const TabelAdmin = () => {
       {(mode == "official" || selectedKontingen.idKontingen) && (
         <TabelOfficialAdmin />
       )}
+      {mode == "pembayaran" && <TabelPembayaran />}
     </div>
   );
 };

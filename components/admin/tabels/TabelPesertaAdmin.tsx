@@ -47,6 +47,7 @@ const TabelPesertaAdmin = () => {
     "Kategori Pertandingan",
     "Nama Kontingen",
     "Status Pembayaran",
+    "ID Pembayaran",
     "Waktu Pembayaran",
     "Konfirmai Pembayaran",
     "Dikonfirmasi oleh",
@@ -261,6 +262,7 @@ const TabelPesertaAdmin = () => {
                     <span className="text-red-500">Belum dibayar</span>
                   )}
                 </td>
+                <td>{peserta.idPembayaran}</td>
                 <td>{formatTanggal(peserta.infoPembayaran.waktu)}</td>
                 <td>{peserta.confirmedPembayaran ? "Yes" : "No"}</td>
                 <td>

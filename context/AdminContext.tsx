@@ -29,6 +29,9 @@ export const AdminContextProvider = ({
   const [unconfirmedKongtingens, setUncofirmedKontingens] = useState<
     DataKontingenState[]
   >([]);
+  const [confirmedKontingens, setCofirmedKontingens] = useState<
+    DataKontingenState[]
+  >([]);
   const [pesertas, setPesertas] = useState<DataPesertaState[]>([]);
   const [selectedPesertas, setSelectedPesertas] = useState<DataPesertaState[]>(
     []
@@ -100,6 +103,7 @@ export const AdminContextProvider = ({
     if (selectedKontingen.idKontingen) {
       setSelectedKategori("");
       setUncofirmedKontingens([]);
+      setCofirmedKontingens([]);
       setSelectedOfficials(
         getOfficialsByKontingen(selectedKontingen.idKontingen, officials)
       );
@@ -120,6 +124,16 @@ export const AdminContextProvider = ({
       if (kontingen.unconfirmedPembayaran.length) selected.push(kontingen);
     });
     setUncofirmedKontingens(selected);
+  };
+
+  // GET UNCORFIMED KONTINGENS
+  const getConfirmedKontingens = () => {
+    setMode("kontingen");
+    let selected: DataKontingenState[] = [];
+    kontingens.map((kontingen) => {
+      if (kontingen.confirmedPembayaran.length) selected.push(kontingen);
+    });
+    setCofirmedKontingens(selected);
   };
 
   // CEK KUOTA
@@ -200,7 +214,6 @@ export const AdminContextProvider = ({
         setMode,
         selectedKontingen,
         setSelectedKontingen,
-        getUnconfirmedKontingens,
         cekKuota,
         selectedKategori,
         setSelectedKategori,
@@ -208,8 +221,12 @@ export const AdminContextProvider = ({
         setSelectedPesertas,
         selectedOfficials,
         setSelectedOfficials,
+        getUnconfirmedKontingens,
         unconfirmedKongtingens,
         setUncofirmedKontingens,
+        getConfirmedKontingens,
+        confirmedKontingens,
+        setCofirmedKontingens,
       }}
     >
       {children}
