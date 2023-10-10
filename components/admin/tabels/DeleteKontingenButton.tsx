@@ -57,6 +57,7 @@ const DeleteKontingenButton = ({
   };
 
   const deleteData = () => {
+    console.log("deleteData");
     deletePesertas(pesertasToDelete.length - 1);
     newToast(toastId, "loading", `Menghapus`);
   };
@@ -65,6 +66,7 @@ const DeleteKontingenButton = ({
     if (index < 0) {
       deleteOfficials(officialsToDelete.length - 1);
     } else {
+      console.log("deletePesertas");
       const peserta = pesertasToDelete[index];
       const stepController = (step: number) => {
         switch (step) {
@@ -136,6 +138,7 @@ const DeleteKontingenButton = ({
     if (index < 0) {
       deleteKontingen();
     } else {
+      console.log("deleteOfficials");
       const official = officialsToDelete[index];
       const stepController = (step: number) => {
         switch (step) {
@@ -172,11 +175,13 @@ const DeleteKontingenButton = ({
   };
 
   const deleteKontingen = () => {
+    console.log("deleteKontingen");
     updateToast(toastId, "loading", "Menghapus Kontingen");
     deleteDoc(doc(firestore, "kontingens", kontingenToDelete.idKontingen))
       .then(() => {
-        updateToast(toastId, "success", `Data Kontingen Berhasil dihapus`);
+        console.log("done");
         refreshKontingens();
+        updateToast(toastId, "success", `Data Kontingen Berhasil dihapus`);
         cancelDelete();
       })
       .catch((error) =>

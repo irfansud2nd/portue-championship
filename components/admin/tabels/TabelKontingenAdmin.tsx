@@ -221,8 +221,10 @@ const TabelKontingenAdmin = () => {
               </td>
               <td>{kontingen.creatorEmail}</td>
               <td>
-                {kontingen.idPembayaran.length ? null : (
-                  <DeleteKontingenButton kontingen={kontingen} />
+                {kontingen.idPembayaran.length > 0 ? null : (
+                  <div>
+                    <DeleteKontingenButton kontingen={kontingen} />
+                  </div>
                 )}
               </td>
               <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>
