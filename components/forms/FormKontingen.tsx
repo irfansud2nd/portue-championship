@@ -322,7 +322,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           )}
         </div>
       </Rodal>
-      {(updating || kontingens.length == 0) && (
+      {updating && (
         <form onSubmit={(e) => saveKontingen(e)}>
           <div className="input_container">
             <label className="input_label">Nama Kontingen</label>
