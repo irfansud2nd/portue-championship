@@ -283,6 +283,7 @@ const KonfirmasiButton = ({
             <>
               <Link
                 href={`/konfirmasi-pembayaran/${idPembayaran}`}
+                target="_blank"
                 className="btn_green btn_full text-center"
               >
                 Konfirmasi Sebagian
