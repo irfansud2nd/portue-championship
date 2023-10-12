@@ -92,7 +92,7 @@ const TabelKontingenAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.id && (
+        {!selectedKontingen.idKontingen && (
           <button className="btn_green btn_full" onClick={refreshKontingens}>
             Refresh
           </button>

@@ -76,7 +76,11 @@ const FormOfficial = ({
   // SET DATA USER
   useEffect(() => {
     if (user && kontingens.length == 0) {
-      setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
+      setData({
+        ...data,
+        creatorEmail: user.email,
+        creatorUid: user.uid,
+      });
     }
     if (user && kontingens.length !== 0) {
       setData({

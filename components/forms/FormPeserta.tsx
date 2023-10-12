@@ -14,8 +14,6 @@ import {
   getInputErrorPeserta,
   updatePerson,
   updatePersonImage,
-  updatePersonImageKontingen,
-  updatePersonKontingen,
   getJumlahPeserta,
   newToast,
   submitPeserta,
@@ -813,6 +811,7 @@ const FormPeserta = ({
                 </div> */}
                 {/* NIK */}
 
+                {/* EDIT ONLY */}
                 {/* JENIS KELAMIN */}
                 <div className="input_container">
                   <label className="input_label">Jenis Kelamin</label>
@@ -837,9 +836,10 @@ const FormPeserta = ({
                   </p>
                 </div>
                 {/* JENIS KELAMIN */}
+                {/* EDIT ONLY */}
 
                 {/* ALAMAT LENGKAP */}
-                {/* <div className="input_container">
+                <div className="input_container">
                   <label className="input_label">Alamat Lengkap</label>
                   <textarea
                     disabled={disable}
@@ -857,11 +857,11 @@ const FormPeserta = ({
                   <p className="text-red-500">
                     {inputErrorMessages.alamatLengkap}
                   </p>
-                </div> */}
+                </div>
                 {/* ALAMAT LENGKAP */}
 
                 {/* TEMPAT LAHIR */}
-                {/* <div className="input_container">
+                <div className="input_container">
                   <label className="input_label">Tempat Lahir</label>
                   <input
                     disabled={disable}
@@ -880,11 +880,11 @@ const FormPeserta = ({
                   <p className="text-red-500">
                     {inputErrorMessages.tempatLahir}
                   </p>
-                </div> */}
+                </div>
                 {/* TEMPAT LAHIR */}
 
                 {/* TANGGAL LAHIR */}
-                {/* <div className="input_container">
+                <div className="input_container">
                   <label className="input_label">Tanggal Lahir</label>
                   <input
                     disabled={disable}
@@ -898,11 +898,11 @@ const FormPeserta = ({
                   <p className="text-red-500">
                     {inputErrorMessages.tanggalLahir}
                   </p>
-                </div> */}
+                </div>
                 {/* TANGGAL LAHIR */}
 
                 {/* EMAIL */}
-                {/* <div className="input_container">
+                <div className="input_container">
                   <label className="input_label">
                     Email{" "}
                     {data.umur >= 17 || data.umur == "" ? (
@@ -931,11 +931,11 @@ const FormPeserta = ({
                 `}
                   />
                   <p className="text-red-500">{inputErrorMessages.email}</p>
-                </div> */}
+                </div>
                 {/* EMAIL */}
 
                 {/* NO HP */}
-                {/* <div className="input_container">
+                <div className="input_container">
                   <label className="input_label">
                     Nomor HP{" "}
                     {data.umur >= 17 || data.umur == "" ? (
@@ -964,11 +964,11 @@ const FormPeserta = ({
                 `}
                   />
                   <p className="text-red-500">{inputErrorMessages.noHp}</p>
-                </div> */}
+                </div>
                 {/* NO HP */}
 
                 {/* KTP */}
-                {/* <div className="input_container">
+                <div className="input_container">
                   <label className="input_label">
                     KTP{" "}
                     {data.umur >= 17 || data.umur == "" ? (
@@ -999,7 +999,7 @@ const FormPeserta = ({
                   <p className="text-red-500">
                     {!updating && inputErrorMessages.ktp}
                   </p>
-                </div> */}
+                </div>
                 {/* KTP */}
 
                 {/* KARTU KELUARGA */}
@@ -1146,6 +1146,7 @@ const FormPeserta = ({
                 </div> */}
                 {/* TINGKATAN */}
 
+                {/* EDIT ONLY */}
                 {/* JENIS PERTANDINGAN */}
                 <div className="input_container">
                   <label className="input_label">Jenis Pertaindingan</label>
@@ -1309,6 +1310,7 @@ const FormPeserta = ({
                   </div>
                 )}
                 {/* KATEGORI TANDING */}
+                {/* EDIT ONLY */}
               </div>
               {/* KOLOM KANAN */}
             </div>

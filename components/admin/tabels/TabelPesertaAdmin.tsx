@@ -15,13 +15,14 @@ import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import InlineLoading from "../InlineLoading";
-import { triggerAsyncId } from "async_hooks";
-import { dataPesertaInitialValue } from "@/utils/constants";
+import { dataPesertaInitialValue, tingkatanKategori } from "@/utils/constants";
 import { deleteObject, ref } from "firebase/storage";
 import { firestore, storage } from "@/utils/firebase";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import PersyaratanButton from "./PersyaratanButton";
+import CheckAllPersyaratanButton from "./CheckAllPersyaratanButton";
 
 const TabelPesertaAdmin = () => {
   const {
@@ -77,6 +78,10 @@ const TabelPesertaAdmin = () => {
   const [kkUrl, setKkUrl] = useState("");
   const [ktpUrl, setKtpUrl] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
+  const [keteranganSehats, setKeteranganSehats] = useState<string[]>([]);
+  const [rekomendasis, setRekomendasis] = useState<string[]>([]);
+  const [rapots, setRapots] = useState<string[]>([]);
+  const [kartuKeluargas, setKartuKeluargas] = useState<string[]>([]);
 
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
@@ -90,7 +95,9 @@ const TabelPesertaAdmin = () => {
 
   useEffect(() => {
     if (selectedPesertas.length) {
-      setPesertaToMap(selectedPesertas);
+      let arr = [...selectedPesertas];
+      arr = arr.sort(compare("umur", "asc"));
+      setPesertaToMap(arr);
     } else {
       setPesertaToMap(pesertas);
     }
@@ -200,6 +207,163 @@ const TabelPesertaAdmin = () => {
     setDeleteRodal(false);
   };
 
+  const checkKeteranganSehat = (add: boolean, id: string) => {
+    if (add) {
+      setKeteranganSehats((prev) => [...prev, id]);
+    } else {
+      let arr = [...keteranganSehats];
+      arr.splice(arr.indexOf(id), 1);
+      setKeteranganSehats(arr);
+    }
+  };
+  const checkRekomendasi = (add: boolean, id: string) => {
+    if (add) {
+      setRekomendasis((prev) => [...prev, id]);
+    } else {
+      let arr = [...rekomendasis];
+      arr.splice(arr.indexOf(id), 1);
+      setRekomendasis(arr);
+    }
+  };
+  const checkRapot = (add: boolean, id: string) => {
+    if (add) {
+      setRapots((prev) => [...prev, id]);
+    } else {
+      let arr = [...rapots];
+      arr.splice(arr.indexOf(id), 1);
+      setRapots(arr);
+    }
+  };
+  const checkKartuKeluarga = (add: boolean, id: string) => {
+    if (add) {
+      setKartuKeluargas((prev) => [...prev, id]);
+    } else {
+      let arr = [...kartuKeluargas];
+      arr.splice(arr.indexOf(id), 1);
+      setKartuKeluargas(arr);
+    }
+  };
+
+  const checkAllPersyaratan = (add: boolean, tipe: string, ids: string[]) => {
+    if (add) {
+      switch (tipe) {
+        case "keteranganSehat":
+          const arr1 = Array.from(new Set(keteranganSehats.concat(ids)));
+          setKeteranganSehats(arr1);
+          break;
+        case "rekomendasi":
+          const arr2 = Array.from(new Set(rekomendasis.concat(ids)));
+          setRekomendasis(arr2);
+          break;
+        case "rapot":
+          const arr3 = Array.from(new Set(rapots.concat(ids)));
+          setRapots(arr3);
+          break;
+        case "kartuKeluarga":
+          const arr4 = Array.from(new Set(kartuKeluargas.concat(ids)));
+          setKartuKeluargas(arr4);
+          break;
+      }
+    } else {
+      switch (tipe) {
+        case "keteranganSehat":
+          let arr1 = [...keteranganSehats];
+          const result1 = arr1.filter((item) => !ids.includes(item));
+          setKeteranganSehats(result1);
+          break;
+        case "rekomendasi":
+          let arr2 = [...rekomendasis];
+          const result2 = arr2.filter((item) => !ids.includes(item));
+          setRekomendasis(result2);
+          break;
+        case "rapot":
+          let arr3 = [...rapots];
+          const result3 = arr3.filter((item) => !ids.includes(item));
+          setRapots(result3);
+          break;
+        case "kartuKeluarga":
+          let arr4 = [...kartuKeluargas];
+          const result4 = arr4.filter((item) => !ids.includes(item));
+          setKartuKeluargas(result4);
+          break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchPersyaratan();
+  }, [selectedPesertas]);
+
+  const fetchPersyaratan = () => {
+    if (selectedPesertas.length) {
+      let keteranganSehat: string[] = [];
+      let rekomendasi: string[] = [];
+      let rapot: string[] = [];
+      let kartuKeluarga: string[] = [];
+      selectedPesertas.map((peserta: any) => {
+        if (peserta.keteranganSehat) {
+          keteranganSehat.push(peserta.id);
+        }
+        if (peserta.rekomendasi) {
+          rekomendasi.push(peserta.id);
+        }
+        if (peserta.rapot) {
+          rapot.push(peserta.id);
+        }
+        if (peserta.kartuKeluarga) {
+          kartuKeluarga.push(peserta.id);
+        }
+      });
+      setKeteranganSehats(keteranganSehat);
+      setRekomendasis(rekomendasi);
+      setRapots(rapot);
+      setKartuKeluargas(kartuKeluarga);
+    }
+  };
+
+  const savePersyaratan = (tipe: "sdsmp" | "smadewasa") => {
+    let pesertaToUpdate: string[] = [];
+    pesertaToMap.map((peserta) => {
+      if (
+        (peserta.tingkatanPertandingan.includes("SD") ||
+          peserta.tingkatanPertandingan.includes("SMP")) &&
+        tipe == "sdsmp"
+      ) {
+        pesertaToUpdate.push(peserta.id);
+      }
+      if (
+        (peserta.tingkatanPertandingan.includes("SMA") ||
+          peserta.tingkatanPertandingan.includes("Dewasa")) &&
+        tipe == "smadewasa"
+      ) {
+        pesertaToUpdate.push(peserta.id);
+      }
+    });
+    newToast(toastId, "loading", "Menyimpan Persyaratan");
+    const repeater = (index: number) => {
+      if (index < 0) {
+        updateToast(toastId, "success", "Persyaratan berhasil disimpan");
+      } else {
+        const id = pesertaToUpdate[index];
+        updateDoc(doc(firestore, "pesertas", id), {
+          keteranganSehat: keteranganSehats.includes(id),
+          rekomendasi: rekomendasis.includes(id),
+          rapot: rapots.includes(id),
+          kartuKeluarga: kartuKeluargas.includes(id),
+        })
+          .then(() => repeater(index - 1))
+          .catch((error) =>
+            updateToast(
+              toastId,
+              "error",
+              `Peryaratan gagal disimpan. ${error.code}`
+            )
+          );
+      }
+    };
+    repeater(pesertaToUpdate.length - 1);
+  };
+
   return (
     <div className="w-fit">
       <ToastContainer />
@@ -299,6 +463,7 @@ const TabelPesertaAdmin = () => {
           </>
         )}
       </Rodal>
+
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
         Tabel Peserta{" "}
         {selectedKategori ? selectedKategori.split(",").join(" - ") : null}
@@ -306,22 +471,60 @@ const TabelPesertaAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.id && (
+        <button className="btn_green btn_full" onClick={onDownload}>
+          Download
+        </button>
+        {!selectedKontingen.idKontingen && (
           <button className="btn_green btn_full" onClick={refreshPesertas}>
             Refresh
           </button>
         )}
         {pesertasLoading && <InlineLoading />}
-        <button className="btn_green btn_full" onClick={onDownload}>
-          Download
-        </button>
       </div>
+      {selectedKontingen.idKontingen && (
+        <div className="flex flex-col w-fit gap-1 mb-1">
+          <button
+            className="btn_green btn_full"
+            onClick={() => savePersyaratan("sdsmp")}
+          >
+            Save Persyaratan <b>SD & SMP</b>
+          </button>
+          <button
+            className="btn_green btn_full"
+            onClick={() => savePersyaratan("smadewasa")}
+          >
+            Save Persyaratan <b>SMA & DEWASA</b>
+          </button>
+          <button className="btn_green btn_full" onClick={fetchPersyaratan}>
+            Fetch Persyaratan
+          </button>
+        </div>
+      )}
       {/* BUTTONS */}
+
+      {selectedKontingen.idKontingen && (
+        <CheckAllPersyaratanButton
+          checkAll={checkAllPersyaratan}
+          arrays={{
+            keteranganSehat: keteranganSehats,
+            rekomendasi: rekomendasis,
+            rapot: rapots,
+            kartuKeluarga: kartuKeluargas,
+          }}
+          pesertas={pesertaToMap}
+        />
+      )}
+
       <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
-            {tabelHead.map((item) => (
-              <th key={item}>{item}</th>
+            {tabelHead.map((item, i) => (
+              <>
+                <th key={item}>{item}</th>
+                {i == 1 && selectedKontingen.idKontingen ? (
+                  <th>Persyaratan</th>
+                ) : null}
+              </>
             ))}
           </tr>
         </thead>
@@ -332,6 +535,49 @@ const TabelPesertaAdmin = () => {
               <tr key={peserta.id}>
                 <td>{i + 1}</td>
                 <td className="capitalize">{peserta.namaLengkap}</td>
+                {selectedKontingen.idKontingen && (
+                  <td className="whitespace-nowrap">
+                    <ul>
+                      <li>
+                        <PersyaratanButton
+                          id={peserta.id}
+                          label="Surat Keterangan Sehat"
+                          data={keteranganSehats}
+                          check={checkKeteranganSehat}
+                        />
+                      </li>
+                      <li>
+                        <PersyaratanButton
+                          id={peserta.id}
+                          label="Surat Rekomendasi"
+                          data={rekomendasis}
+                          check={checkRekomendasi}
+                        />
+                      </li>
+                      {(peserta.tingkatanPertandingan == "Dewasa" ||
+                        peserta.tingkatanPertandingan == "SMA") && (
+                        <li>
+                          <PersyaratanButton
+                            id={peserta.id}
+                            label="Kartu Keluarga"
+                            data={kartuKeluargas}
+                            check={checkKartuKeluarga}
+                          />
+                        </li>
+                      )}
+                      {peserta.tingkatanPertandingan == "SMA" && (
+                        <li>
+                          <PersyaratanButton
+                            id={peserta.id}
+                            label="Rapot"
+                            data={rapots}
+                            check={checkRapot}
+                          />
+                        </li>
+                      )}
+                    </ul>
+                  </td>
+                )}
                 <td>
                   <span className="text-transparent">"</span>
                   {peserta.NIK.toString()}

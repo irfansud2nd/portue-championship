@@ -40,7 +40,7 @@ const TabelOfficialAdmin = () => {
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
     filename: `Tabel Official${
-      selectedKontingen.id ? selectedKontingen.namaKontingen : null
+      selectedKontingen.idKontingen ? selectedKontingen.namaKontingen : null
     }`,
     sheet: "Data Official",
   });
@@ -61,7 +61,7 @@ const TabelOfficialAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.id && (
+        {!selectedKontingen.idKontingen && (
           <button className="btn_green btn_full" onClick={refreshOfficials}>
             Refresh
           </button>
