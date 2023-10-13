@@ -151,7 +151,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
     setData({
       ...dataKontingenInitialValue,
       creatorEmail: user.email,
-      creatorUid: "",
+      creatorUid: user.uid,
     });
     setUpdating(false);
   };
