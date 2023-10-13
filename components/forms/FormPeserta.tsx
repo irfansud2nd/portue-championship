@@ -91,7 +91,11 @@ const FormPeserta = ({
   // SET DATA USER
   useEffect(() => {
     if (user && kontingens.length == 0) {
-      setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
+      setData({
+        ...data,
+        creatorEmail: user.email,
+        creatorUid: user.uid,
+      });
     }
     if (user && kontingens.length !== 0) {
       setData({
@@ -1107,37 +1111,39 @@ const FormPeserta = ({
                 {/* BERAT BADAN */}
 
                 {/* NAMA KONTINGEN */}
-                {/* <div className="input_container">
-                  <label className="input_label">Nama Kontingen</label>
-                  <select
-                    disabled={disable}
-                    value={data.idKontingen}
-                    onChange={(e) => {
-                      setData({
-                        ...data,
-                        idKontingen: e.target.value,
-                      });
-                    }}
-                    className={`
+                {!editOnly && (
+                  <div className="input_container">
+                    <label className="input_label">Nama Kontingen</label>
+                    <select
+                      disabled={disable}
+                      value={data.idKontingen}
+                      onChange={(e) => {
+                        setData({
+                          ...data,
+                          idKontingen: e.target.value,
+                        });
+                      }}
+                      className={`
                   uppercase
                   ${inputErrorMessages.idKontingen ? "input_error" : "input"}
                   `}
-                  >
-                    {kontingens.length &&
-                      kontingens.map((kontingen) => (
-                        <option
-                          className="uppercase"
-                          value={kontingen.idKontingen}
-                          key={kontingen.idKontingen}
-                        >
-                          {kontingen.namaKontingen}
-                        </option>
-                      ))}
-                  </select>
-                  <p className="text-red-500">
-                    {inputErrorMessages.idKontingen}
-                  </p>
-                </div> */}
+                    >
+                      {kontingens.length &&
+                        kontingens.map((kontingen) => (
+                          <option
+                            className="uppercase"
+                            value={kontingen.idKontingen}
+                            key={kontingen.idKontingen}
+                          >
+                            {kontingen.namaKontingen}
+                          </option>
+                        ))}
+                    </select>
+                    <p className="text-red-500">
+                      {inputErrorMessages.idKontingen}
+                    </p>
+                  </div>
+                )}
                 {/* NAMA KONTINGEN */}
 
                 {/* TINGKATAN */}

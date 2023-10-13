@@ -152,7 +152,7 @@ export const kategoriPendaftaranArray = [
   "kontingen",
   "official",
   "peserta",
-  "pembayaran",
+  // "pembayaran",
 ];
 
 // JABATAN OPTION

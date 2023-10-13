@@ -4,7 +4,6 @@ import {
 } from "@/utils/adminFunctions";
 import { dataKontingenInitialValue } from "@/utils/constants";
 import { firestore, storage } from "@/utils/firebase";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
 import {
   DataKontingenState,
   DataOfficialState,
@@ -15,14 +14,20 @@ import { deleteObject, ref } from "firebase/storage";
 import { useRef, useState } from "react";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
 
 const DeleteKontingenButton = ({
   kontingen,
+  toastSuccess,
+  toastError,
+  toastLoading,
+  toastBaru,
 }: {
   kontingen: DataKontingenState;
+  toastSuccess: (msg: string) => void;
+  toastError: (msg: string) => void;
+  toastLoading: (msg: string) => void;
+  toastBaru: (msg: string) => void;
 }) => {
   const { pesertas, officials, refreshKontingens } = AdminContext();
 
@@ -35,8 +40,6 @@ const DeleteKontingenButton = ({
     []
   );
   const [rodalVisible, setRodalVisible] = useState<boolean>(false);
-
-  const toastId = useRef(null);
 
   const deleteHandler = (kontingen: DataKontingenState) => {
     setRodalVisible(true);
@@ -59,7 +62,7 @@ const DeleteKontingenButton = ({
   const deleteData = () => {
     console.log("deleteData");
     deletePesertas(pesertasToDelete.length - 1);
-    newToast(toastId, "loading", `Menghapus`);
+    toastBaru(`Menghapus`);
   };
 
   const deletePesertas = (index: number) => {
@@ -76,9 +79,7 @@ const DeleteKontingenButton = ({
               deleteObject(ref(storage, peserta.ktpUrl))
                 .then(() => stepController(2))
                 .catch((error) =>
-                  updateToast(
-                    toastId,
-                    "error",
+                  toastError(
                     `Gagal Menghapus KTP Peserta ${index + 1}. ${error.code}`
                   )
                 );
@@ -92,9 +93,7 @@ const DeleteKontingenButton = ({
               deleteObject(ref(storage, peserta.kkUrl))
                 .then(() => stepController(3))
                 .catch((error) =>
-                  updateToast(
-                    toastId,
-                    "error",
+                  toastError(
                     `Gagal Menghapus KK Peserta ${index + 1}. ${error.code}`
                   )
                 );
@@ -107,9 +106,7 @@ const DeleteKontingenButton = ({
             deleteObject(ref(storage, peserta.fotoUrl))
               .then(() => stepController(4))
               .catch((error) =>
-                updateToast(
-                  toastId,
-                  "error",
+                toastError(
                   `Gagal Menghapus KTP Peserta ${index + 1}. ${error.code}`
                 )
               );
@@ -121,9 +118,7 @@ const DeleteKontingenButton = ({
                 deletePesertas(index - 1);
               })
               .catch((error) =>
-                updateToast(
-                  toastId,
-                  "error",
+                toastError(
                   `Gagal Menghapus Data Peserta ${index + 1}. ${error.code}`
                 )
               );
@@ -147,9 +142,7 @@ const DeleteKontingenButton = ({
             deleteObject(ref(storage, official.fotoUrl))
               .then(() => stepController(2))
               .catch((error) =>
-                updateToast(
-                  toastId,
-                  "error",
+                toastError(
                   `Gagal Menghapus KTP Official ${index + 1}. ${error.code}`
                 )
               );
@@ -161,9 +154,7 @@ const DeleteKontingenButton = ({
                 deleteOfficials(index - 1);
               })
               .catch((error) =>
-                updateToast(
-                  toastId,
-                  "error",
+                toastError(
                   `Gagal Menghapus Data Official ${index + 1}. ${error.code}`
                 )
               );
@@ -176,49 +167,44 @@ const DeleteKontingenButton = ({
 
   const deleteKontingen = () => {
     console.log("deleteKontingen");
-    updateToast(toastId, "loading", "Menghapus Kontingen");
+    toastLoading("Menghapus Kontingen");
     deleteDoc(doc(firestore, "kontingens", kontingenToDelete.idKontingen))
       .then(() => {
         console.log("done");
-        refreshKontingens();
-        updateToast(toastId, "success", `Data Kontingen Berhasil dihapus`);
+        // refreshKontingens();
+        toastSuccess(`Data Kontingen Berhasil dihapus`);
         cancelDelete();
       })
       .catch((error) =>
-        updateToast(
-          toastId,
-          "error",
-          `Gagal Menghapus Data Kontingen. ${error.code}`
-        )
+        toastError(`Gagal Menghapus Data Kontingen. ${error.code}`)
       );
   };
   return (
     <>
-      <ToastContainer />
-      <div>
-        <Rodal visible={rodalVisible} onClose={cancelDelete}>
-          <div className="flex flex-col h-full justify-around">
-            <h1 className="font-bold text-lg">Hapus Kontingen</h1>
-            <p>
-              Nama Kontingen:{" "}
-              <b>{kontingenToDelete.namaKontingen.toUpperCase()}</b>
-            </p>
-            <p>
-              Official: <b>{officialsToDelete.length} Orang</b>
-            </p>
-            <p>
-              Peserta: <b>{pesertasToDelete.length} Orang</b>
-            </p>
-            <div className="flex gap-2 justify-center">
-              <button className="btn_red btn_full" onClick={deleteData}>
-                Delete
-              </button>
-              <button className="btn_green btn_full" onClick={cancelDelete}>
-                Cancel
-              </button>
-            </div>
+      <Rodal visible={rodalVisible} onClose={cancelDelete}>
+        <div className="flex flex-col h-full justify-around">
+          <h1 className="font-bold text-lg">Hapus Kontingen</h1>
+          <p>
+            Nama Kontingen:{" "}
+            <b>{kontingenToDelete.namaKontingen.toUpperCase()}</b>
+          </p>
+          <p>
+            Official: <b>{officialsToDelete.length} Orang</b>
+          </p>
+          <p>
+            Peserta: <b>{pesertasToDelete.length} Orang</b>
+          </p>
+          <div className="flex gap-2 justify-center">
+            <button className="btn_red btn_full" onClick={deleteData}>
+              Delete
+            </button>
+            <button className="btn_green btn_full" onClick={cancelDelete}>
+              Cancel
+            </button>
           </div>
-        </Rodal>
+        </div>
+      </Rodal>
+      <div>
         <button
           className="btn_red btn_full text-white"
           onClick={() => deleteHandler(kontingen)}

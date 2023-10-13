@@ -11,6 +11,9 @@ import { DataKontingenState, DataPesertaState } from "@/utils/types";
 import InlineLoading from "../InlineLoading";
 import KonfirmasiButton from "../KonfirmasiButton";
 import DeleteKontingenButton from "./DeleteKontingenButton";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { newToast, updateToast } from "@/utils/sharedFunctions";
 
 const TabelKontingenAdmin = () => {
   const {
@@ -84,8 +87,24 @@ const TabelKontingenAdmin = () => {
     }
   }, [selectedKontingen, unconfirmedKongtingens, confirmedKontingens]);
 
+  const toastId = useRef(null);
+
+  const toastSuccess = (msg: string) => {
+    updateToast(toastId, "success", msg);
+  };
+  const toastError = (msg: string) => {
+    updateToast(toastId, "error", msg);
+  };
+  const toastLoading = (msg: string) => {
+    updateToast(toastId, "loading", msg);
+  };
+  const toastBaru = (msg: string) => {
+    newToast(toastId, "loading", msg);
+  };
+
   return (
     <div>
+      <ToastContainer />
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
         Tabel Kontingen
       </h1>
@@ -114,7 +133,12 @@ const TabelKontingenAdmin = () => {
         </thead>
         <tbody>
           {kontingensToMap.map((kontingen: DataKontingenState, i: number) => (
-            <tr key={kontingen.idKontingen} className="border_td">
+            <tr
+              key={kontingen.idKontingen}
+              className={`border_td ${
+                getPesertasLength(kontingen.idKontingen) == 0 && "text-red-400"
+              }`}
+            >
               <td>{i + 1}</td>
               <td>{kontingen.idKontingen}</td>
               <td
@@ -222,9 +246,15 @@ const TabelKontingenAdmin = () => {
               <td>{kontingen.creatorEmail}</td>
               <td>
                 {kontingen.idPembayaran.length > 0 ? null : (
-                  <div>
-                    <DeleteKontingenButton kontingen={kontingen} />
-                  </div>
+                  <span>
+                    <DeleteKontingenButton
+                      kontingen={kontingen}
+                      toastSuccess={toastSuccess}
+                      toastError={toastError}
+                      toastLoading={toastLoading}
+                      toastBaru={toastBaru}
+                    />
+                  </span>
                 )}
               </td>
               <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>
