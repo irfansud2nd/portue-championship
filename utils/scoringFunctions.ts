@@ -44,6 +44,22 @@ export const getKontingens = async (uid: string) => {
   }
 };
 
+const reduceKontingens = (array: any) => {
+  const seen: any = [];
+  const result: any = [];
+  array.map((item: any) => {
+    if (seen.indexOf(item.namaKontingen.toUpperCase().replace(/\s/g, "")) < 0) {
+      seen.push(item.namaKontingen.toUpperCase().replace(/\s/g, ""));
+      result.push(item);
+    } else {
+      // result.push({ namaKontingen: `${item.namaKontingen} - copy` });
+    }
+  });
+  console.log("SEEN", seen);
+  console.log("RESULT", result);
+  return result;
+};
+
 export const writeAllKontingen = async (user: User) => {
   let kontingens: any[] = [];
   let initialKontingenScore: {
@@ -61,7 +77,7 @@ export const writeAllKontingen = async (user: User) => {
     })
     .catch((error) => alert(error))
     .finally(() => {
-      kontingens.map((kontingen: DataKontingenState) => {
+      reduceKontingens(kontingens).map((kontingen: DataKontingenState) => {
         initialKontingenScore.push({
           idKontingen: kontingen.idKontingen,
           namaKontingen: kontingen.namaKontingen,

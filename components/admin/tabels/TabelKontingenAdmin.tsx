@@ -13,7 +13,7 @@ import KonfirmasiButton from "../KonfirmasiButton";
 import DeleteKontingenButton from "./DeleteKontingenButton";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
+import { compare, newToast, updateToast } from "@/utils/sharedFunctions";
 
 const TabelKontingenAdmin = () => {
   const {
@@ -132,60 +132,63 @@ const TabelKontingenAdmin = () => {
           </tr>
         </thead>
         <tbody>
-          {kontingensToMap.map((kontingen: DataKontingenState, i: number) => (
-            <tr
-              key={kontingen.idKontingen}
-              className={`border_td ${
-                getPesertasLength(kontingen.idKontingen) == 0 && "text-red-400"
-              }`}
-            >
-              <td>{i + 1}</td>
-              <td>{kontingen.idKontingen}</td>
-              <td
-                className="hover:text-green-500 hover:underline transition cursor-pointer uppercase"
-                onClick={() => setSelectedKontingen(kontingen)}
+          {kontingensToMap
+            .sort(compare("namaKontingen", "asc"))
+            .map((kontingen: DataKontingenState, i: number) => (
+              <tr
+                key={kontingen.idKontingen}
+                className={`border_td ${
+                  getPesertasLength(kontingen.idKontingen) == 0 &&
+                  "text-red-400"
+                }`}
               >
-                {kontingen.namaKontingen}
-              </td>
-              <td>
-                {/* {kontingen.pesertas.length} */}
-                {getPesertasLength(kontingen.idKontingen)}
-              </td>
-              <td>
-                {
-                  getOfficialsByKontingen(kontingen.idKontingen, officials)
-                    .length
-                }
-              </td>
-              <td>
-                <ul>
-                  {kontingen.idPembayaran
-                    ? kontingen.idPembayaran.map((idPembayaran) => (
-                        <li
-                          key={idPembayaran}
-                          className="border-b border-black last:border-none"
-                        >
-                          <span className="whitespace-nowrap">
-                            {formatTanggal(
-                              kontingen.infoPembayaran[
-                                kontingen.infoPembayaran.findIndex(
-                                  (info) => info.idPembayaran == idPembayaran
-                                )
-                              ].waktu,
-                              true
-                            )}{" "}
-                            |{" "}
-                            {
-                              kontingen.infoPembayaran[
-                                kontingen.infoPembayaran.findIndex(
-                                  (info) => info.idPembayaran == idPembayaran
-                                )
-                              ].nominal
-                            }
-                          </span>
-                          <br />
-                          <span className="whitespace-nowrap">
-                            {/* {kontingen.confirmedPembayaran.indexOf(
+                <td>{i + 1}</td>
+                <td>{kontingen.idKontingen}</td>
+                <td
+                  className="hover:text-green-500 hover:underline transition cursor-pointer uppercase"
+                  onClick={() => setSelectedKontingen(kontingen)}
+                >
+                  {kontingen.namaKontingen}
+                </td>
+                <td>
+                  {/* {kontingen.pesertas.length} */}
+                  {getPesertasLength(kontingen.idKontingen)}
+                </td>
+                <td>
+                  {
+                    getOfficialsByKontingen(kontingen.idKontingen, officials)
+                      .length
+                  }
+                </td>
+                <td>
+                  <ul>
+                    {kontingen.idPembayaran
+                      ? kontingen.idPembayaran.map((idPembayaran) => (
+                          <li
+                            key={idPembayaran}
+                            className="border-b border-black last:border-none"
+                          >
+                            <span className="whitespace-nowrap">
+                              {formatTanggal(
+                                kontingen.infoPembayaran[
+                                  kontingen.infoPembayaran.findIndex(
+                                    (info) => info.idPembayaran == idPembayaran
+                                  )
+                                ].waktu,
+                                true
+                              )}{" "}
+                              |{" "}
+                              {
+                                kontingen.infoPembayaran[
+                                  kontingen.infoPembayaran.findIndex(
+                                    (info) => info.idPembayaran == idPembayaran
+                                  )
+                                ].nominal
+                              }
+                            </span>
+                            <br />
+                            <span className="whitespace-nowrap">
+                              {/* {kontingen.confirmedPembayaran.indexOf(
                               idPembayaran
                             ) >= 0 ? (
                               <button className="hover:underline">
@@ -200,67 +203,69 @@ const TabelKontingenAdmin = () => {
                                 }
                               </button>
                             ) : ( */}
-                            <KonfirmasiButton
-                              idPembayaran={idPembayaran}
-                              infoPembayaran={
-                                kontingen.infoPembayaran[
-                                  kontingen.infoPembayaran.findIndex(
-                                    (info) => info.idPembayaran == idPembayaran
-                                  )
-                                ]
-                              }
-                              data={kontingen}
-                              infoKonfirmasi={
-                                kontingen.infoKonfirmasi[
-                                  kontingen.infoKonfirmasi.findIndex(
-                                    (info) => info.idPembayaran == idPembayaran
-                                  )
-                                ]
-                              }
-                              paid={
-                                kontingen.confirmedPembayaran.indexOf(
-                                  idPembayaran
-                                ) >= 0
-                              }
-                            />
-                            {/* )} */}
-                          </span>
-                        </li>
-                      ))
-                    : "-"}
-                </ul>
-              </td>
-              <td className="whitespace-nowrap">
-                {/* {getKontingenUnpaid(kontingen, pesertas) < 0
+                              <KonfirmasiButton
+                                idPembayaran={idPembayaran}
+                                infoPembayaran={
+                                  kontingen.infoPembayaran[
+                                    kontingen.infoPembayaran.findIndex(
+                                      (info) =>
+                                        info.idPembayaran == idPembayaran
+                                    )
+                                  ]
+                                }
+                                data={kontingen}
+                                infoKonfirmasi={
+                                  kontingen.infoKonfirmasi[
+                                    kontingen.infoKonfirmasi.findIndex(
+                                      (info) =>
+                                        info.idPembayaran == idPembayaran
+                                    )
+                                  ]
+                                }
+                                paid={
+                                  kontingen.confirmedPembayaran.indexOf(
+                                    idPembayaran
+                                  ) >= 0
+                                }
+                              />
+                              {/* )} */}
+                            </span>
+                          </li>
+                        ))
+                      : "-"}
+                  </ul>
+                </td>
+                <td className="whitespace-nowrap">
+                  {/* {getKontingenUnpaid(kontingen, pesertas) < 0
                   ? "0"
                   : `Rp. ${getKontingenUnpaid(kontingen, pesertas)}`} */}
-                Rp.{" "}
-                {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
-              </td>
-              <td>
-                {kontingen.unconfirmedPembayaran &&
-                kontingen.unconfirmedPembayaran.length
-                  ? "Butuh Konfimasi"
-                  : "Selesai Konfirmasi"}
-              </td>
-              <td>{kontingen.creatorEmail}</td>
-              <td>
-                {kontingen.idPembayaran.length > 0 ? null : (
-                  <span>
-                    <DeleteKontingenButton
-                      kontingen={kontingen}
-                      toastSuccess={toastSuccess}
-                      toastError={toastError}
-                      toastLoading={toastLoading}
-                      toastBaru={toastBaru}
-                    />
-                  </span>
-                )}
-              </td>
-              <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>
-              <td>{formatTanggal(kontingen.waktuPerubahan)}</td>
-            </tr>
-          ))}
+                  Rp.{" "}
+                  {getKontingenUnpaid(kontingen, pesertas).toLocaleString("id")}
+                </td>
+                <td>
+                  {kontingen.unconfirmedPembayaran &&
+                  kontingen.unconfirmedPembayaran.length
+                    ? "Butuh Konfimasi"
+                    : "Selesai Konfirmasi"}
+                </td>
+                <td>{kontingen.creatorEmail}</td>
+                <td>
+                  {kontingen.idPembayaran.length > 0 ? null : (
+                    <span>
+                      <DeleteKontingenButton
+                        kontingen={kontingen}
+                        toastSuccess={toastSuccess}
+                        toastError={toastError}
+                        toastLoading={toastLoading}
+                        toastBaru={toastBaru}
+                      />
+                    </span>
+                  )}
+                </td>
+                <td>{formatTanggal(kontingen.waktuPendaftaran)}</td>
+                <td>{formatTanggal(kontingen.waktuPerubahan)}</td>
+              </tr>
+            ))}
         </tbody>
       </table>
     </div>

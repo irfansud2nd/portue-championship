@@ -70,7 +70,6 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -83,7 +82,6 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak,
-
             smpEmas: desc ? smpEmas - 1 : smpEmas + 1,
             smpPerak,
             smpPerunggu,
@@ -189,7 +187,6 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak,
-
             smpEmas,
             smpPerak,
             smpPerunggu: desc ? smpPerunggu - 1 : smpPerunggu + 1,
@@ -282,7 +279,6 @@ export const ScoringContextProvider = ({
         namaKontingen,
         sdEmas,
         sdPerak,
-
         smpEmas,
         smpPerak,
         smpPerunggu,
@@ -295,7 +291,6 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak: desc ? sdPerak - 1 : sdPerak + 1,
-
             smpEmas,
             smpPerak,
             smpPerunggu,
