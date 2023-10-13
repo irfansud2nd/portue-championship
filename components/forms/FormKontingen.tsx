@@ -44,7 +44,11 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
 
   // SET DATA USER
   useEffect(() => {
-    setData({ ...data, creatorEmail: user.email, creatorUid: user.uid });
+    setData({
+      ...data,
+      creatorEmail: user.email,
+      creatorUid: user.uid,
+    });
   }, [user]);
 
   // GET KONTINGENS ON DID MOUNT
@@ -147,7 +151,7 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
     setData({
       ...dataKontingenInitialValue,
       creatorEmail: user.email,
-      creatorUid: user.uid,
+      creatorUid: "",
     });
     setUpdating(false);
   };
