@@ -421,11 +421,10 @@ const TabelPesertaAdmin = () => {
               </Link>
             </div>
             <div className="w-[500px] h-[500px] relative">
-              <Image
+              <img
                 src={kkUrl}
                 alt="kk"
-                fill
-                className="object-contain mx-auto"
+                className="w-[500px] h-[500px] object-contain mx-auto"
               />
             </div>
           </>
@@ -442,7 +441,11 @@ const TabelPesertaAdmin = () => {
               </Link>
             </div>
             <div className="w-[400px] h-[300px] relative">
-              <Image src={fotoUrl} alt="kk" fill className="object-contain" />
+              <img
+                src={fotoUrl}
+                alt="kk"
+                className="w-[400px] h-[300px] object-contain"
+              />
             </div>
           </>
         )}
@@ -458,7 +461,11 @@ const TabelPesertaAdmin = () => {
               </Link>
             </div>
             <div className="w-[400px] h-[300px] relative">
-              <Image src={ktpUrl} alt="kk" fill className="object-contain" />
+              <img
+                src={ktpUrl}
+                alt="kk"
+                className="w-[400px] h-[300px] object-contain"
+              />
             </div>
           </>
         )}
