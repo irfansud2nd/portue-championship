@@ -13,6 +13,7 @@ import {
 import { firestore } from "@/utils/firebase";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Verified from "../Verified";
 
 const DashboardAdmin = () => {
   const [pesertaTerdaftar, setPesertaTerdaftar] = useState<
@@ -323,6 +324,10 @@ const DashboardAdmin = () => {
             </button>
           </div>
         </div>
+      </div>
+
+      <div className="bg-white w-fit rounded-md p-2 mt-2">
+        <Verified />
       </div>
 
       {/* SECOND ROW */}
