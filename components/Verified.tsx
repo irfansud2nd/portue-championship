@@ -7,7 +7,8 @@ import {
   where,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
-const Verified = () => {
+import VerifiedDetail from "./VerifiedDetail";
+const Verified = ({ detail }: { detail?: boolean }) => {
   const [keteranganSehat, setKeteranganSehat] = useState<JSX.Element | number>(
     <InlineLoading />
   );
@@ -265,58 +266,70 @@ const Verified = () => {
   useEffect(() => {
     refreshCount();
   }, []);
+
   return (
     <div>
       <p className="font-bold text-xl">Data yang telah diverifikasi</p>
       <button className="btn_green btn_full mb-1" onClick={refreshCount}>
         Refresh
       </button>
-      <table>
-        <thead>
-          <tr>
-            <th>Persyaratan</th>
-            <th>SD</th>
-            <th>SMP</th>
-            <th>SMA</th>
-            <th>Dewasa</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Surat Keterangan Sehat</td>
-            <td>{sd.keteranganSehat}</td>
-            <td>{smp.keteranganSehat}</td>
-            <td>{sma.keteranganSehat}</td>
-            <td>{dewasa.keteranganSehat}</td>
-            <td>{keteranganSehat}</td>
-          </tr>
-          <tr>
-            <td>Surat Rekomendasi</td>
-            <td>{sd.rekomendasi}</td>
-            <td>{smp.rekomendasi}</td>
-            <td>{sma.rekomendasi}</td>
-            <td>{dewasa.rekomendasi}</td>
-            <td>{rekomendasi}</td>
-          </tr>
-          <tr>
-            <td>Rapot</td>
-            <td></td>
-            <td></td>
-            <td>{sma.rapot}</td>
-            <td></td>
-            <td>{rapot}</td>
-          </tr>
-          <tr>
-            <td>Kartu Keluarga</td>
-            <td></td>
-            <td></td>
-            <td>{sma.kartuKeluarga}</td>
-            <td>{dewasa.kartuKeluarga}</td>
-            <td>{kartuKeluarga}</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <div className="flex gap-1 flex-wrap mb-1">
+        <VerifiedDetail label="TOTAL" total={keteranganSehat} />
+        <VerifiedDetail label="SD" total={sd.keteranganSehat} />
+        <VerifiedDetail label="SMP" total={smp.keteranganSehat} />
+        <VerifiedDetail label="SMA" total={sma.keteranganSehat} />
+        <VerifiedDetail label="DEWASA" total={dewasa.keteranganSehat} />
+      </div>
+
+      {detail && (
+        <table>
+          <thead>
+            <tr>
+              <th>Persyaratan</th>
+              <th>SD</th>
+              <th>SMP</th>
+              <th>SMA</th>
+              <th>Dewasa</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Surat Keterangan Sehat</td>
+              <td>{sd.keteranganSehat}</td>
+              <td>{smp.keteranganSehat}</td>
+              <td>{sma.keteranganSehat}</td>
+              <td>{dewasa.keteranganSehat}</td>
+              <td>{keteranganSehat}</td>
+            </tr>
+            <tr>
+              <td>Surat Rekomendasi</td>
+              <td>{sd.rekomendasi}</td>
+              <td>{smp.rekomendasi}</td>
+              <td>{sma.rekomendasi}</td>
+              <td>{dewasa.rekomendasi}</td>
+              <td>{rekomendasi}</td>
+            </tr>
+            <tr>
+              <td>Rapot</td>
+              <td></td>
+              <td></td>
+              <td>{sma.rapot}</td>
+              <td></td>
+              <td>{rapot}</td>
+            </tr>
+            <tr>
+              <td>Kartu Keluarga</td>
+              <td></td>
+              <td></td>
+              <td>{sma.kartuKeluarga}</td>
+              <td>{dewasa.kartuKeluarga}</td>
+              <td>{kartuKeluarga}</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
     </div>
   );
 };

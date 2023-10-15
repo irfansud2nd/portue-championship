@@ -327,7 +327,7 @@ const DashboardAdmin = () => {
       </div>
 
       <div className="bg-white w-fit rounded-md p-2 mt-2">
-        <Verified />
+        <Verified detail />
       </div>
 
       {/* SECOND ROW */}
