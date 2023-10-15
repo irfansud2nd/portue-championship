@@ -32,6 +32,7 @@ const TabelKontingenAdmin = () => {
     "No",
     "ID Kontingen",
     "Nama Kontingen",
+    "Verifikasi",
     "Peserta",
     "Official",
     "Pembayaran",
@@ -102,6 +103,41 @@ const TabelKontingenAdmin = () => {
     newToast(toastId, "loading", msg);
   };
 
+  const isVerified = (idKontingen: string) => {
+    const pesertaToCheck = getPesertasByKontingen(idKontingen, pesertas);
+    let checked = false;
+    let result = false;
+    pesertaToCheck.map((peserta: any) => {
+      if (peserta.suratKesehatan) {
+        result = true;
+      } else {
+        result = false;
+      }
+    });
+    return result;
+  };
+
+  const getVerified = () => {
+    let pesertaVerified: any = [];
+    let unVerifyKontingen: any = [];
+    let verifiedKontingen: any = [];
+
+    pesertas.map((peserta: any) => {
+      if (peserta.keteranganSehat == true) {
+        pesertaVerified.push(peserta);
+        if (!verifiedKontingen.includes(peserta.idKontingen)) {
+          verifiedKontingen.push(peserta.idKontingen);
+        }
+      } else {
+        if (!unVerifyKontingen.includes(peserta.idKontingen)) {
+          unVerifyKontingen.push(peserta.idKontingen);
+        }
+      }
+    });
+
+    return { pesertaVerified, unVerifyKontingen, verifiedKontingen };
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -149,6 +185,25 @@ const TabelKontingenAdmin = () => {
                   onClick={() => setSelectedKontingen(kontingen)}
                 >
                   {kontingen.namaKontingen}
+                </td>
+                <td>
+                  {getVerified().unVerifyKontingen.includes(
+                    kontingen.idKontingen
+                  ) ? (
+                    getVerified().verifiedKontingen.includes(
+                      kontingen.idKontingen
+                    ) ? (
+                      <span className="font-bold text-yellow-500">
+                        Not Fully Verified
+                      </span>
+                    ) : (
+                      <span className="font-bold text-red-500">Unverified</span>
+                    )
+                  ) : (
+                    <span className="font-bold text-green-500">
+                      Fully Verified
+                    </span>
+                  )}
                 </td>
                 <td>
                   {/* {kontingen.pesertas.length} */}

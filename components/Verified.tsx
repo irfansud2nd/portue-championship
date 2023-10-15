@@ -21,35 +21,43 @@ const Verified = ({ detail }: { detail?: boolean }) => {
   );
 
   const [sd, setSd] = useState<{
+    total: JSX.Element | number;
     keteranganSehat: JSX.Element | number;
     rekomendasi: JSX.Element | number;
   }>({
+    total: <InlineLoading />,
     keteranganSehat: <InlineLoading />,
     rekomendasi: <InlineLoading />,
   });
   const [smp, setSmp] = useState<{
+    total: JSX.Element | number;
     keteranganSehat: JSX.Element | number;
     rekomendasi: JSX.Element | number;
   }>({
+    total: <InlineLoading />,
     keteranganSehat: <InlineLoading />,
     rekomendasi: <InlineLoading />,
   });
   const [sma, setSma] = useState<{
+    total: JSX.Element | number;
     keteranganSehat: JSX.Element | number;
     rekomendasi: JSX.Element | number;
     rapot: JSX.Element | number;
     kartuKeluarga: JSX.Element | number;
   }>({
+    total: <InlineLoading />,
     keteranganSehat: <InlineLoading />,
     rekomendasi: <InlineLoading />,
     rapot: <InlineLoading />,
     kartuKeluarga: <InlineLoading />,
   });
   const [dewasa, setDewasa] = useState<{
+    total: JSX.Element | number;
     keteranganSehat: JSX.Element | number;
     rekomendasi: JSX.Element | number;
     kartuKeluarga: JSX.Element | number;
   }>({
+    total: <InlineLoading />,
     keteranganSehat: <InlineLoading />,
     rekomendasi: <InlineLoading />,
     kartuKeluarga: <InlineLoading />,
@@ -85,6 +93,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
   const getVerifiedSd = () => {
     let keteranganSehat = 0;
     let rekomendasi = 0;
+    let total = 0;
 
     // KETERANGAN SEHAT
     getCountFromServer(
@@ -120,7 +129,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
             )
           ).then((res) => {
             rekomendasi += res.data().count;
-            setSd({ keteranganSehat, rekomendasi });
+            setSd({ keteranganSehat, rekomendasi, total });
           });
         });
       });
@@ -130,6 +139,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
   const getVerifiedSmp = () => {
     let keteranganSehat = 0;
     let rekomendasi = 0;
+    let total = 0;
 
     // KETERANGAN SEHAT
     getCountFromServer(
@@ -154,6 +164,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
         setSmp({
           keteranganSehat,
           rekomendasi,
+          total,
         });
       });
     });
@@ -164,6 +175,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
     let rekomendasi = 0;
     let rapot = 0;
     let kartuKeluarga = 0;
+    let total = 0;
 
     // KETERANGAN SEHAT
     getCountFromServer(
@@ -204,7 +216,13 @@ const Verified = ({ detail }: { detail?: boolean }) => {
             )
           ).then((res) => {
             kartuKeluarga += res.data().count;
-            setSma({ keteranganSehat, rekomendasi, rapot, kartuKeluarga });
+            setSma({
+              keteranganSehat,
+              rekomendasi,
+              rapot,
+              kartuKeluarga,
+              total,
+            });
           });
         });
       });
@@ -215,6 +233,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
     let keteranganSehat = 0;
     let rekomendasi = 0;
     let kartuKeluarga = 0;
+    let total = 0;
 
     // KETERANGAN SEHAT
     getCountFromServer(
@@ -246,7 +265,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
         ).then((res) => {
           kartuKeluarga += res.data().count;
 
-          setDewasa({ keteranganSehat, rekomendasi, kartuKeluarga });
+          setDewasa({ keteranganSehat, rekomendasi, kartuKeluarga, total });
         });
       });
     });
@@ -283,7 +302,7 @@ const Verified = ({ detail }: { detail?: boolean }) => {
       </div>
 
       {detail && (
-        <table>
+        <table className="w-full">
           <thead>
             <tr>
               <th>Persyaratan</th>

@@ -250,6 +250,36 @@ const DashboardAdmin = () => {
     return (nominal * 1000).toLocaleString("id");
   };
 
+  const getVerified = () => {
+    let pesertaVerified: any = [];
+    let unVerifyKontingen: any = [];
+    let verifiedKontingen: any = [];
+
+    pesertas.map((peserta: any) => {
+      if (peserta.keteranganSehat == true) {
+        pesertaVerified.push(peserta);
+        if (!verifiedKontingen.includes(peserta.idKontingen)) {
+          verifiedKontingen.push(peserta.idKontingen);
+        }
+      } else {
+        if (!unVerifyKontingen.includes(peserta.idKontingen)) {
+          unVerifyKontingen.push(peserta.idKontingen);
+        }
+      }
+    });
+
+    const halfVerifiedKontingen = verifiedKontingen.filter((item: any) =>
+      unVerifyKontingen.includes(item)
+    );
+
+    return {
+      pesertaVerified,
+      unVerifyKontingen,
+      verifiedKontingen,
+      halfVerifiedKontingen,
+    };
+  };
+
   return (
     <div className="w-full h-full bg-gray-200 rounded-md p-2">
       <h1 className="text-4xl font-extrabold">Dashboard Admin</h1>
@@ -432,6 +462,61 @@ const DashboardAdmin = () => {
               <InlineLoading />
             ) : (
               getKontingensPayment().unpaid
+            )}
+            {/* |{kontingenUnpaid} */}
+          </p>
+          <p className="text-2xl font-extrabold text-green-500  border-r-2 border-r-white">
+            Verified
+          </p>
+          <p className="text-2xl font-extrabold text-green-500  border-r-2 border-r-white">
+            {pesertasLoading ? (
+              <InlineLoading />
+            ) : (
+              getVerified().pesertaVerified.length
+            )}{" "}
+            {/* | {pesertaUnpaid} */}
+          </p>
+          <p className="text-2xl font-extrabold text-green-500">
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getVerified().verifiedKontingen.length -
+              getVerified().halfVerifiedKontingen.length
+            )}
+            {/* |{kontingenUnpaid} */}
+          </p>
+          <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
+            Not Fully Verified
+          </p>
+          <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
+            {pesertasLoading ? <InlineLoading /> : "-"}{" "}
+            {/* | {pesertaUnpaid} */}
+          </p>
+          <p className="text-2xl font-extrabold text-yellow-500">
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getVerified().halfVerifiedKontingen.length
+            )}
+            {/* |{kontingenUnpaid} */}
+          </p>
+          <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
+            Unverified
+          </p>
+          <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
+            {pesertasLoading ? (
+              <InlineLoading />
+            ) : (
+              pesertas.length - getVerified().pesertaVerified.length
+            )}{" "}
+            {/* | {pesertaUnpaid} */}
+          </p>
+          <p className="text-2xl font-extrabold text-red-500">
+            {kontingensLoading ? (
+              <InlineLoading />
+            ) : (
+              getVerified().unVerifyKontingen.length -
+              getVerified().halfVerifiedKontingen.length
             )}
             {/* |{kontingenUnpaid} */}
           </p>
