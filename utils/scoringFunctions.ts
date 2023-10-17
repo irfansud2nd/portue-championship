@@ -55,8 +55,8 @@ const reduceKontingens = (array: any) => {
       // result.push({ namaKontingen: `${item.namaKontingen} - copy` });
     }
   });
-  console.log("SEEN", seen);
-  console.log("RESULT", result);
+  // console.log("SEEN", seen);
+  // console.log("RESULT", result);
   return result;
 };
 

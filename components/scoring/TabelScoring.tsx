@@ -1,7 +1,7 @@
 import { ScoringContext } from "@/context/ScoringContext";
 import { KontingenScore } from "@/utils/scoringFunctions";
 import { compare } from "@/utils/sharedFunctions";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { BsPlusLg } from "react-icons/bs";
 import { HiMiniMinus } from "react-icons/hi2";
 import { Id, ToastContainer } from "react-toastify";
