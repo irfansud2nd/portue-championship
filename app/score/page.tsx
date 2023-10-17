@@ -148,6 +148,7 @@ const ScorePage = () => {
             <table className="w-full">
               <thead>
                 <tr>
+                  <th>No</th>
                   <th>Nama Kontingen</th>
                   <th>Emas</th>
                   <th>Perak</th>
@@ -156,8 +157,9 @@ const ScorePage = () => {
               <tbody>
                 {kontingenScores
                   .sort(compare("namaKontingen", "asc"))
-                  .map((kontingen) => (
-                    <tr>
+                  .map((kontingen, i) => (
+                    <tr key={kontingen.namaKontingen}>
+                      <td>{i + 1}</td>
                       <td className="uppercase">{kontingen.namaKontingen}</td>
                       <td>{kontingen.sdEmas}</td>
                       <td>{kontingen.sdPerak}</td>
@@ -171,6 +173,7 @@ const ScorePage = () => {
             <table className="w-full">
               <thead>
                 <tr>
+                  <th>No</th>
                   <th>Nama Kontingen</th>
                   <th>Emas</th>
                   <th>Perak</th>
@@ -180,8 +183,9 @@ const ScorePage = () => {
               <tbody>
                 {kontingenScores
                   .sort(compare("namaKontingen", "asc"))
-                  .map((kontingen) => (
-                    <tr>
+                  .map((kontingen, i) => (
+                    <tr key={kontingen.namaKontingen}>
+                      <td>{i + 1}</td>
                       <td className="uppercase">{kontingen.namaKontingen}</td>
                       <td>{kontingen.smpEmas}</td>
                       <td>{kontingen.smpPerak}</td>
