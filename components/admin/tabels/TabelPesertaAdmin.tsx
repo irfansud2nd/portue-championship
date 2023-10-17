@@ -6,9 +6,7 @@ import {
   newToast,
   updateToast,
 } from "@/utils/sharedFunctions";
-import { DataKontingenState, DataPesertaState } from "@/utils/types";
-import FileSaver from "file-saver";
-import Image from "next/image";
+import { DataPesertaState } from "@/utils/types";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
@@ -38,6 +36,7 @@ const TabelPesertaAdmin = () => {
   const tabelHead = [
     "No",
     "Nama Lengkap",
+    "Nama Kontingen",
     "NIK",
     "Jenis Kelamin",
     "Tempat Lahir",
@@ -54,7 +53,6 @@ const TabelPesertaAdmin = () => {
     "Tingkatan",
     "Jenis Pertandingan",
     "Kategori Pertandingan",
-    "Nama Kontingen",
     "Status Pembayaran",
     "ID Pembayaran",
     "Waktu Pembayaran",
@@ -541,7 +539,13 @@ const TabelPesertaAdmin = () => {
             .map((peserta: DataPesertaState, i: number) => (
               <tr key={peserta.id}>
                 <td>{i + 1}</td>
-                <td className="capitalize">{peserta.namaLengkap}</td>
+                <td>{peserta.namaLengkap.toUpperCase()}</td>
+                <td>
+                  {findNamaKontingen(
+                    kontingens,
+                    peserta.idKontingen
+                  ).toUpperCase()}
+                </td>
                 {selectedKontingen.idKontingen && (
                   <td className="whitespace-nowrap">
                     <ul>
@@ -658,9 +662,6 @@ const TabelPesertaAdmin = () => {
                 <td>{peserta.jenisPertandingan}</td>
                 <td className="whitespace-nowrap">
                   {peserta.kategoriPertandingan}
-                </td>
-                <td className="capitalize">
-                  {findNamaKontingen(kontingens, peserta.idKontingen)}
                 </td>
                 <td>
                   {peserta.pembayaran ? (

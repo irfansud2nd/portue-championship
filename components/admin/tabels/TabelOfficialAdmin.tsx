@@ -23,9 +23,9 @@ const TabelOfficialAdmin = () => {
     "No",
     "ID Official",
     "Nama Lengkap",
+    "Nama Kontingen",
     "Jenis Kelamin",
     "Jabatan",
-    "Nama Kontingen",
     "Pas Foto",
     "Email Pendaftar",
     "Waktu Pendaftaran",
@@ -110,12 +110,15 @@ const TabelOfficialAdmin = () => {
             <tr key={official.id} className="border_td">
               <td>{i + 1}</td>
               <td>{official.id}</td>
-              <td>{official.namaLengkap}</td>
+              <td>{official.namaLengkap.toUpperCase()}</td>
+              <td className="capitalize">
+                {findNamaKontingen(
+                  kontingens,
+                  official.idKontingen
+                ).toUpperCase()}
+              </td>
               <td>{official.jenisKelamin}</td>
               <td>{official.jabatan}</td>
-              <td className="capitalize">
-                {findNamaKontingen(kontingens, official.idKontingen)}
-              </td>
               <td>
                 {official.downloadFotoUrl ? (
                   <button
