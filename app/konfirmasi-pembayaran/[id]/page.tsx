@@ -50,6 +50,7 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
       res.forEach((doc) => setKontingen(doc.data() as DataKontingenState))
     );
   };
+
   const getPesertas = () => {
     let result: any[] = [];
     getDocs(

@@ -1,6 +1,7 @@
 "use client";
 
 import InlineLoading from "@/components/admin/InlineLoading";
+import PartaiCard from "@/components/scoring/PartaiCard";
 import { firestore } from "@/utils/firebase";
 import { KontingenScore } from "@/utils/scoringFunctions";
 import { compare } from "@/utils/sharedFunctions";
@@ -17,6 +18,8 @@ const ScorePage = () => {
       smpEmas: number;
       smpPerak: number;
       smpPerunggu: number;
+      pointSd: number;
+      pointSmp: number;
     }[]
   >([]);
   const [partai, setPartai] = useState<
@@ -90,7 +93,17 @@ const ScorePage = () => {
 
     const mergedArr: Item[] = Object.values(result);
 
-    setKontingenScores(mergedArr);
+    let arr: any = [];
+
+    mergedArr.map((item) => {
+      arr.push({
+        ...item,
+        pointSd: item.sdEmas + item.sdPerak,
+        pointSmp: item.smpEmas + item.smpPerak + item.smpPerunggu,
+      });
+    });
+
+    setKontingenScores(arr);
     setLoading(false);
   };
 
@@ -108,11 +121,13 @@ const ScorePage = () => {
     getPartai();
   }, []);
 
+  const links = ["tabel_1", "tabel_2", "tabel_3", "tabel_4"];
+
   return (
     <div className="w-full h-full p-2">
       <div className="w-full h-full bg-gray-200 rounded-md p-2">
         <button
-          className="btn_green btn_full mb-1"
+          className="bg-custom-navy hover:bg-custom-yellow text-custom-yellow hover:text-custom-navy border-2 border-custom-navy transition-all px-2 rounded-full font-semibold mb-1"
           onClick={() => {
             getScores();
             getPartai();
@@ -126,22 +141,16 @@ const ScorePage = () => {
             <h1 className="text-2xl font-bold">
               PARTAI YANG SEDANG BERTANDING
             </h1>
-            <table className="min-w-[400px]">
-              <thead>
-                <tr>
-                  <th>Gelanggang</th>
-                  <th>Partai</th>
-                </tr>
-              </thead>
-              <tbody>
-                {partai.map((item) => (
-                  <tr key={item.nama}>
-                    <td>{item.nama}</td>
-                    <td>Partai {item.partai}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="flex gap-2 flex-wrap">
+              {partai.map((item, i) => (
+                <PartaiCard
+                  key={item.nama}
+                  label={item.nama}
+                  partai={item.partai}
+                  link={links[i]}
+                />
+              ))}
+            </div>
             <h1 className="text-2xl font-bold">
               REKAPITULASI PEROLEHAN MEDALI SD
             </h1>
@@ -152,17 +161,20 @@ const ScorePage = () => {
                   <th>Nama Kontingen</th>
                   <th>Emas</th>
                   <th>Perak</th>
+                  {/* <th>Point</th> */}
                 </tr>
               </thead>
               <tbody>
                 {kontingenScores
                   .sort(compare("namaKontingen", "asc"))
+                  .sort(compare("pointSd", "desc"))
                   .map((kontingen, i) => (
                     <tr key={kontingen.namaKontingen}>
                       <td>{i + 1}</td>
                       <td className="uppercase">{kontingen.namaKontingen}</td>
                       <td>{kontingen.sdEmas}</td>
                       <td>{kontingen.sdPerak}</td>
+                      {/* <td>{kontingen.pointSd}</td> */}
                     </tr>
                   ))}
               </tbody>
@@ -178,11 +190,13 @@ const ScorePage = () => {
                   <th>Emas</th>
                   <th>Perak</th>
                   <th>Perunggu</th>
+                  {/* <th>Point</th> */}
                 </tr>
               </thead>
               <tbody>
                 {kontingenScores
                   .sort(compare("namaKontingen", "asc"))
+                  .sort(compare("pointSmp", "desc"))
                   .map((kontingen, i) => (
                     <tr key={kontingen.namaKontingen}>
                       <td>{i + 1}</td>
@@ -190,6 +204,7 @@ const ScorePage = () => {
                       <td>{kontingen.smpEmas}</td>
                       <td>{kontingen.smpPerak}</td>
                       <td>{kontingen.smpPerunggu}</td>
+                      {/* <td>{kontingen.pointSmp}</td> */}
                     </tr>
                   ))}
               </tbody>
