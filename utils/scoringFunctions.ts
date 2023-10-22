@@ -71,7 +71,7 @@ export const writeAllKontingen = async (user: User) => {
     smpPerak: number;
     smpPerunggu: number;
   }[] = [];
-  getAllKontingen()
+  return getAllKontingen()
     .then((res: any) => {
       kontingens = res;
     })

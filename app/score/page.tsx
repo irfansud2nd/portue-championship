@@ -154,22 +154,20 @@ const ScorePage = () => {
           Refresh
         </button>
         {loading && <InlineLoading />}
+        <h1 className="text-2xl font-bold">PARTAI YANG SEDANG BERTANDING</h1>
+        <div className="flex gap-2 flex-wrap">
+          {partai.map((item, i) => (
+            <PartaiCard
+              key={item.nama}
+              label={item.nama}
+              partai={item.partai}
+              link={selectedLinks[i]}
+              disabled={!selectedLinks[i]}
+            />
+          ))}
+        </div>
         {kontingenScores.length ? (
           <>
-            <h1 className="text-2xl font-bold">
-              PARTAI YANG SEDANG BERTANDING
-            </h1>
-            <div className="flex gap-2 flex-wrap">
-              {partai.map((item, i) => (
-                <PartaiCard
-                  key={item.nama}
-                  label={item.nama}
-                  partai={item.partai}
-                  link={selectedLinks[i]}
-                  disabled={!selectedLinks[i]}
-                />
-              ))}
-            </div>
             <h1 className="text-2xl font-bold">
               REKAPITULASI PEROLEHAN MEDALI SD
             </h1>

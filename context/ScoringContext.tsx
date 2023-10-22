@@ -44,10 +44,12 @@ export const ScoringContextProvider = ({
   // INITIALIZE KONTINGENS
   const initializeKontingens = () => {
     setInitializeLoading(true);
-    writeAllKontingen(user).then(() => {
-      refreshKontingens();
-      setInitializeLoading(false);
-    });
+    writeAllKontingen(user)
+      .then(() => {
+        setInitializeLoading(false);
+        refreshKontingens();
+      })
+      .finally(() => refreshKontingens());
   };
 
   const changeEmasSmp = (
