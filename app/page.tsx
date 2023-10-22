@@ -69,6 +69,12 @@ export default function Home() {
           </Link>
         </p>
         <LoginButton />
+        <Link
+          href={"/score"}
+          className="w-full rounded-full font-semibold text-lg btn_navy_gold text-center"
+        >
+          Perolehan Medali dan Update Partai
+        </Link>
         <DownloadButton />
         <p className="text-center text-5xl leading-5 font-bold mt-2 font-dancing-script">
           Are you the next

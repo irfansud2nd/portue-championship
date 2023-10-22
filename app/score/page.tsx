@@ -121,7 +121,25 @@ const ScorePage = () => {
     getPartai();
   }, []);
 
-  const links = ["tabel_1", "tabel_2", "tabel_3", "tabel_4"];
+  const day1 = [
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday1%2FGelanggang%201.pdf?alt=media&token=ae42dbd1-8238-40b8-b79a-7bf59beabc0f&_gl=1*womjmo*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg3ODkzLjU1LjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday1%2FGelanggang%202.pdf?alt=media&token=432df379-e4e1-4b4f-9690-fac764ce6c6e&_gl=1*18s533k*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg3OTM2LjEyLjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday1%2FGelanggang%203.pdf?alt=media&token=f47210b1-2cc5-414f-89d9-2bb312ff49bc&_gl=1*1kixtip*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg3OTUwLjYwLjAuMA..",
+    "",
+  ];
+  const day2 = [
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2%2FGelanggang%201.pdf?alt=media&token=3c1ad84f-74d9-41c8-8a96-52ad9dd47e3a&_gl=1*1lkobo6*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MDk5LjYwLjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2%2FGelanggang%202.pdf?alt=media&token=965d7126-e835-4614-8d15-b8d92ca23a9c&_gl=1*13mewml*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MDIxLjU4LjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2%2FGelanggang%203.pdf?alt=media&token=ebbd31e1-e584-49f6-8ee7-2165003329c0&_gl=1*ztme1b*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MDM4LjQxLjAuMA..",
+    "",
+  ];
+  const day2Malam = [
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2Malam%2FGelanggang%201%20Malam.pdf?alt=media&token=3b87b76e-5ea0-4316-8492-1992bb39a6b7&_gl=1*1y610py*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MTQ2LjEzLjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2Malam%2FGelanggang%202%20Malam.pdf?alt=media&token=211d548d-4697-4ab9-8341-0652e5f994f3&_gl=1*1gwmr73*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MTY1LjYwLjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2Malam%2FGelanggang%203%20Malam.pdf?alt=media&token=b140cb0d-ed86-461b-b98d-477c4ef23405&_gl=1*1d60u21*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MTgyLjQzLjAuMA..",
+    "",
+  ];
+  const selectedLinks = day1;
 
   return (
     <div className="w-full h-full p-2">
@@ -147,7 +165,8 @@ const ScorePage = () => {
                   key={item.nama}
                   label={item.nama}
                   partai={item.partai}
-                  link={links[i]}
+                  link={selectedLinks[i]}
+                  disabled={!selectedLinks[i]}
                 />
               ))}
             </div>
