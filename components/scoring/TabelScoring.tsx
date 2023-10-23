@@ -41,6 +41,29 @@ const TabelScoring = () => {
 
   const toastId = useRef(null);
 
+  const getTotal = () => {
+    let sdEmas = 0;
+    let sdPerak = 0;
+    let smpEmas = 0;
+    let smpPerak = 0;
+    let smpPerunggu = 0;
+    kontingens.scores.map((item) => {
+      sdEmas += item.sdEmas;
+      sdPerak += item.sdPerak;
+      smpEmas += item.smpEmas;
+      smpPerak += item.smpPerak;
+      smpPerunggu += item.smpPerunggu;
+    });
+
+    return {
+      sdEmas,
+      sdPerak,
+      smpEmas,
+      smpPerak,
+      smpPerunggu,
+    };
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -157,6 +180,13 @@ const TabelScoring = () => {
                 </td>
               </tr>
             ))}
+          <tr>
+            <td className="font-bold" colSpan={2}>
+              Total
+            </td>
+            <td>{getTotal().sdEmas}</td>
+            <td>{getTotal().sdPerak}</td>
+          </tr>
         </tbody>
       </table>
       <h1 className="text-2xl font-bold mt-2">
@@ -314,6 +344,14 @@ const TabelScoring = () => {
                 </td>
               </tr>
             ))}
+          <tr>
+            <td className="font-bold" colSpan={2}>
+              Total
+            </td>
+            <td>{getTotal().smpEmas}</td>
+            <td>{getTotal().smpPerak}</td>
+            <td>{getTotal().smpPerunggu}</td>
+          </tr>
         </tbody>
       </table>
     </div>
