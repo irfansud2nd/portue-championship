@@ -2,6 +2,7 @@ import { ScoringContext } from "@/context/ScoringContext";
 import { KontingenScore } from "@/utils/scoringFunctions";
 import { compare } from "@/utils/sharedFunctions";
 import { useRef } from "react";
+import { useDownloadExcel } from "react-export-table-to-excel";
 import { BsPlusLg } from "react-icons/bs";
 import { HiMiniMinus } from "react-icons/hi2";
 import { Id, ToastContainer } from "react-toastify";
@@ -9,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 type AddScore = (
   toastId: React.MutableRefObject<Id | null>,
-  documentId: string,
+  id: string,
   idKontingen: string,
   namaKontingen: string,
   sdEmas: number,
@@ -64,11 +65,21 @@ const TabelScoring = () => {
     };
   };
 
+  const tabelRef = useRef(null);
+
+  const { onDownload } = useDownloadExcel({
+    currentTableRef: tabelRef.current,
+    filename: `Tabel Scoring ${kontingens.userEmail} - ${kontingens.id}`,
+  });
+
   return (
     <div>
       <ToastContainer />
       <h1 className="text-2xl font-bold">REKAPITULASI PEROLEHAN MEDALI SD</h1>
-      <table className="w-full">
+      {/* <button className="btn_green btn_full" onClick={onDownload}>
+        Download
+      </button> */}
+      <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
             <th>No</th>
@@ -88,7 +99,7 @@ const TabelScoring = () => {
                 }`}
               >
                 <td>{i + 1}</td>
-                <td className="uppercase">{kontingen.namaKontingen}</td>
+                <td>{kontingen.namaKontingen.toUpperCase()}</td>
                 {/* SD */}
                 <td>
                   <div className="flex gap-2">
@@ -98,7 +109,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changeEmasSd(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -118,7 +129,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changeEmasSd(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -142,7 +153,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changePerakSd(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -162,7 +173,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changePerakSd(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -218,7 +229,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changeEmasSmp(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -238,7 +249,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changeEmasSmp(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -262,7 +273,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changePerakSmp(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -282,7 +293,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changePerakSmp(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -306,7 +317,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changePerungguSmp(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,
@@ -326,7 +337,7 @@ const TabelScoring = () => {
                       onClick={() =>
                         changePerungguSmp(
                           toastId,
-                          kontingens.documentId,
+                          kontingens.id,
                           kontingen.idKontingen,
                           kontingen.namaKontingen,
                           kontingen.sdEmas,

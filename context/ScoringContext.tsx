@@ -54,7 +54,7 @@ export const ScoringContextProvider = ({
 
   const changeEmasSmp = (
     toastId: React.MutableRefObject<Id | null>,
-    documentId: string,
+    id: string,
     idKontingen: string,
     namaKontingen: string,
     sdEmas: number,
@@ -66,7 +66,7 @@ export const ScoringContextProvider = ({
   ) => {
     newToast(toastId, "loading", "Mengubah Jumlah Medali Emas");
     setDisable(true);
-    updateDoc(doc(firestore, "kontingenScores", documentId), {
+    updateDoc(doc(firestore, "kontingenScores", id), {
       scores: arrayRemove({
         idKontingen,
         namaKontingen,
@@ -78,7 +78,7 @@ export const ScoringContextProvider = ({
       }),
     })
       .then(() =>
-        updateDoc(doc(firestore, "kontingenScores", documentId), {
+        updateDoc(doc(firestore, "kontingenScores", id), {
           scores: arrayUnion({
             idKontingen,
             namaKontingen,
@@ -105,7 +105,7 @@ export const ScoringContextProvider = ({
 
   const changePerakSmp = (
     toastId: React.MutableRefObject<Id | null>,
-    documentId: string,
+    id: string,
     idKontingen: string,
     namaKontingen: string,
     sdEmas: number,
@@ -117,7 +117,7 @@ export const ScoringContextProvider = ({
   ) => {
     setDisable(true);
     newToast(toastId, "loading", "Mengubah Jumlah Medali Perak");
-    updateDoc(doc(firestore, "kontingenScores", documentId), {
+    updateDoc(doc(firestore, "kontingenScores", id), {
       scores: arrayRemove({
         idKontingen,
         namaKontingen,
@@ -130,7 +130,7 @@ export const ScoringContextProvider = ({
       }),
     })
       .then(() =>
-        updateDoc(doc(firestore, "kontingenScores", documentId), {
+        updateDoc(doc(firestore, "kontingenScores", id), {
           scores: arrayUnion({
             idKontingen,
             namaKontingen,
@@ -158,7 +158,7 @@ export const ScoringContextProvider = ({
 
   const changePerungguSmp = (
     toastId: React.MutableRefObject<Id | null>,
-    documentId: string,
+    id: string,
     idKontingen: string,
     namaKontingen: string,
     sdEmas: number,
@@ -170,7 +170,7 @@ export const ScoringContextProvider = ({
   ) => {
     setDisable(true);
     newToast(toastId, "loading", "Mengubah Jumlah Medali Perunggu");
-    updateDoc(doc(firestore, "kontingenScores", documentId), {
+    updateDoc(doc(firestore, "kontingenScores", id), {
       scores: arrayRemove({
         idKontingen,
         namaKontingen,
@@ -183,7 +183,7 @@ export const ScoringContextProvider = ({
       }),
     })
       .then(() =>
-        updateDoc(doc(firestore, "kontingenScores", documentId), {
+        updateDoc(doc(firestore, "kontingenScores", id), {
           scores: arrayUnion({
             idKontingen,
             namaKontingen,
@@ -210,7 +210,7 @@ export const ScoringContextProvider = ({
   // ADD EMAS
   const changeEmasSd = (
     toastId: React.MutableRefObject<Id | null>,
-    documentId: string,
+    id: string,
     idKontingen: string,
     namaKontingen: string,
     sdEmas: number,
@@ -222,7 +222,7 @@ export const ScoringContextProvider = ({
   ) => {
     setDisable(true);
     newToast(toastId, "loading", "Mengubah Jumlah Medali Emas");
-    updateDoc(doc(firestore, "kontingenScores", documentId), {
+    updateDoc(doc(firestore, "kontingenScores", id), {
       scores: arrayRemove({
         idKontingen,
         namaKontingen,
@@ -235,7 +235,7 @@ export const ScoringContextProvider = ({
       }),
     })
       .then(() =>
-        updateDoc(doc(firestore, "kontingenScores", documentId), {
+        updateDoc(doc(firestore, "kontingenScores", id), {
           scores: arrayUnion({
             idKontingen,
             namaKontingen,
@@ -263,7 +263,7 @@ export const ScoringContextProvider = ({
 
   const changePerakSd = (
     toastId: React.MutableRefObject<Id | null>,
-    documentId: string,
+    id: string,
     idKontingen: string,
     namaKontingen: string,
     sdEmas: number,
@@ -275,7 +275,7 @@ export const ScoringContextProvider = ({
   ) => {
     setDisable(true);
     newToast(toastId, "loading", "Mengubah Jumlah Medali Perak");
-    updateDoc(doc(firestore, "kontingenScores", documentId), {
+    updateDoc(doc(firestore, "kontingenScores", id), {
       scores: arrayRemove({
         idKontingen,
         namaKontingen,
@@ -287,7 +287,7 @@ export const ScoringContextProvider = ({
       }),
     })
       .then(() =>
-        updateDoc(doc(firestore, "kontingenScores", documentId), {
+        updateDoc(doc(firestore, "kontingenScores", id), {
           scores: arrayUnion({
             idKontingen,
             namaKontingen,

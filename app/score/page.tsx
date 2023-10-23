@@ -140,6 +140,7 @@ const ScorePage = () => {
     "",
   ];
   const selectedLinks = day2;
+  const hideScore = true;
 
   return (
     <div className="w-full h-full p-2">
@@ -166,7 +167,13 @@ const ScorePage = () => {
             />
           ))}
         </div>
-        {kontingenScores.length ? (
+        {hideScore ? (
+          <div className="mt-1">
+            <p className="text-xl font-bold">
+              Mohon maaf, rekapitulasi medali sedang dalam tahap maintenance
+            </p>
+          </div>
+        ) : kontingenScores.length ? (
           <>
             <h1 className="text-2xl font-bold">
               REKAPITULASI PEROLEHAN MEDALI SD

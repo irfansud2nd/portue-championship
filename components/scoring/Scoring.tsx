@@ -12,6 +12,7 @@ const Scoring = () => {
     refreshKontingens,
   } = ScoringContext();
   const { kontingens }: { kontingens: KontingenScore } = ScoringContext();
+
   return (
     <div>
       <button

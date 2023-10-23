@@ -2,8 +2,10 @@ import {
   DocumentData,
   addDoc,
   collection,
+  doc,
   getDocs,
   query,
+  setDoc,
   where,
 } from "firebase/firestore";
 import { firestore } from "./firebase";
@@ -13,6 +15,7 @@ import { User } from "firebase/auth";
 
 export type KontingenScore = {
   documentId: string;
+  id: string;
   userUid: string;
   userEmail: string;
   scores: {
@@ -71,6 +74,7 @@ export const writeAllKontingen = async (user: User) => {
     smpPerak: number;
     smpPerunggu: number;
   }[] = [];
+  const newDocRef = doc(collection(firestore, "kontingenScores"));
   return getAllKontingen()
     .then((res: any) => {
       kontingens = res;
@@ -88,7 +92,8 @@ export const writeAllKontingen = async (user: User) => {
           smpPerunggu: 0,
         });
       });
-      addDoc(collection(firestore, "kontingenScores"), {
+      setDoc(newDocRef, {
+        id: newDocRef.id,
         userUid: user.uid,
         userEmail: user.email,
         scores: initialKontingenScore,
