@@ -22,6 +22,7 @@ export const ScoringContextProvider = ({
   const [kontingens, setKontingens] = useState<KontingenScore>();
   const [kontingensLoading, setKontingensLoading] = useState(true);
   const [initializeLoading, setInitializeLoading] = useState(false);
+  const [value, setValue] = useState(1);
   const [disable, setDisable] = useState(false);
 
   const { user } = MyContext();
@@ -84,7 +85,7 @@ export const ScoringContextProvider = ({
             namaKontingen,
             sdEmas,
             sdPerak,
-            smpEmas: desc ? smpEmas - 1 : smpEmas + 1,
+            smpEmas: desc ? smpEmas - value : smpEmas + value,
             smpPerak,
             smpPerunggu,
           }),
@@ -138,7 +139,7 @@ export const ScoringContextProvider = ({
             sdPerak,
 
             smpEmas,
-            smpPerak: desc ? smpPerak - 1 : smpPerak + 1,
+            smpPerak: desc ? smpPerak - value : smpPerak + value,
             smpPerunggu,
           }),
         })
@@ -191,7 +192,7 @@ export const ScoringContextProvider = ({
             sdPerak,
             smpEmas,
             smpPerak,
-            smpPerunggu: desc ? smpPerunggu - 1 : smpPerunggu + 1,
+            smpPerunggu: desc ? smpPerunggu - value : smpPerunggu + value,
           }),
         })
           .then(() => {
@@ -239,7 +240,7 @@ export const ScoringContextProvider = ({
           scores: arrayUnion({
             idKontingen,
             namaKontingen,
-            sdEmas: desc ? sdEmas - 1 : sdEmas + 1,
+            sdEmas: desc ? sdEmas - value : sdEmas + value,
             sdPerak,
 
             smpEmas,
@@ -292,7 +293,7 @@ export const ScoringContextProvider = ({
             idKontingen,
             namaKontingen,
             sdEmas,
-            sdPerak: desc ? sdPerak - 1 : sdPerak + 1,
+            sdPerak: desc ? sdPerak - value : sdPerak + value,
             smpEmas,
             smpPerak,
             smpPerunggu,
@@ -326,6 +327,8 @@ export const ScoringContextProvider = ({
         changeEmasSd,
         changePerakSd,
         disable,
+        value,
+        setValue,
       }}
     >
       {children}

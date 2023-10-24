@@ -5,7 +5,7 @@ import PartaiCard from "@/components/scoring/PartaiCard";
 import { firestore } from "@/utils/firebase";
 import { KontingenScore } from "@/utils/scoringFunctions";
 import { compare } from "@/utils/sharedFunctions";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 const ScorePage = () => {
@@ -34,7 +34,12 @@ const ScorePage = () => {
     setLoading(true);
 
     let result: any = [];
-    getDocs(collection(firestore, "kontingenScores"))
+    getDocs(
+      query(
+        collection(firestore, "kontingenScores"),
+        where("visible", "==", true)
+      )
+    )
       .then((res) => res.forEach((doc) => result.push(doc.data())))
       .finally(() => {
         processScore(result);
@@ -140,7 +145,7 @@ const ScorePage = () => {
     "",
   ];
   const selectedLinks = day2;
-  const hideScore = true;
+  const hideScore = false;
 
   return (
     <div className="w-full h-full p-2">
@@ -190,8 +195,8 @@ const ScorePage = () => {
               </thead>
               <tbody>
                 {kontingenScores
-                  .sort(compare("namaKontingen", "asc"))
-                  .sort(compare("pointSd", "desc"))
+                  .sort(compare("sdPerak", "desc"))
+                  .sort(compare("sdEmas", "desc"))
                   .map((kontingen, i) => (
                     <tr key={kontingen.namaKontingen}>
                       <td>{i + 1}</td>

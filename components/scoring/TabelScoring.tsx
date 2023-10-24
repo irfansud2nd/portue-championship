@@ -1,7 +1,7 @@
 import { ScoringContext } from "@/context/ScoringContext";
 import { KontingenScore } from "@/utils/scoringFunctions";
 import { compare } from "@/utils/sharedFunctions";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { BsPlusLg } from "react-icons/bs";
 import { HiMiniMinus } from "react-icons/hi2";
@@ -30,6 +30,8 @@ const TabelScoring = () => {
     changePerakSmp,
     changePerungguSmp,
     disable,
+    value,
+    setValue,
   }: {
     kontingens: KontingenScore;
     changeEmasSd: AddScore;
@@ -38,6 +40,8 @@ const TabelScoring = () => {
     changePerakSmp: AddScore;
     changePerungguSmp: AddScore;
     disable: boolean;
+    value: number;
+    setValue: any;
   } = ScoringContext();
 
   const toastId = useRef(null);
@@ -84,6 +88,7 @@ const TabelScoring = () => {
           <tr>
             <th>No</th>
             <th>Nama Kontingen</th>
+            {/* <th>Value</th> */}
             <th>Emas</th>
             <th>Perak</th>
           </tr>
@@ -100,6 +105,13 @@ const TabelScoring = () => {
               >
                 <td>{i + 1}</td>
                 <td>{kontingen.namaKontingen.toUpperCase()}</td>
+                {/* <td>
+                  <input
+                    type="text"
+                    onChange={(e) => setValue(Number(e.target.value))}
+                  />
+                  <p>Value {value}</p>
+                </td> */}
                 {/* SD */}
                 <td>
                   <div className="flex gap-2">

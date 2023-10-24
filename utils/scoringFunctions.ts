@@ -93,7 +93,8 @@ export const writeAllKontingen = async (user: User) => {
         });
       });
       setDoc(newDocRef, {
-backup:false,
+        visible: false,
+        backup: false,
         id: newDocRef.id,
         userUid: user.uid,
         userEmail: user.email,
