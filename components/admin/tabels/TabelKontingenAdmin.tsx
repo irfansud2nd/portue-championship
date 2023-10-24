@@ -34,6 +34,10 @@ const TabelKontingenAdmin = () => {
     "Nama Kontingen",
     "Verifikasi",
     "Peserta",
+    "Peserta SD",
+    "Peserta SMP",
+    "Peserta SMA",
+    "Peserta Dewasa",
     "Official",
     "Pembayaran",
     "Belum Lunas",
@@ -138,6 +142,21 @@ const TabelKontingenAdmin = () => {
     return { pesertaVerified, unVerifyKontingen, verifiedKontingen };
   };
 
+  const groupingPeserta = (idKontingen: string) => {
+    let sd = 0;
+    let smp = 0;
+    let sma = 0;
+    let dewasa = 0;
+    const array = getPesertasByKontingen(idKontingen, pesertas);
+    array.map((peserta) => {
+      if (peserta.tingkatanPertandingan.includes("SD")) sd += 1;
+      if (peserta.tingkatanPertandingan.includes("SMP")) smp += 1;
+      if (peserta.tingkatanPertandingan.includes("SMA")) sma += 1;
+      if (peserta.tingkatanPertandingan.includes("Dewasa")) dewasa += 1;
+    });
+    return { sd, smp, sma, dewasa };
+  };
+
   return (
     <div>
       <ToastContainer />
@@ -209,6 +228,10 @@ const TabelKontingenAdmin = () => {
                   {/* {kontingen.pesertas.length} */}
                   {getPesertasLength(kontingen.idKontingen)}
                 </td>
+                <td>{groupingPeserta(kontingen.idKontingen).sd}</td>
+                <td>{groupingPeserta(kontingen.idKontingen).smp}</td>
+                <td>{groupingPeserta(kontingen.idKontingen).sma}</td>
+                <td>{groupingPeserta(kontingen.idKontingen).dewasa}</td>
                 <td>
                   {
                     getOfficialsByKontingen(kontingen.idKontingen, officials)
