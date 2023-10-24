@@ -153,7 +153,7 @@ const ScorePage = () => {
     "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2Malam%2FGelanggang%203%20Malam.pdf?alt=media&token=b140cb0d-ed86-461b-b98d-477c4ef23405&_gl=1*1d60u21*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MTgyLjQzLjAuMA..",
     "",
   ];
-  const selectedLinks = day2;
+  const selectedLinks = day2Malam;
   const hideScore = false;
 
   return (
