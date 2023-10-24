@@ -100,12 +100,21 @@ const ScorePage = () => {
 
     let arr: any = [];
 
-    mergedArr.map((item) => {
+    mergedArr.map((item, i) => {
       arr.push({
         ...item,
         pointSd: item.sdEmas + item.sdPerak,
         pointSmp: item.smpEmas + item.smpPerak + item.smpPerunggu,
       });
+    });
+
+    arr.push({
+      namaKontingen: "TERATAI SILAT CLUB",
+      sdEmas: 0,
+      sdPerak: 5,
+      smpEmas: 0,
+      smpPerak: 0,
+      smpPerunggu: 0,
     });
 
     setKontingenScores(arr);
@@ -198,13 +207,22 @@ const ScorePage = () => {
                   .sort(compare("sdPerak", "desc"))
                   .sort(compare("sdEmas", "desc"))
                   .map((kontingen, i) => (
-                    <tr key={kontingen.namaKontingen}>
-                      <td>{i + 1}</td>
-                      <td className="uppercase">{kontingen.namaKontingen}</td>
-                      <td>{kontingen.sdEmas}</td>
-                      <td>{kontingen.sdPerak}</td>
-                      {/* <td>{kontingen.pointSd}</td> */}
-                    </tr>
+                    <>
+                      <tr
+                        key={kontingen.namaKontingen}
+                        className={`${
+                          kontingen.sdEmas == 0 &&
+                          kontingen.sdPerak == 0 &&
+                          "hidden"
+                        }`}
+                      >
+                        <td>{i + 1}</td>
+                        <td className="uppercase">{kontingen.namaKontingen}</td>
+                        <td>{kontingen.sdEmas}</td>
+                        <td>{kontingen.sdPerak}</td>
+                        {/* <td>{kontingen.pointSd}</td> */}
+                      </tr>
+                    </>
                   ))}
               </tbody>
             </table>
