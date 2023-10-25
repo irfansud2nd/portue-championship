@@ -153,7 +153,14 @@ const ScorePage = () => {
     "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday2Malam%2FGelanggang%203%20Malam.pdf?alt=media&token=b140cb0d-ed86-461b-b98d-477c4ef23405&_gl=1*1d60u21*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5Nzk4NzUwNy4xOTUuMS4xNjk3OTg4MTgyLjQzLjAuMA..",
     "",
   ];
-  const selectedLinks = ["", "", "", ""];
+  const day3 = [
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday3%2FGelanggang%201.pdf?alt=media&token=cc57fccf-748a-4c9d-a06c-9c1a9445f926",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday3%2FGelanggang%202.pdf?alt=media&token=61ff736f-02bb-4f65-8437-e8f9bc75f67a",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday3%2FGelanggang%203.pdf?alt=media&token=92daf6ed-a738-48e1-9ee5-e12c848cb32d",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday3%2FGelanggang%204.pdf?alt=media&token=899734e0-278c-4173-b09c-2b4e2bb0856f",
+  ];
+  const kosong = ["", "", "", ""];
+  const selectedLinks = day3;
   const hideScore = false;
 
   return (
