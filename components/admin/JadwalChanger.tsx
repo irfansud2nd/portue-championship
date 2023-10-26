@@ -6,7 +6,7 @@ import { Id, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const JadwalChanger = () => {
-  const [gelanggang, setGelanggang] = useState<number>();
+  const [gelanggang, setGelanggang] = useState<string>();
   const [partai, setPartai] = useState<string>();
   const changePartai = () => {
     if (!gelanggang || !partai || partai == "0") {
@@ -34,13 +34,11 @@ const JadwalChanger = () => {
       <ToastContainer />
       <select
         value={gelanggang}
-        onChange={(e) => setGelanggang(Number(e.target.value))}
+        onChange={(e) => setGelanggang(e.target.value)}
       >
         <option value={0}></option>
-        <option value={1}>Gelanggang 1</option>
-        <option value={2}>Gelanggang 2</option>
-        <option value={3}>Gelanggang 3</option>
-        <option value={4}>Gelanggang 4</option>
+        <option value={"a"}>Gelanggang A</option>
+        <option value={"b"}>Gelanggang B</option>
       </select>
       <p>Partai</p>
       <input

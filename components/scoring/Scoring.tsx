@@ -31,7 +31,7 @@ const Scoring = () => {
       ) : kontingens ? (
         <>
           <JadwalChanger />
-          <TabelScoring />
+          {/* <TabelScoring /> */}
         </>
       ) : kontingensLoading ? (
         <InlineLoading />

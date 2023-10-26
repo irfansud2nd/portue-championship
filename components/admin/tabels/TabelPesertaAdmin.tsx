@@ -73,6 +73,7 @@ const TabelPesertaAdmin = () => {
   );
   const [pesertaToMap, setPesertaToMap] =
     useState<DataPesertaState[]>(pesertas);
+
   const [kkUrl, setKkUrl] = useState("");
   const [ktpUrl, setKtpUrl] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
