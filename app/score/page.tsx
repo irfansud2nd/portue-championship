@@ -160,7 +160,7 @@ const ScorePage = () => {
     "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday3%2FGelanggang%204.pdf?alt=media&token=899734e0-278c-4173-b09c-2b4e2bb0856f",
   ];
   const kosong = ["", "", "", ""];
-  const selectedLinks = day3;
+  const selectedLinks = kosong;
   const hideScore = false;
 
   return (
