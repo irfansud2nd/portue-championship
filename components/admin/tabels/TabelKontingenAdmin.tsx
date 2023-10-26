@@ -52,15 +52,6 @@ const TabelKontingenAdmin = () => {
     []
   );
 
-  const getUnpaidPeserta = (kontingen: DataKontingenState) => {
-    if (!kontingen.infoPembayaran || !kontingen.pesertas) return 0;
-    let paidNominal = 0;
-    kontingen.infoPembayaran.map(
-      (info) => (paidNominal += Number(info.nominal.replace(/[^0-9]/g, "")))
-    );
-    return kontingen.pesertas.length - Math.floor(paidNominal / 300000);
-  };
-
   const getPesertasLength = (idKontingen: string) => {
     let length = 0;
     pesertas.map((peserta: DataPesertaState) => {

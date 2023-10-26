@@ -166,7 +166,7 @@ const ScorePage = () => {
     "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday4%2FGelanggang%204.pdf?alt=media&token=5e90eeb3-2654-4214-b043-76ebdb454ff1&_gl=1*x2sw82*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5ODI4NjcwNC4yMDguMS4xNjk4Mjg4NjM3LjIzLjAuMA..",
   ];
   const kosong = ["", "", "", ""];
-  const selectedLinks = day4;
+  const selectedLinks = kosong;
   const hideScore = false;
 
   return (
@@ -188,7 +188,7 @@ const ScorePage = () => {
             <PartaiCard
               key={item.nama}
               label={item.nama}
-              partai={item.partai}
+              partai={i != 3 ? "SELESAI" : `Partai ${item.partai}`}
               link={selectedLinks[i]}
               disabled={!selectedLinks[i]}
             />
