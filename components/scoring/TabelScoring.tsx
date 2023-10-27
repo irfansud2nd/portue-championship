@@ -83,12 +83,11 @@ const TabelScoring = () => {
       {/* <button className="btn_green btn_full" onClick={onDownload}>
         Download
       </button> */}
-      <table className="w-full" ref={tabelRef}>
+      {/* <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
             <th>No</th>
             <th>Nama Kontingen</th>
-            {/* <th>Value</th> */}
             <th>Emas</th>
             <th>Perak</th>
           </tr>
@@ -105,14 +104,6 @@ const TabelScoring = () => {
               >
                 <td>{i + 1}</td>
                 <td>{kontingen.namaKontingen.toUpperCase()}</td>
-                {/* <td>
-                  <input
-                    type="text"
-                    onChange={(e) => setValue(Number(e.target.value))}
-                  />
-                  <p>Value {value}</p>
-                </td> */}
-                {/* SD */}
                 <td>
                   <div className="flex gap-2">
                     <button
@@ -211,7 +202,7 @@ const TabelScoring = () => {
             <td>{getTotal().sdPerak}</td>
           </tr>
         </tbody>
-      </table>
+      </table> */}
       <h1 className="text-2xl font-bold mt-2">
         REKAPITULASI PEROLEHAN MEDALI SMP
       </h1>
@@ -220,6 +211,7 @@ const TabelScoring = () => {
           <tr>
             <th>No</th>
             <th>Nama Kontingen</th>
+            <th>Value</th>
             <th>Emas</th>
             <th>Perak</th>
             <th>Perunggu</th>
@@ -233,6 +225,13 @@ const TabelScoring = () => {
                 {/* SMP */}
                 <td>{i + 1}</td>
                 <td className="uppercase">{kontingen.namaKontingen}</td>
+                <td>
+                  <input
+                    type="text"
+                    onChange={(e) => setValue(Number(e.target.value))}
+                  />
+                  <p>Value {value}</p>
+                </td>
                 <td>
                   <div className="flex gap-2">
                     <button

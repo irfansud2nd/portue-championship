@@ -113,7 +113,7 @@ const ScorePage = () => {
       sdEmas: 0,
       sdPerak: 5,
       smpEmas: 0,
-      smpPerak: 0,
+      smpPerak: 1,
       smpPerunggu: 0,
     });
 
@@ -134,8 +134,11 @@ const ScorePage = () => {
     getScores();
     getPartai();
   }, []);
-  const kosong = ["", ""];
-  const selectedLinks = kosong;
+  const day5 = [
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday5%2FGelanggang%201.pdf?alt=media&token=bf85375e-abce-4ece-aea7-0e3d400276b2&_gl=1*18357cm*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5ODM3NDYzNS4yMTUuMS4xNjk4Mzc0NzYwLjYwLjAuMA..",
+    "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday5%2FGelanggang%202.pdf?alt=media&token=ea47bdab-225b-41e1-9bd5-592824c2b6f0&_gl=1*27lkdg*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5ODM3NDYzNS4yMTUuMS4xNjk4Mzc0NzgxLjM5LjAuMA..",
+  ];
+  const selectedLinks = day5;
   const hideScore = false;
 
   return (
@@ -208,7 +211,7 @@ const ScorePage = () => {
                   ))}
               </tbody>
             </table>
-            {/* <h1 className="text-2xl font-bold mt-2">
+            <h1 className="text-2xl font-bold mt-2">
               REKAPITULASI PEROLEHAN MEDALI SMP
             </h1>
             <table className="w-full">
@@ -223,10 +226,19 @@ const ScorePage = () => {
               </thead>
               <tbody>
                 {kontingenScores
-                  .sort(compare("namaKontingen", "asc"))
-                  .sort(compare("pointSmp", "desc"))
+                  .sort(compare("smpPerunggu", "desc"))
+                  .sort(compare("smpPerak", "desc"))
+                  .sort(compare("smpEmas", "desc"))
                   .map((kontingen, i) => (
-                    <tr key={kontingen.namaKontingen}>
+                    <tr
+                      key={kontingen.namaKontingen}
+                      className={`${
+                        kontingen.smpEmas == 0 &&
+                        kontingen.smpPerak == 0 &&
+                        kontingen.smpPerunggu == 0 &&
+                        "hidden"
+                      }`}
+                    >
                       <td>{i + 1}</td>
                       <td className="uppercase">{kontingen.namaKontingen}</td>
                       <td>{kontingen.smpEmas}</td>
@@ -235,7 +247,7 @@ const ScorePage = () => {
                     </tr>
                   ))}
               </tbody>
-            </table> */}
+            </table>
           </>
         ) : (
           <InlineLoading />
