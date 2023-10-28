@@ -29,6 +29,7 @@ const TabelScoring = () => {
     changeEmasSmp,
     changePerakSmp,
     changePerungguSmp,
+    changeMedali,
     disable,
     value,
     setValue,
@@ -39,6 +40,36 @@ const TabelScoring = () => {
     changeEmasSmp: AddScore;
     changePerakSmp: AddScore;
     changePerungguSmp: AddScore;
+    changeMedali: (
+      toastId: React.MutableRefObject<Id | null>,
+      id: string,
+      idKontingen: string,
+      namaKontingen: string,
+      sdEmas: number,
+      sdPerak: number,
+      smpEmas: number,
+      smpPerak: number,
+      smpPerunggu: number,
+      smaEmas: number,
+      smaPerak: number,
+      smaPerunggu: number,
+      dewasaEmas: number,
+      dewasaPerak: number,
+      dewasaPerunggu: number,
+      tipeMedali:
+        | "sdEmas"
+        | "sdPerak"
+        | "smpEmas"
+        | "smpPerak"
+        | "smpPerunggu"
+        | "smaEmas"
+        | "smaPerak"
+        | "smaPerunggu"
+        | "dewasaEmas"
+        | "dewasaPerak"
+        | "dewasaPerunggu",
+      desc?: boolean
+    ) => void;
     disable: boolean;
     value: number;
     setValue: any;
@@ -79,10 +110,10 @@ const TabelScoring = () => {
   return (
     <div>
       <ToastContainer />
-      <h1 className="text-2xl font-bold">REKAPITULASI PEROLEHAN MEDALI SD</h1>
       {/* <button className="btn_green btn_full" onClick={onDownload}>
         Download
       </button> */}
+      {/* <h1 className="text-2xl font-bold">REKAPITULASI PEROLEHAN MEDALI SD</h1> */}
       {/* <table className="w-full" ref={tabelRef}>
         <thead>
           <tr>
@@ -203,7 +234,8 @@ const TabelScoring = () => {
           </tr>
         </tbody>
       </table> */}
-      <h1 className="text-2xl font-bold mt-2">
+      {/* SMP */}
+      {/* <h1 className="text-2xl font-bold mt-2">
         REKAPITULASI PEROLEHAN MEDALI SMP
       </h1>
       <table className="w-full">
@@ -222,8 +254,6 @@ const TabelScoring = () => {
             .sort(compare("namaKontingen", "asc"))
             .map((kontingen, i) => (
               <tr key={kontingen.idKontingen}>
-                {/* SMP */}
-                <td>{i + 1}</td>
                 <td className="uppercase">{kontingen.namaKontingen}</td>
                 <td>
                   <input
@@ -356,6 +386,439 @@ const TabelScoring = () => {
                           kontingen.smpEmas,
                           kontingen.smpPerak,
                           kontingen.smpPerunggu,
+                          true
+                        )
+                      }
+                    >
+                      <HiMiniMinus />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          <tr>
+            <td className="font-bold" colSpan={2}>
+              Total
+            </td>
+            <td>{getTotal().smpEmas}</td>
+            <td>{getTotal().smpPerak}</td>
+            <td>{getTotal().smpPerunggu}</td>
+          </tr>
+        </tbody>
+      </table> */}
+      {/* SMA */}
+      {/* <h1 className="text-2xl font-bold mt-2">
+        REKAPITULASI PEROLEHAN MEDALI SMA
+      </h1>
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Kontingen</th>
+            <th>Value</th>
+            <th>Emas</th>
+            <th>Perak</th>
+            <th>Perunggu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {kontingens.scores
+            .sort(compare("namaKontingen", "asc"))
+            .map((kontingen, i) => (
+              <tr key={kontingen.idKontingen}>
+                <td>{i + 1}</td>
+                <td className="uppercase">{kontingen.namaKontingen}</td>
+                <td>
+                  <input
+                    type="text"
+                    onChange={(e) => setValue(Number(e.target.value))}
+                  />
+                  <p>Value {value}</p>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={disable}
+                      className="btn_green btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "smaEmas"
+                        )
+                      }
+                    >
+                      <BsPlusLg />
+                    </button>
+                    <span className="font-bold">{kontingen.smaEmas}</span>
+                    <button
+                      disabled={disable}
+                      className="btn_red btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "smaEmas",
+                          true
+                        )
+                      }
+                    >
+                      <HiMiniMinus />
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={disable}
+                      className="btn_green btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "smaPerak"
+                        )
+                      }
+                    >
+                      <BsPlusLg />
+                    </button>
+                    <span className="font-bold">{kontingen.smaPerak}</span>
+                    <button
+                      disabled={disable}
+                      className="btn_red btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "smaPerak",
+                          true
+                        )
+                      }
+                    >
+                      <HiMiniMinus />
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={disable}
+                      className="btn_green btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "smaPerunggu"
+                        )
+                      }
+                    >
+                      <BsPlusLg />
+                    </button>
+                    <span className="font-bold">{kontingen.smaPerunggu}</span>
+                    <button
+                      disabled={disable}
+                      className="btn_red btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "smaPerunggu",
+                          true
+                        )
+                      }
+                    >
+                      <HiMiniMinus />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          <tr>
+            <td className="font-bold" colSpan={2}>
+              Total
+            </td>
+            <td>{getTotal().smpEmas}</td>
+            <td>{getTotal().smpPerak}</td>
+            <td>{getTotal().smpPerunggu}</td>
+          </tr>
+        </tbody>
+      </table> */}
+      {/* DEWASA */}
+      <h1 className="text-2xl font-bold mt-2">
+        REKAPITULASI PEROLEHAN MEDALI DEWASA
+      </h1>
+      <table className="w-full">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Kontingen</th>
+            <th>Value</th>
+            <th>Emas</th>
+            <th>Perak</th>
+            <th>Perunggu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {kontingens.scores
+            .sort(compare("namaKontingen", "asc"))
+            .map((kontingen, i) => (
+              <tr key={kontingen.idKontingen}>
+                {/* SMP */}
+                <td>{i + 1}</td>
+                <td className="uppercase">{kontingen.namaKontingen}</td>
+                <td>
+                  <input
+                    type="text"
+                    onChange={(e) => setValue(Number(e.target.value))}
+                  />
+                  <p>Value {value}</p>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={disable}
+                      className="btn_green btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "dewasaEmas"
+                        )
+                      }
+                    >
+                      <BsPlusLg />
+                    </button>
+                    <span className="font-bold">{kontingen.dewasaEmas}</span>
+                    <button
+                      disabled={disable}
+                      className="btn_red btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "dewasaEmas",
+                          true
+                        )
+                      }
+                    >
+                      <HiMiniMinus />
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={disable}
+                      className="btn_green btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "dewasaPerak"
+                        )
+                      }
+                    >
+                      <BsPlusLg />
+                    </button>
+                    <span className="font-bold">{kontingen.dewasaPerak}</span>
+                    <button
+                      disabled={disable}
+                      className="btn_red btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "dewasaPerak",
+                          true
+                        )
+                      }
+                    >
+                      <HiMiniMinus />
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <div className="flex gap-2">
+                    <button
+                      disabled={disable}
+                      className="btn_green btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "dewasaPerunggu"
+                        )
+                      }
+                    >
+                      <BsPlusLg />
+                    </button>
+                    <span className="font-bold">
+                      {kontingen.dewasaPerunggu}
+                    </span>
+                    <button
+                      disabled={disable}
+                      className="btn_red btn_full"
+                      onClick={() =>
+                        changeMedali(
+                          toastId,
+                          kontingens.id,
+                          kontingen.idKontingen,
+                          kontingen.namaKontingen,
+                          kontingen.sdEmas,
+                          kontingen.sdPerak,
+                          kontingen.smpEmas,
+                          kontingen.smpPerak,
+                          kontingen.smpPerunggu,
+                          kontingen.smaEmas,
+                          kontingen.smaPerak,
+                          kontingen.smaPerunggu,
+                          kontingen.dewasaEmas,
+                          kontingen.dewasaPerak,
+                          kontingen.dewasaPerunggu,
+                          "dewasaPerunggu",
                           true
                         )
                       }

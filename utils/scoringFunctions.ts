@@ -26,6 +26,12 @@ export type KontingenScore = {
     smpEmas: number;
     smpPerak: number;
     smpPerunggu: number;
+    smaEmas: number;
+    smaPerak: number;
+    smaPerunggu: number;
+    dewasaEmas: number;
+    dewasaPerak: number;
+    dewasaPerunggu: number;
   }[];
 };
 
