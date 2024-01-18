@@ -256,7 +256,6 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <ToastContainer />
       {kontingens.length ? (
         <TabelKontingen
           data={kontingens}

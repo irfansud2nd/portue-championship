@@ -73,7 +73,6 @@ const DeletePembayaranPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="p-2 bg-gray-200 m-2 rounded-md">
-      <ToastContainer />
       <h1 className="text-xl font-bold">ID Pembayaran : {idPembayaran}</h1>
       <p>
         Jumlah Peserta: <b>{pesertas.length}</b>

@@ -1,6 +1,7 @@
 "use client";
 
 import InlineLoading from "@/components/admin/InlineLoading";
+import TabelScore from "@/components/score/TabelScore";
 import PartaiCard from "@/components/scoring/PartaiCard";
 import { firestore } from "@/utils/firebase";
 import { KontingenScore } from "@/utils/scoringFunctions";
@@ -128,15 +129,6 @@ const ScorePage = () => {
 
     let arr: any = [];
 
-    // arr.push({
-    //   namaKontingen: "TERATAI SILAT CLUB",
-    //   sdEmas: 0,
-    //   sdPerak: 5,
-    //   smpEmas: 0,
-    //   smpPerak: 1,
-    //   smpPerunggu: 0,
-    // });
-
     setKontingenScores(mergedArr);
     setLoading(false);
   };
@@ -174,7 +166,7 @@ const ScorePage = () => {
           Refresh
         </button>
         {loading && <InlineLoading />}
-        {/* <h1 className="text-2xl font-bold">PARTAI YANG SEDANG BERTANDING</h1>
+        <h1 className="text-2xl font-bold">PARTAI YANG SEDANG BERTANDING</h1>
         <div className="flex gap-2 flex-wrap">
           {partai.map((item, i) => (
             <PartaiCard
@@ -185,7 +177,7 @@ const ScorePage = () => {
               disabled={!selectedLinks[i]}
             />
           ))}
-        </div> */}
+        </div>
         {hideScore ? (
           <div className="mt-1">
             <p className="text-xl font-bold">
@@ -195,157 +187,29 @@ const ScorePage = () => {
         ) : kontingenScores.length ? (
           <>
             {/* SD */}
-            <h1 className="text-2xl font-bold">
-              REKAPITULASI PEROLEHAN MEDALI SD
-            </h1>
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama Kontingen</th>
-                  <th>Emas</th>
-                  <th>Perak</th>
-                  {/* <th>Point</th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {kontingenScores
-                  .sort(compare("sdPerak", "desc"))
-                  .sort(compare("sdEmas", "desc"))
-                  .map((kontingen, i) => (
-                    <>
-                      <tr
-                        key={kontingen.namaKontingen}
-                        className={`${
-                          kontingen.sdEmas == 0 &&
-                          kontingen.sdPerak == 0 &&
-                          "hidden"
-                        }`}
-                      >
-                        <td>{i + 1}</td>
-                        <td className="uppercase">{kontingen.namaKontingen}</td>
-                        <td>{kontingen.sdEmas}</td>
-                        <td>{kontingen.sdPerak}</td>
-                        {/* <td>{kontingen.pointSd}</td> */}
-                      </tr>
-                    </>
-                  ))}
-              </tbody>
-            </table>
+            <TabelScore
+              label="SD"
+              medalis={["sdEmas", "sdPerak"]}
+              rawData={kontingenScores}
+            />
             {/* SMP */}
-            <h1 className="text-2xl font-bold mt-2">
-              REKAPITULASI PEROLEHAN MEDALI SMP
-            </h1>
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama Kontingen</th>
-                  <th>Emas</th>
-                  <th>Perak</th>
-                  <th>Perunggu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {kontingenScores
-                  .sort(compare("smpPerunggu", "desc"))
-                  .sort(compare("smpPerak", "desc"))
-                  .sort(compare("smpEmas", "desc"))
-                  .map((kontingen, i) => (
-                    <tr
-                      key={kontingen.namaKontingen}
-                      className={`${
-                        kontingen.smpEmas == 0 &&
-                        kontingen.smpPerak == 0 &&
-                        kontingen.smpPerunggu == 0 &&
-                        "hidden"
-                      }`}
-                    >
-                      <td>{i + 1}</td>
-                      <td className="uppercase">{kontingen.namaKontingen}</td>
-                      <td>{kontingen.smpEmas}</td>
-                      <td>{kontingen.smpPerak}</td>
-                      <td>{kontingen.smpPerunggu}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <TabelScore
+              label="SMP"
+              medalis={["smpEmas", "smpPerak", "smpPerunggu"]}
+              rawData={kontingenScores}
+            />
             {/* SMA */}
-            <h1 className="text-2xl font-bold mt-2">
-              REKAPITULASI PEROLEHAN MEDALI SMA
-            </h1>
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama Kontingen</th>
-                  <th>Emas</th>
-                  <th>Perak</th>
-                  <th>Perunggu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {kontingenScores
-                  .sort(compare("smaPerunggu", "desc"))
-                  .sort(compare("smaPerak", "desc"))
-                  .sort(compare("smaEmas", "desc"))
-                  .map((kontingen, i) => (
-                    <tr
-                      key={kontingen.namaKontingen}
-                      className={`${
-                        kontingen.smaEmas == 0 &&
-                        kontingen.smaPerak == 0 &&
-                        kontingen.smaPerunggu == 0 &&
-                        "hidden"
-                      }`}
-                    >
-                      <td>{i + 1}</td>
-                      <td className="uppercase">{kontingen.namaKontingen}</td>
-                      <td>{kontingen.smaEmas}</td>
-                      <td>{kontingen.smaPerak}</td>
-                      <td>{kontingen.smaPerunggu}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <TabelScore
+              medalis={["smaEmas", "smaPerak", "smaPerunggu"]}
+              label="SMA"
+              rawData={kontingenScores}
+            />
             {/* DEWASA */}
-            <h1 className="text-2xl font-bold mt-2">
-              REKAPITULASI PEROLEHAN MEDALI DEWASA
-            </h1>
-            <table className="w-full">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama Kontingen</th>
-                  <th>Emas</th>
-                  <th>Perak</th>
-                  <th>Perunggu</th>
-                </tr>
-              </thead>
-              <tbody>
-                {kontingenScores
-                  .sort(compare("dewasaPerunggu", "desc"))
-                  .sort(compare("dewasaPerak", "desc"))
-                  .sort(compare("dewasaEmas", "desc"))
-                  .map((kontingen, i) => (
-                    <tr
-                      key={kontingen.namaKontingen}
-                      className={`${
-                        kontingen.dewasaEmas == 0 &&
-                        kontingen.dewasaPerak == 0 &&
-                        kontingen.dewasaPerunggu == 0 &&
-                        "hidden"
-                      }`}
-                    >
-                      <td>{i + 1}</td>
-                      <td className="uppercase">{kontingen.namaKontingen}</td>
-                      <td>{kontingen.dewasaEmas}</td>
-                      <td>{kontingen.dewasaPerak}</td>
-                      <td>{kontingen.dewasaPerunggu}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+            <TabelScore
+              medalis={["dewasaEmas", "dewasaPerak", "dewasaPerunggu"]}
+              label="Dewasa"
+              rawData={kontingenScores}
+            />
           </>
         ) : (
           <InlineLoading />

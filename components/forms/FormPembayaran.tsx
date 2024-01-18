@@ -420,7 +420,6 @@ const FormPembayaran = ({
 
   return (
     <div>
-      <ToastContainer />
       {/* DATA SUMMARY */}
       <div className="bg-gray-200 p-2 rounded-md mb-2">
         <h1 className="text-2xl sm:text-3xl font-bold border-b-2 border-b-gray-700 pb-2 mb-2 w-fit">

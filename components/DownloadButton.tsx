@@ -33,7 +33,6 @@ const DownloadButton = () => {
       onClick={() => FileSaver.saveAs(downloadLink)}
       disabled={!downloadLink}
     >
-      <ToastContainer />
       {errorMessage ? (
         errorMessage
       ) : downloadLink ? (

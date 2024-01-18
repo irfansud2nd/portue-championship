@@ -683,7 +683,6 @@ const FormPeserta = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <ToastContainer />
       <TabelPeserta
         loading={tabelLoading}
         data={pesertas.sort(compare("waktuPendaftaran", "asc"))}

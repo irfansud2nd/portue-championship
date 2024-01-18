@@ -150,7 +150,6 @@ const TabelKontingenAdmin = () => {
 
   return (
     <div>
-      <ToastContainer />
       <h1 className="capitalize mb-1 text-3xl font-bold border-b-2 border-black w-fit">
         Tabel Kontingen
       </h1>

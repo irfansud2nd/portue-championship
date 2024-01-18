@@ -301,8 +301,6 @@ const FormOfficial = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <ToastContainer />
-
       <TabelOfficial
         loading={tabelLoading}
         data={officials.sort(compare("waktuPendaftaran", "asc"))}

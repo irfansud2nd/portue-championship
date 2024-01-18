@@ -1,8 +1,8 @@
 import { ScoringContext } from "@/context/ScoringContext";
 import InlineLoading from "../admin/InlineLoading";
 import { KontingenScore } from "@/utils/scoringFunctions";
-import TabelScoring from "./TabelScoring";
 import JadwalChanger from "../admin/JadwalChanger";
+import TabelScorings from "./TabelScorings";
 
 const Scoring = () => {
   const {
@@ -30,8 +30,8 @@ const Scoring = () => {
         <InlineLoading />
       ) : kontingens ? (
         <>
-          {/* <JadwalChanger /> */}
-          {/* <TabelScoring /> */}
+          <JadwalChanger />
+          <TabelScorings />
         </>
       ) : kontingensLoading ? (
         <InlineLoading />

@@ -79,6 +79,12 @@ export const writeAllKontingen = async (user: User) => {
     smpEmas: number;
     smpPerak: number;
     smpPerunggu: number;
+    smaEmas: number;
+    smaPerak: number;
+    smaPerunggu: number;
+    dewasaEmas: number;
+    dewasaPerak: number;
+    dewasaPerunggu: number;
   }[] = [];
   const newDocRef = doc(collection(firestore, "kontingenScores"));
   return getAllKontingen()
@@ -96,10 +102,16 @@ export const writeAllKontingen = async (user: User) => {
           smpEmas: 0,
           smpPerak: 0,
           smpPerunggu: 0,
+          smaEmas: 0,
+          smaPerak: 0,
+          smaPerunggu: 0,
+          dewasaEmas: 0,
+          dewasaPerak: 0,
+          dewasaPerunggu: 0,
         });
       });
       setDoc(newDocRef, {
-        visible: false,
+        visible: true,
         backup: false,
         id: newDocRef.id,
         userUid: user.uid,

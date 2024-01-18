@@ -365,7 +365,6 @@ const TabelPesertaAdmin = () => {
 
   return (
     <div className="w-fit">
-      <ToastContainer />
       {/* DELETE RODAL */}
       <Rodal visible={deleteRodal} onClose={cancelDelete}>
         <div className="flex flex-col h-full justify-around items-center">

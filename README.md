@@ -21,6 +21,18 @@ This website is also my first paid project and is used by around 1700 registrant
 - Table of athletes data with customizable filters
 - Export data to Excel format for admins
 - Automatically calculating the registration fee amount
+- Recapitulation of medal winnings
+- Live updates on the ongoing match number.
+
+## Discalaimer
+
+- Admin pages are usually accessible only to admins, but for the sake of my personal portfolio, I have changed the access to anyone with their Google account
+- Current database is different from the database used for PORTUE Silat Bandung Championship. this is done to avoid mixed data and free acces to admin page
+
+## How to use
+
+- Access admin page [here](https://portue-silat-championship.vercel.app/admin)
+- Access scoring page [here](https://portue-silat-championship.vercel.app/scoring)
 
 ## Tech Stack
 

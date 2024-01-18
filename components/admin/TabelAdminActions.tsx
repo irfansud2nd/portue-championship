@@ -115,7 +115,6 @@ const TabelAdminActions = ({
 
   return (
     <>
-      <ToastContainer />
       <Rodal
         visible={rodalVisible}
         onClose={resetKonfirmasi}

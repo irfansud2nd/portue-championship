@@ -31,7 +31,6 @@ const JadwalChanger = () => {
   const toastId = useRef(null);
   return (
     <div className="bg-white rounded-md p-1 flex gap-1 items-center w-fit">
-      <ToastContainer />
       <select
         value={gelanggang}
         onChange={(e) => setGelanggang(e.target.value)}
@@ -39,6 +38,8 @@ const JadwalChanger = () => {
         <option value={0}></option>
         <option value={"a"}>Gelanggang A</option>
         <option value={"b"}>Gelanggang B</option>
+        <option value={"b"}>Gelanggang C</option>
+        <option value={"b"}>Gelanggang D</option>
       </select>
       <p>Partai</p>
       <input

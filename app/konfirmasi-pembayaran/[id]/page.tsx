@@ -223,7 +223,6 @@ const KonfirmasiPembayaranPage = ({ params }: { params: { id: string } }) => {
 
   return (
     <div className="p-2 bg-gray-200 m-2 rounded-md">
-      <ToastContainer />
       <p className="uppercase font-bold text-2xl">{kontingen.namaKontingen}</p>
       <p>
         Jumlah Peserta yang akan dikonfirmasi: <b>{pesertasToConfirm.length}</b>
