@@ -2,7 +2,7 @@
 
 ## Introduction
 
-PORTUE Bandung Championship is an annual event orginized by [Komite Olahraga Nasional Indonesia (KONI) Kota Bandung](https://portue.koni-kotabandung.or.id/) and supported by many organization. This event consists of 32 sports branches, and for the Pencak Silat sport, KONI Kota is supported an event organized owned by my close friend. Therefore, I have the opportunity to facilitate registrations through the website that I have developed.
+PORTUE Bandung Championship is an annual event orginized by [Komite Olahraga Nasional Indonesia (KONI) Kota Bandung](https://portue.koni-kotabandung.or.id/) and supported by many organization. This event consists of 32 sports branches, and for the Pencak Silat, KONI Kota is supported an event organizer owned by my close friend. Therefore, I have the opportunity to facilitate registrations through the website that I have developed.
 
 This website is also my first paid project and is used by around 1700 registrants and 5 admins. I know this website is far from perfect. It was created in just one week, but I still maintain this website until the event is over. Nevertheless, I cannot make many improvements because I also maintain [another website](https://github.com/irfansud2nd/kejurnas-asbd-2023) that has similar functions to this one.
 
