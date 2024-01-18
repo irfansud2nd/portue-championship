@@ -45,9 +45,9 @@ const TabelPeserta = ({
                   {item}
                 </th>
               ))}
-              {/* <th key="aksi" scope="col">
+              <th key="aksi" scope="col">
                 {handleDelete && handleEdit ? "Aksi" : "Status Pembayaran"}
-              </th> */}
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -64,7 +64,7 @@ const TabelPeserta = ({
                 <td className="whitespace-nowrap">
                   {item.kategoriPertandingan}
                 </td>
-                {/* <td>
+                <td>
                   {handleDelete && handleEdit ? (
                     <TabelActionButtons
                       handleDelete={() => handleDelete(item)}
@@ -79,7 +79,7 @@ const TabelPeserta = ({
                   ) : (
                     "Belum dibayar"
                   )}
-                </td> */}
+                </td>
               </tr>
             ))}
           </tbody>

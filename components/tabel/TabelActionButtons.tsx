@@ -10,13 +10,13 @@ const TabelActionButtons = ({
   const { disable } = MyContext();
   return (
     <div className="flex gap-2">
-      {/* <button
+      <button
         disabled={disable}
         className="hover:text-custom-gold transition"
         onClick={handleDelete}
       >
         Delete
-      </button> */}
+      </button>
       <button
         disabled={disable}
         className="hover:text-custom-gold transition"
