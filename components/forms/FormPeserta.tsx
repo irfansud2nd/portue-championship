@@ -679,7 +679,7 @@ const FormPeserta = ({
     if (pasFotoRef.current) pasFotoRef.current.disabled = disable;
   }, [disable]);
 
-  const editOnly = true;
+  const editOnly = false;
 
   return (
     <div className="flex flex-col gap-2">
@@ -725,520 +725,518 @@ const FormPeserta = ({
       {/* RODAL */}
 
       {/* FORM */}
-      {updating ? (
-        <form onSubmit={(e) => submitHandler(e)}>
-          <div className="grid grid-rows-[1fr_auto] gap-2">
-            {/* BARIS 1 */}
-            {/* <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3"> */}
-            <div className="w-full flex flex-wrap justify-center min-[825px]:grid min-[825px]:grid-cols-[auto_1fr] gap-3">
-              {/* KOLOM KIRI */}
-              {/* PAS FOTO */}
-              {!editOnly && (
-                <div className="input_container max-w-[150px] ">
-                  <label className="input_label text-center">Pas Foto</label>
-                  <p className="-mt-2 text-sm text-gray-600 text-center">
-                    Maks. 1MB
-                  </p>
-                  <div
-                    className={`
+      {/* {updating ? ( */}
+      <form onSubmit={(e) => submitHandler(e)}>
+        <div className="grid grid-rows-[1fr_auto] gap-2">
+          {/* BARIS 1 */}
+          {/* <div className="w-full flex flex-wrap sm:flex-nowrap justify-center gap-3"> */}
+          <div className="w-full flex flex-wrap justify-center min-[825px]:grid min-[825px]:grid-cols-[auto_1fr] gap-3">
+            {/* KOLOM KIRI */}
+            {/* PAS FOTO */}
+            {!editOnly && (
+              <div className="input_container max-w-[150px] ">
+                <label className="input_label text-center">Pas Foto</label>
+                <p className="-mt-2 text-sm text-gray-600 text-center">
+                  Maks. 1MB
+                </p>
+                <div
+                  className={`
                 ${inputErrorMessages.pasFoto ? "input_error" : "input"}
                 bg-white w-[150px] h-[200px] relative border-2 rounded-md`}
-                  >
-                    {imagePreviewSrc && (
-                      // <Image
-                      //   src={imagePreviewSrc}
-                      //   alt="preview"
-                      //   fill
-                      //   className="object-cover rounded-md"
-                      // />
-                      <img
-                        src={imagePreviewSrc}
-                        alt="preview"
-                        className="w-[150px] h-[200px] object-cover rounded-md"
-                      />
-                    )}
-                  </div>
+                >
+                  {imagePreviewSrc && (
+                    // <Image
+                    //   src={imagePreviewSrc}
+                    //   alt="preview"
+                    //   fill
+                    //   className="object-cover rounded-md"
+                    // />
+                    <img
+                      src={imagePreviewSrc}
+                      alt="preview"
+                      className="w-[150px] h-[200px] object-cover rounded-md"
+                    />
+                  )}
+                </div>
+                <input
+                  disabled={disable}
+                  ref={pasFotoRef}
+                  accept=".jpg, .jpeg, .png"
+                  type="file"
+                  multiple={false}
+                  onChange={(e) =>
+                    e.target.files &&
+                    pasFotoimageChangeHandler(e.target.files[0])
+                  }
+                  className="input_file mt-1 w-full text-transparent"
+                />
+                <p className="text-red-500 text-center">
+                  {inputErrorMessages.pasFoto}
+                </p>
+              </div>
+            )}
+            {/* PAS FOTO */}
+            {/* KOLOM KIRI */}
+
+            {/* KOLOM KANAN */}
+            <div className="w-full flex flex-wrap justify-center min-[825px]:justify-normal gap-3 h-fit">
+              {/* NAMA LENGKAP */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">Nama Lengkap</label>
                   <input
                     disabled={disable}
-                    ref={pasFotoRef}
-                    accept=".jpg, .jpeg, .png"
-                    type="file"
-                    multiple={false}
+                    className={`${
+                      inputErrorMessages.namaLengkap ? "input_error" : "input"
+                    } capitalize`}
+                    type="text"
+                    value={data.namaLengkap}
                     onChange={(e) =>
-                      e.target.files &&
-                      pasFotoimageChangeHandler(e.target.files[0])
+                      setData({
+                        ...data,
+                        namaLengkap: e.target.value.toUpperCase(),
+                      })
                     }
-                    className="input_file mt-1 w-full text-transparent"
                   />
-                  <p className="text-red-500 text-center">
-                    {inputErrorMessages.pasFoto}
+                  <p className="text-red-500">
+                    {inputErrorMessages.namaLengkap}
                   </p>
                 </div>
               )}
-              {/* PAS FOTO */}
-              {/* KOLOM KIRI */}
+              {/* NAMA LENGKAP */}
 
-              {/* KOLOM KANAN */}
-              <div className="w-full flex flex-wrap justify-center min-[825px]:justify-normal gap-3 h-fit">
-                {/* NAMA LENGKAP */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">Nama Lengkap</label>
-                    <input
-                      disabled={disable}
-                      className={`${
-                        inputErrorMessages.namaLengkap ? "input_error" : "input"
-                      } capitalize`}
-                      type="text"
-                      value={data.namaLengkap}
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          namaLengkap: e.target.value.toLowerCase(),
-                        })
-                      }
-                    />
-                    <p className="text-red-500">
-                      {inputErrorMessages.namaLengkap}
-                    </p>
-                  </div>
-                )}
-                {/* NAMA LENGKAP */}
-
-                {/* NIK */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">NIK</label>
-                    <input
-                      disabled={disable}
-                      value={data.NIK}
-                      type="text"
-                      onChange={(e) => sanitizeNIK(e.target.value)}
-                      className={`
+              {/* NIK */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">NIK</label>
+                  <input
+                    disabled={disable}
+                    value={data.NIK}
+                    type="text"
+                    onChange={(e) => sanitizeNIK(e.target.value)}
+                    className={`
                 ${inputErrorMessages.NIK ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">{inputErrorMessages.NIK}</p>
-                  </div>
-                )}
-                {/* NIK */}
+                  />
+                  <p className="text-red-500">{inputErrorMessages.NIK}</p>
+                </div>
+              )}
+              {/* NIK */}
 
-                {/* EDIT ONLY */}
-                {/* JENIS KELAMIN */}
-                <div className="input_container">
-                  <label className="input_label">Jenis Kelamin</label>
-                  <select
-                    disabled={disable}
-                    value={data.jenisKelamin}
-                    onChange={(e) =>
-                      setData({ ...data, jenisKelamin: e.target.value })
-                    }
-                    className={`
+              {/* EDIT ONLY */}
+              {/* JENIS KELAMIN */}
+              <div className="input_container">
+                <label className="input_label">Jenis Kelamin</label>
+                <select
+                  disabled={disable}
+                  value={data.jenisKelamin}
+                  onChange={(e) =>
+                    setData({ ...data, jenisKelamin: e.target.value })
+                  }
+                  className={`
                 ${inputErrorMessages.jenisKelamin ? "input_error" : "input"}
                 `}
-                  >
-                    {jenisKelamin.map((item) => (
-                      <option value={item} key={item}>
-                        {item}
-                      </option>
-                    ))}
-                  </select>
-                  <p className="text-red-500">
-                    {inputErrorMessages.jenisKelamin}
-                  </p>
-                </div>
-                {/* JENIS KELAMIN */}
-                {/* EDIT ONLY */}
+                >
+                  {jenisKelamin.map((item) => (
+                    <option value={item} key={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-red-500">
+                  {inputErrorMessages.jenisKelamin}
+                </p>
+              </div>
+              {/* JENIS KELAMIN */}
+              {/* EDIT ONLY */}
 
-                {/* ALAMAT LENGKAP */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">Alamat Lengkap</label>
-                    <textarea
-                      disabled={disable}
-                      value={data.alamatLengkap}
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          alamatLengkap: e.target.value,
-                        })
-                      }
-                      className={`
+              {/* ALAMAT LENGKAP */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">Alamat Lengkap</label>
+                  <textarea
+                    disabled={disable}
+                    value={data.alamatLengkap}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        alamatLengkap: e.target.value,
+                      })
+                    }
+                    className={`
                 ${inputErrorMessages.alamatLengkap ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {inputErrorMessages.alamatLengkap}
-                    </p>
-                  </div>
-                )}
-                {/* ALAMAT LENGKAP */}
+                  />
+                  <p className="text-red-500">
+                    {inputErrorMessages.alamatLengkap}
+                  </p>
+                </div>
+              )}
+              {/* ALAMAT LENGKAP */}
 
-                {/* TEMPAT LAHIR */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">Tempat Lahir</label>
-                    <input
-                      disabled={disable}
-                      value={data.tempatLahir}
-                      type="text"
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          tempatLahir: e.target.value,
-                        })
-                      }
-                      className={`
+              {/* TEMPAT LAHIR */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">Tempat Lahir</label>
+                  <input
+                    disabled={disable}
+                    value={data.tempatLahir}
+                    type="text"
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        tempatLahir: e.target.value,
+                      })
+                    }
+                    className={`
                 ${inputErrorMessages.tempatLahir ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {inputErrorMessages.tempatLahir}
-                    </p>
-                  </div>
-                )}
-                {/* TEMPAT LAHIR */}
+                  />
+                  <p className="text-red-500">
+                    {inputErrorMessages.tempatLahir}
+                  </p>
+                </div>
+              )}
+              {/* TEMPAT LAHIR */}
 
-                {/* TANGGAL LAHIR */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">Tanggal Lahir</label>
-                    <input
-                      disabled={disable}
-                      value={data.tanggalLahir}
-                      type="date"
-                      onChange={(e) => calculateAge(e.target.value)}
-                      className={`
+              {/* TANGGAL LAHIR */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">Tanggal Lahir</label>
+                  <input
+                    disabled={disable}
+                    value={data.tanggalLahir}
+                    type="date"
+                    onChange={(e) => calculateAge(e.target.value)}
+                    className={`
                 ${inputErrorMessages.tanggalLahir ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {inputErrorMessages.tanggalLahir}
-                    </p>
-                  </div>
-                )}
-                {/* TANGGAL LAHIR */}
+                  />
+                  <p className="text-red-500">
+                    {inputErrorMessages.tanggalLahir}
+                  </p>
+                </div>
+              )}
+              {/* TANGGAL LAHIR */}
 
-                {/* EMAIL */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">
-                      Email{" "}
-                      {data.umur >= 17 || data.umur == "" ? (
-                        "Peserta"
-                      ) : (
-                        <span className="bg-yellow-400 rounded-md px-0.5">
-                          Orangtua
-                        </span>
-                      )}
-                    </label>
-                    <p className="text-xs">
-                      Peserta &lt; 17 tahun gunakan email Orangtua
-                    </p>
-                    <input
-                      disabled={disable}
-                      value={data.email}
-                      type="email"
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          email: e.target.value,
-                        })
-                      }
-                      className={`
+              {/* EMAIL */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">
+                    Email{" "}
+                    {data.umur >= 17 || data.umur == "" ? (
+                      "Peserta"
+                    ) : (
+                      <span className="bg-yellow-400 rounded-md px-0.5">
+                        Orangtua
+                      </span>
+                    )}
+                  </label>
+                  <p className="text-xs">
+                    Peserta &lt; 17 tahun gunakan email Orangtua
+                  </p>
+                  <input
+                    disabled={disable}
+                    value={data.email}
+                    type="email"
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        email: e.target.value,
+                      })
+                    }
+                    className={`
                 ${inputErrorMessages.email ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">{inputErrorMessages.email}</p>
-                  </div>
-                )}
-                {/* EMAIL */}
+                  />
+                  <p className="text-red-500">{inputErrorMessages.email}</p>
+                </div>
+              )}
+              {/* EMAIL */}
 
-                {/* NO HP */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">
-                      Nomor HP{" "}
-                      {data.umur >= 17 || data.umur == "" ? (
-                        "Peserta"
-                      ) : (
-                        <span className="bg-yellow-400 rounded-md px-0.5">
-                          Orangtua
-                        </span>
-                      )}
-                    </label>
-                    <p className="text-xs">
-                      Peserta &lt; 17 tahun gunakan No HP Orangtua
-                    </p>
-                    <input
-                      disabled={disable}
-                      value={data.noHp}
-                      type="string"
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          noHp: sanitizeNumber(e.target.value),
-                        })
-                      }
-                      className={`
+              {/* NO HP */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">
+                    Nomor HP{" "}
+                    {data.umur >= 17 || data.umur == "" ? (
+                      "Peserta"
+                    ) : (
+                      <span className="bg-yellow-400 rounded-md px-0.5">
+                        Orangtua
+                      </span>
+                    )}
+                  </label>
+                  <p className="text-xs">
+                    Peserta &lt; 17 tahun gunakan No HP Orangtua
+                  </p>
+                  <input
+                    disabled={disable}
+                    value={data.noHp}
+                    type="string"
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        noHp: sanitizeNumber(e.target.value),
+                      })
+                    }
+                    className={`
                 ${inputErrorMessages.noHp ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">{inputErrorMessages.noHp}</p>
-                  </div>
-                )}
-                {/* NO HP */}
+                  />
+                  <p className="text-red-500">{inputErrorMessages.noHp}</p>
+                </div>
+              )}
+              {/* NO HP */}
 
-                {/* KTP */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">
-                      KTP{" "}
-                      {data.umur >= 17 || data.umur == "" ? (
-                        "Peserta"
-                      ) : (
-                        <span className="bg-yellow-400 rounded-md px-0.5">
-                          Orangtua
-                        </span>
-                      )}{" "}
-                      <span className="text-sm text-gray-600">Maks. 1MB</span>
-                    </label>
-                    <p className="text-xs">
-                      Peserta &lt; 17 tahun gunakan KTP Orangtua
-                    </p>
-                    <input
-                      disabled={disable}
-                      ref={ktpRef}
-                      type="file"
-                      accept=".jpg, .jpeg, .png, .pdf"
-                      multiple={false}
-                      onChange={(e) =>
-                        e.target.files && ktpChangeHandler(e.target.files[0])
-                      }
-                      className={`input_kk
+              {/* KTP */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">
+                    KTP{" "}
+                    {data.umur >= 17 || data.umur == "" ? (
+                      "Peserta"
+                    ) : (
+                      <span className="bg-yellow-400 rounded-md px-0.5">
+                        Orangtua
+                      </span>
+                    )}{" "}
+                    <span className="text-sm text-gray-600">Maks. 1MB</span>
+                  </label>
+                  <p className="text-xs">
+                    Peserta &lt; 17 tahun gunakan KTP Orangtua
+                  </p>
+                  <input
+                    disabled={disable}
+                    ref={ktpRef}
+                    type="file"
+                    accept=".jpg, .jpeg, .png, .pdf"
+                    multiple={false}
+                    onChange={(e) =>
+                      e.target.files && ktpChangeHandler(e.target.files[0])
+                    }
+                    className={`input_kk
                 ${inputErrorMessages.ktp ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {!updating && inputErrorMessages.ktp}
-                    </p>
-                  </div>
-                )}
-                {/* KTP */}
+                  />
+                  <p className="text-red-500">
+                    {!updating && inputErrorMessages.ktp}
+                  </p>
+                </div>
+              )}
+              {/* KTP */}
 
-                {/* KARTU KELUARGA */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">
-                      Kartu Keluarga{" "}
-                      <span className="text-sm text-gray-600">Maks. 1MB</span>
-                    </label>
-                    <input
-                      disabled={disable}
-                      ref={kkRef}
-                      type="file"
-                      accept=".jpg, .jpeg, .png, .pdf"
-                      multiple={false}
-                      onChange={(e) =>
-                        e.target.files && kkChangeHandler(e.target.files[0])
-                      }
-                      className={`input_kk
+              {/* KARTU KELUARGA */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">
+                    Kartu Keluarga{" "}
+                    <span className="text-sm text-gray-600">Maks. 1MB</span>
+                  </label>
+                  <input
+                    disabled={disable}
+                    ref={kkRef}
+                    type="file"
+                    accept=".jpg, .jpeg, .png, .pdf"
+                    multiple={false}
+                    onChange={(e) =>
+                      e.target.files && kkChangeHandler(e.target.files[0])
+                    }
+                    className={`input_kk
                 ${inputErrorMessages.kk ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {!updating && inputErrorMessages.kk}
-                    </p>
-                  </div>
-                )}
-                {/* KARTU KELUARGA */}
+                  />
+                  <p className="text-red-500">
+                    {!updating && inputErrorMessages.kk}
+                  </p>
+                </div>
+              )}
+              {/* KARTU KELUARGA */}
 
-                {/* TINGGI BADAN */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">
-                      Tinggi Badan{" "}
-                      <span className="text-sm text-gray-600">(CM)</span>
-                    </label>
-                    <input
-                      disabled={disable}
-                      value={data.tinggiBadan == 0 ? "" : data.tinggiBadan}
-                      type="text"
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          tinggiBadan: sanitizeNumber(e.target.value),
-                        })
-                      }
-                      className={`
+              {/* TINGGI BADAN */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">
+                    Tinggi Badan{" "}
+                    <span className="text-sm text-gray-600">(CM)</span>
+                  </label>
+                  <input
+                    disabled={disable}
+                    value={data.tinggiBadan == 0 ? "" : data.tinggiBadan}
+                    type="text"
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        tinggiBadan: sanitizeNumber(e.target.value),
+                      })
+                    }
+                    className={`
                 ${inputErrorMessages.tinggiBadan ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {inputErrorMessages.tinggiBadan}
-                    </p>
-                  </div>
-                )}
-                {/* TINGGI BADAN */}
+                  />
+                  <p className="text-red-500">
+                    {inputErrorMessages.tinggiBadan}
+                  </p>
+                </div>
+              )}
+              {/* TINGGI BADAN */}
 
-                {/* BERAT BADAN */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">
-                      Berat Badan{" "}
-                      <span className="text-sm text-gray-600">(KG)</span>
-                    </label>
-                    <input
-                      disabled={disable}
-                      value={data.beratBadan == 0 ? "" : data.beratBadan}
-                      type="text"
-                      step={0.1}
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          beratBadan: sanitizeNumber(e.target.value),
-                        })
-                      }
-                      className={`
+              {/* BERAT BADAN */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">
+                    Berat Badan{" "}
+                    <span className="text-sm text-gray-600">(KG)</span>
+                  </label>
+                  <input
+                    disabled={disable}
+                    value={data.beratBadan == 0 ? "" : data.beratBadan}
+                    type="text"
+                    step={0.1}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        beratBadan: sanitizeNumber(e.target.value),
+                      })
+                    }
+                    className={`
                 ${inputErrorMessages.beratBadan ? "input_error" : "input"}
                 `}
-                    />
-                    <p className="text-red-500">
-                      {inputErrorMessages.beratBadan}
-                    </p>
-                  </div>
-                )}
-                {/* BERAT BADAN */}
+                  />
+                  <p className="text-red-500">
+                    {inputErrorMessages.beratBadan}
+                  </p>
+                </div>
+              )}
+              {/* BERAT BADAN */}
 
-                {/* NAMA KONTINGEN */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">Nama Kontingen</label>
-                    <select
-                      disabled={disable}
-                      value={data.idKontingen}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          idKontingen: e.target.value,
-                        });
-                      }}
-                      className={`
+              {/* NAMA KONTINGEN */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">Nama Kontingen</label>
+                  <select
+                    disabled={disable}
+                    value={data.idKontingen}
+                    onChange={(e) => {
+                      setData({
+                        ...data,
+                        idKontingen: e.target.value,
+                      });
+                    }}
+                    className={`
                   uppercase
                   ${inputErrorMessages.idKontingen ? "input_error" : "input"}
                   `}
-                    >
-                      {kontingens.length &&
-                        kontingens.map((kontingen) => (
-                          <option
-                            className="uppercase"
-                            value={kontingen.idKontingen}
-                            key={kontingen.idKontingen}
-                          >
-                            {kontingen.namaKontingen}
-                          </option>
-                        ))}
-                    </select>
-                    <p className="text-red-500">
-                      {inputErrorMessages.idKontingen}
-                    </p>
-                  </div>
-                )}
-                {/* NAMA KONTINGEN */}
+                  >
+                    {kontingens.length &&
+                      kontingens.map((kontingen) => (
+                        <option
+                          className="uppercase"
+                          value={kontingen.idKontingen}
+                          key={kontingen.idKontingen}
+                        >
+                          {kontingen.namaKontingen}
+                        </option>
+                      ))}
+                  </select>
+                  <p className="text-red-500">
+                    {inputErrorMessages.idKontingen}
+                  </p>
+                </div>
+              )}
+              {/* NAMA KONTINGEN */}
 
-                {/* TINGKATAN */}
-                {!editOnly && (
-                  <div className="input_container">
-                    <label className="input_label">Tingkatan</label>
-                    <select
-                      disabled={disable}
-                      value={data.tingkatanPertandingan}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          tingkatanPertandingan: e.target.value,
-                        });
-                      }}
-                      className={`
+              {/* TINGKATAN */}
+              {!editOnly && (
+                <div className="input_container">
+                  <label className="input_label">Tingkatan</label>
+                  <select
+                    disabled={disable}
+                    value={data.tingkatanPertandingan}
+                    onChange={(e) => {
+                      setData({
+                        ...data,
+                        tingkatanPertandingan: e.target.value,
+                      });
+                    }}
+                    className={`
                 ${
                   inputErrorMessages.tingkatanPertandingan
                     ? "input_error"
                     : "input"
                 }
                 `}
-                    >
-                      {tingkatanKategori.map((item) => (
-                        <option value={item.tingkatan} key={item.tingkatan}>
-                          {item.tingkatan}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-red-500">
-                      {inputErrorMessages.tingkatanPertandingan}
-                    </p>
-                  </div>
-                )}
-                {/* TINGKATAN */}
-
-                {/* EDIT ONLY */}
-                {/* JENIS PERTANDINGAN */}
-                <div className="input_container">
-                  <label className="input_label">Jenis Pertaindingan</label>
-                  <select
-                    disabled={disable}
-                    value={data.jenisPertandingan}
-                    onChange={(e) =>
-                      setData({
-                        ...data,
-                        jenisPertandingan: e.target.value,
-                        kategoriPertandingan:
-                          e.target.value == "Tanding"
-                            ? tingkatanKategori[
-                                tingkatanKategori.findIndex(
-                                  (i) =>
-                                    i.tingkatan == data.tingkatanPertandingan
-                                )
-                              ].kategoriTanding[0]
-                            : tingkatanKategori[
-                                tingkatanKategori.findIndex(
-                                  (i) =>
-                                    i.tingkatan == data.tingkatanPertandingan
-                                )
-                              ].kategoriTanding[0],
-                      })
-                    }
-                    className={`
-                ${
-                  inputErrorMessages.jenisPertandingan ? "input_error" : "input"
-                }
-                `}
                   >
-                    {jenisPertandingan.map((item) => (
-                      <option value={item} key={item}>
-                        {item}
+                    {tingkatanKategori.map((item) => (
+                      <option value={item.tingkatan} key={item.tingkatan}>
+                        {item.tingkatan}
                       </option>
                     ))}
                   </select>
                   <p className="text-red-500">
-                    {inputErrorMessages.jenisPertandingan}
+                    {inputErrorMessages.tingkatanPertandingan}
                   </p>
                 </div>
-                {/* JENIS PERTANDINGAN */}
+              )}
+              {/* TINGKATAN */}
 
-                {/* KATEGORI TANDING */}
-                {data.jenisPertandingan == "Tanding" && (
-                  <div className="input_container">
-                    <label className="input_label">Kategori Tanding</label>
-                    <select
-                      disabled={disable}
-                      value={data.kategoriPertandingan}
-                      onChange={(e) => {
-                        setData({
-                          ...data,
-                          kategoriPertandingan: e.target.value,
-                        });
-                      }}
-                      className={`
+              {/* EDIT ONLY */}
+              {/* JENIS PERTANDINGAN */}
+              <div className="input_container">
+                <label className="input_label">Jenis Pertaindingan</label>
+                <select
+                  disabled={disable}
+                  value={data.jenisPertandingan}
+                  onChange={(e) =>
+                    setData({
+                      ...data,
+                      jenisPertandingan: e.target.value,
+                      kategoriPertandingan:
+                        e.target.value == "Tanding"
+                          ? tingkatanKategori[
+                              tingkatanKategori.findIndex(
+                                (i) => i.tingkatan == data.tingkatanPertandingan
+                              )
+                            ].kategoriTanding[0]
+                          : tingkatanKategori[
+                              tingkatanKategori.findIndex(
+                                (i) => i.tingkatan == data.tingkatanPertandingan
+                              )
+                            ].kategoriTanding[0],
+                    })
+                  }
+                  className={`
+                ${
+                  inputErrorMessages.jenisPertandingan ? "input_error" : "input"
+                }
+                `}
+                >
+                  {jenisPertandingan.map((item) => (
+                    <option value={item} key={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-red-500">
+                  {inputErrorMessages.jenisPertandingan}
+                </p>
+              </div>
+              {/* JENIS PERTANDINGAN */}
+
+              {/* KATEGORI TANDING */}
+              {data.jenisPertandingan == "Tanding" && (
+                <div className="input_container">
+                  <label className="input_label">Kategori Tanding</label>
+                  <select
+                    disabled={disable}
+                    value={data.kategoriPertandingan}
+                    onChange={(e) => {
+                      setData({
+                        ...data,
+                        kategoriPertandingan: e.target.value,
+                      });
+                    }}
+                    className={`
                   ${
                     inputErrorMessages.kategoriPertandingan
                       ? "input_error"
@@ -1248,52 +1246,52 @@ const FormPeserta = ({
                   }
                   input
                   `}
-                    >
-                      {tingkatanKategori[
-                        tingkatanKategori.findIndex(
-                          (i) => i.tingkatan == data.tingkatanPertandingan
-                        )
-                      ].kategoriTanding.map((item) => (
-                        <option value={item} key={item}>
-                          {item}
-                        </option>
-                      ))}
-                    </select>
-                    <p className="text-red-500">
-                      {inputErrorMessages.kategoriPertandingan}
-                    </p>
-                    {(data.tingkatanPertandingan == "SMA" ||
-                      data.tingkatanPertandingan == "Dewasa") &&
-                      (kuotaLoading ? (
-                        <p className="text-end">
-                          Memuat kuota kategori{" "}
-                          <BiLoader className="animate-spin inline" />
-                        </p>
-                      ) : !kuotaKelas ? (
-                        <p className="text-end text-red-500">
-                          Kuota kategori habis
-                        </p>
-                      ) : (
-                        <p className="text-end">
-                          Sisa kuota kategori: {kuotaKelas} peserta
-                        </p>
-                      ))}
-                  </div>
-                )}
+                  >
+                    {tingkatanKategori[
+                      tingkatanKategori.findIndex(
+                        (i) => i.tingkatan == data.tingkatanPertandingan
+                      )
+                    ].kategoriTanding.map((item) => (
+                      <option value={item} key={item}>
+                        {item}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-red-500">
+                    {inputErrorMessages.kategoriPertandingan}
+                  </p>
+                  {(data.tingkatanPertandingan == "SMA" ||
+                    data.tingkatanPertandingan == "Dewasa") &&
+                    (kuotaLoading ? (
+                      <p className="text-end">
+                        Memuat kuota kategori{" "}
+                        <BiLoader className="animate-spin inline" />
+                      </p>
+                    ) : !kuotaKelas ? (
+                      <p className="text-end text-red-500">
+                        Kuota kategori habis
+                      </p>
+                    ) : (
+                      <p className="text-end">
+                        Sisa kuota kategori: {kuotaKelas} peserta
+                      </p>
+                    ))}
+                </div>
+              )}
 
-                {data.jenisPertandingan == "Seni" && (
-                  <div className="input_container">
-                    <label className="input_label">Kategori Seni</label>
-                    <select
-                      disabled={disable}
-                      value={data.kategoriPertandingan}
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          kategoriPertandingan: e.target.value,
-                        })
-                      }
-                      className={`
+              {data.jenisPertandingan == "Seni" && (
+                <div className="input_container">
+                  <label className="input_label">Kategori Seni</label>
+                  <select
+                    disabled={disable}
+                    value={data.kategoriPertandingan}
+                    onChange={(e) =>
+                      setData({
+                        ...data,
+                        kategoriPertandingan: e.target.value,
+                      })
+                    }
+                    className={`
                   ${
                     inputErrorMessages.kategoriPertandingan
                       ? "input_error"
@@ -1301,79 +1299,79 @@ const FormPeserta = ({
                   }
                   input
                   `}
-                    >
-                      {data.jenisKelamin == "Putra"
-                        ? tingkatanKategori[
-                            tingkatanKategori.findIndex(
-                              (i) => i.tingkatan == data.tingkatanPertandingan
-                            )
-                          ].kategoriSeni.putra.map((item) => (
-                            <option value={item} key={item}>
-                              {item}
-                            </option>
-                          ))
-                        : tingkatanKategori[
-                            tingkatanKategori.findIndex(
-                              (i) => i.tingkatan == data.tingkatanPertandingan
-                            )
-                          ].kategoriSeni.putri.map((item) => (
-                            <option value={item} key={item}>
-                              {item}
-                            </option>
-                          ))}
-                    </select>
-                    <p className="text-red-500">
-                      {inputErrorMessages.kategoriPertandingan}
-                    </p>
-                    {(data.tingkatanPertandingan == "SMA" ||
-                      data.tingkatanPertandingan == "Dewasa") &&
-                      (kuotaLoading ? (
-                        <p className="text-end">
-                          Memuat kuota kategori{" "}
-                          <BiLoader className="animate-spin inline" />
-                        </p>
-                      ) : !kuotaKelas ? (
-                        <p className="text-end text-red-500">
-                          Kuota kategori habis
-                        </p>
-                      ) : (
-                        <p className="text-end">
-                          Sisa kuota kategori: {kuotaKelas} peserta
-                        </p>
-                      ))}
-                  </div>
-                )}
-                {/* KATEGORI TANDING */}
-                {/* EDIT ONLY */}
-              </div>
-              {/* KOLOM KANAN */}
+                  >
+                    {data.jenisKelamin == "Putra"
+                      ? tingkatanKategori[
+                          tingkatanKategori.findIndex(
+                            (i) => i.tingkatan == data.tingkatanPertandingan
+                          )
+                        ].kategoriSeni.putra.map((item) => (
+                          <option value={item} key={item}>
+                            {item}
+                          </option>
+                        ))
+                      : tingkatanKategori[
+                          tingkatanKategori.findIndex(
+                            (i) => i.tingkatan == data.tingkatanPertandingan
+                          )
+                        ].kategoriSeni.putri.map((item) => (
+                          <option value={item} key={item}>
+                            {item}
+                          </option>
+                        ))}
+                  </select>
+                  <p className="text-red-500">
+                    {inputErrorMessages.kategoriPertandingan}
+                  </p>
+                  {(data.tingkatanPertandingan == "SMA" ||
+                    data.tingkatanPertandingan == "Dewasa") &&
+                    (kuotaLoading ? (
+                      <p className="text-end">
+                        Memuat kuota kategori{" "}
+                        <BiLoader className="animate-spin inline" />
+                      </p>
+                    ) : !kuotaKelas ? (
+                      <p className="text-end text-red-500">
+                        Kuota kategori habis
+                      </p>
+                    ) : (
+                      <p className="text-end">
+                        Sisa kuota kategori: {kuotaKelas} peserta
+                      </p>
+                    ))}
+                </div>
+              )}
+              {/* KATEGORI TANDING */}
+              {/* EDIT ONLY */}
             </div>
-            {/* BARIS 1 */}
-
-            {/* BARIS 2 */}
-            {/* BUTTONS */}
-            <div className="mt-2 flex gap-2 justify-end w-full">
-              <button
-                disabled={disable}
-                className="btn_red btn_full"
-                onClick={resetData}
-                type="button"
-              >
-                Batal
-              </button>
-              <button
-                className="btn_green btn_full"
-                type="submit"
-                disabled={disable}
-              >
-                {updating ? "Perbaharui" : "Simpan"}
-              </button>
-            </div>
-            {/* BUTTONS */}
-            {/* BARIS 2 */}
+            {/* KOLOM KANAN */}
           </div>
-        </form>
-      ) : null}
+          {/* BARIS 1 */}
+
+          {/* BARIS 2 */}
+          {/* BUTTONS */}
+          <div className="mt-2 flex gap-2 justify-end w-full">
+            <button
+              disabled={disable}
+              className="btn_red btn_full"
+              onClick={resetData}
+              type="button"
+            >
+              Batal
+            </button>
+            <button
+              className="btn_green btn_full"
+              type="submit"
+              disabled={disable}
+            >
+              {updating ? "Perbaharui" : "Simpan"}
+            </button>
+          </div>
+          {/* BUTTONS */}
+          {/* BARIS 2 */}
+        </div>
+      </form>
+      {/* ) : null} */}
       {/* FORM */}
     </div>
   );

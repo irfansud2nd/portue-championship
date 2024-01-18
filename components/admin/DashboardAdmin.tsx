@@ -234,13 +234,6 @@ const DashboardAdmin = () => {
             ].nominal.split("");
           arr.splice(-3, 3);
           nominal += parseFloat(arr.join("").replace(/[Rp.,\s]/g, ""));
-          // nominal += parseFloat(
-          //   kontingen.infoPembayaran[
-          //     kontingen.infoPembayaran.findIndex(
-          //       (item) => item.idPembayaran == idPembayaran
-          //     )
-          //   ].nominal.replace(/[Rp.,\s]/g, "")
-          // );
         });
       }
     });

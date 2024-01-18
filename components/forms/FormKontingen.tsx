@@ -326,45 +326,45 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           )}
         </div>
       </Rodal>
-      {updating && (
-        <form onSubmit={(e) => saveKontingen(e)}>
-          <div className="input_container">
-            <label className="input_label">Nama Kontingen</label>
-            <div className="flex flex-wrap gap-y-2 gap-x-5">
-              <input
-                type="text"
-                className="input uppercase"
-                value={data.namaKontingen}
-                onChange={(e) =>
-                  setData({
-                    ...data,
-                    namaKontingen: e.target.value.toLowerCase(),
-                  })
-                }
-              />
+      {/* {updating && ( */}
+      <form onSubmit={(e) => saveKontingen(e)}>
+        <div className="input_container">
+          <label className="input_label">Nama Kontingen</label>
+          <div className="flex flex-wrap gap-y-2 gap-x-5">
+            <input
+              type="text"
+              className="input uppercase"
+              value={data.namaKontingen}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  namaKontingen: e.target.value.toLowerCase(),
+                })
+              }
+            />
 
-              <div className="flex gap-3">
-                <button
-                  disabled={disable}
-                  className="btn_red btn_full"
-                  onClick={resetData}
-                  type="button"
-                >
-                  Batal
-                </button>
-                <button
-                  disabled={disable}
-                  className="btn_green btn_full"
-                  type="submit"
-                >
-                  {updating ? "Perbaharui" : "Simpan"}
-                </button>
-              </div>
+            <div className="flex gap-3">
+              <button
+                disabled={disable}
+                className="btn_red btn_full"
+                onClick={resetData}
+                type="button"
+              >
+                Batal
+              </button>
+              <button
+                disabled={disable}
+                className="btn_green btn_full"
+                type="submit"
+              >
+                {updating ? "Perbaharui" : "Simpan"}
+              </button>
             </div>
           </div>
-          <div className="flex gap-2"></div>
-        </form>
-      )}
+        </div>
+        <div className="flex gap-2"></div>
+      </form>
+      {/* )} */}
     </div>
   );
 };

@@ -25,9 +25,9 @@ const AdminPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (user) checkAdminAuthorized(user);
-  }, [user]);
+  // useEffect(() => {
+  //   if (user) checkAdminAuthorized(user);
+  // }, [user]);
 
   useEffect(() => {
     document.title = "Halaman Admin - Portue Silat Bandung Championship";
@@ -38,7 +38,8 @@ const AdminPage = () => {
       <Head>
         <title>Halaman Admin - Portue Silat Bandung Championship</title>
       </Head>
-      {adminAuthorized && adminAuthorized.length ? (
+      {/* {adminAuthorized && adminAuthorized.length ? ( */}
+      {user ? (
         <AdminContextProvider>
           <Authorized />
         </AdminContextProvider>
