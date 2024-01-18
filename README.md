@@ -1,34 +1,37 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# PORTUE Silat Bandung Championship 2023 - Registration Website
 
-## Getting Started
+## Introduction
 
-First, run the development server:
+PORTUE Bandung Championship is an annual event orginized by [Komite Olahraga Nasional Indonesia (KONI) Kota Bandung](https://portue.koni-kotabandung.or.id/) and supported by many organization. This event consists of 32 sports branches, and for the Pencak Silat sport, KONI Kota is supported an event organized owned by my close friend. Therefore, I have the opportunity to facilitate registrations through the website that I have developed.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+This website is also my first paid project and is used by around 1700 registrants and 5 admins. I know this website is far from perfect. It was created in just one week, but I still maintain this website until the event is over. Nevertheless, I cannot make many improvements because I also maintain [another website](https://github.com/irfansud2nd/kejurnas-asbd-2023) that has similar functions to this one.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Register, update and delete kontingen data
+- Register, update and delete kontingen's crew data
+- Upload, update and delete kontingen's crew photo
+- Register, update and delete kontingen's athlete data
+- Upload, update and delete kontingen's athlete photo and personal file
+- Upload kontingen's payment
+- Automatically deleting the old file if the user updates it
+- Manual payment verifivation by admins
+- Store data for offline document verification
+- Admin Dashboard
+- Table of athletes data with customizable filters
+- Export data to Excel format for admins
+- Automatically calculating the registration fee amount
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Tech Stack
 
-## Learn More
+- Next JS
+- Typescript
+- Tailwind CSS
+- Firebase (Firestore, Storage, Authentication)
 
-To learn more about Next.js, take a look at the following resources:
+## Other Resource or Liraries
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [react-export-table-to-excel](https://github.com/EdisonJpp/react-export-table-to-excel)
+- [react-icons](https://react-icons.github.io/react-icons/)
+- [react-toastify](https://fkhadra.github.io/react-toastify/introduction)
+- [rodal](https://chenjiahan.github.io/rodal/)
