@@ -31,7 +31,7 @@ This website is also my first paid project and is used by around 1700 registrant
 
 ## How to use
 
-- - Live Web [here](https://portue-silat-championship.vercel.app)
+- Live Web [here](https://portue-silat-championship.vercel.app)
 - Access admin page [here](https://portue-silat-championship.vercel.app/admin)
 - Access scoring page [here](https://portue-silat-championship.vercel.app/scoring)
 
