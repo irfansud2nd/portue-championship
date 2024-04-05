@@ -4,25 +4,41 @@
 
 PORTUE Bandung Championship is an annual event orginized by [Komite Olahraga Nasional Indonesia (KONI) Kota Bandung](https://portue.koni-kotabandung.or.id/) and supported by many organization. This event consists of 32 sports branches, and for the Pencak Silat, KONI Kota is supported an event organizer owned by my close friend. Therefore, I have the opportunity to facilitate registrations through the website that I have developed.
 
-This website is also my first paid project and is used by around 1700 registrants and 5 admins. I know this website is far from perfect. It was created in just one week, but I still maintain this website until the event is over. Nevertheless, I cannot make many improvements because I also maintain [another website](https://github.com/irfansud2nd/kejurnas-asbd-2023) that has similar functions to this one.
+495 Users\
+12 Admins
+
+Accommodating 2312 data consisting of:
+
+- 157 Kontingens
+- 1772 Athletes
+- 433 Officials
+
+This website is also my first paid and commercial project. I know this website is far from perfect. It was created in just one week, but I still maintain this website until the event is over. Nevertheless, I cannot make many improvements because I also maintain [another website](https://github.com/irfansud2nd/kejurnas-asbd-2023) that has similar functions to this one.
 
 ## Features
+
+### Client
 
 - Register, update and delete kontingen data
 - Register, update and delete kontingen's crew data
 - Upload, update and delete kontingen's crew photo
 - Register, update and delete kontingen's athlete data
-- Upload, update and delete kontingen's athlete photo and personal file
+- Upload, update and delete photo and personal file of kontingen's athlete
 - Upload kontingen's payment
 - Automatically deleting the old file if the user updates it
+- Automatically calculating the registration fee amount
+- Live updates on the ongoing match number.
+- Recapitulation of medal winnings
+
+### Admin
+
+- Dashboard
 - Manual payment verifivation by admins
 - Store data for offline document verification
-- Admin Dashboard
 - Table of athletes data with customizable filters
 - Export data to Excel format for admins
-- Automatically calculating the registration fee amount
-- Recapitulation of medal winnings
-- Live updates on the ongoing match number.
+- Update kontingen's medal winnings
+- Update the ongoing match number.
 
 ## Discalaimer
 
@@ -31,7 +47,7 @@ This website is also my first paid project and is used by around 1700 registrant
 
 ## How to use
 
-- - Live Web [here](https://portue-silat-championship.vercel.app)
+- Live Web [here](https://portue-silat-championship.vercel.app)
 - Access admin page [here](https://portue-silat-championship.vercel.app/admin)
 - Access scoring page [here](https://portue-silat-championship.vercel.app/scoring)
 
