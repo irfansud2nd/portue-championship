@@ -9,7 +9,7 @@ PORTUE Bandung Championship is an annual event orginized by [Komite Olahraga Nas
 
 Accommodating 2312 data consisting of:
 
-- 157 Kontingens
+- 157 Contingents
 - 1772 Athletes
 - 433 Officials
 
