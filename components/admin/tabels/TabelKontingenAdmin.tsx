@@ -18,9 +18,9 @@ import { compare } from "@/utils/functions";
 const TabelKontingenAdmin = () => {
   const {
     kontingens,
+    fetchKontingens,
     setSelectedKontingen,
     selectedKontingen,
-    refreshKontingens,
     kontingensLoading,
     pesertas,
     officials,
@@ -64,13 +64,11 @@ const TabelKontingenAdmin = () => {
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
     filename: "Tabel Kontingen",
-    sheet: `Data Kontingen ${
-      selectedKontingen.idKontingen ? selectedKontingen.namaKontingen : null
-    }`,
+    sheet: `Data Kontingen ${selectedKontingen?.namaKontingen ?? ""}`,
   });
 
   useEffect(() => {
-    if (selectedKontingen.idKontingen) {
+    if (selectedKontingen) {
       setKontingensToMap([selectedKontingen]);
     } else if (unconfirmedKongtingens.length) {
       setKontingensToMap(unconfirmedKongtingens);
@@ -127,8 +125,8 @@ const TabelKontingenAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.idKontingen && (
-          <button className="btn_green btn_full" onClick={refreshKontingens}>
+        {!selectedKontingen && (
+          <button className="btn_green btn_full" onClick={fetchKontingens}>
             Refresh
           </button>
         )}

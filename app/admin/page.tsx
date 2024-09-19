@@ -8,14 +8,7 @@ import Link from "next/link";
 import { useEffect } from "react";
 
 const AdminPage = () => {
-  const {
-    user,
-    userLoading,
-    adminLoading,
-    adminAuthorized,
-    checkAdminAuthorized,
-    googleSignIn,
-  } = MyContext();
+  const { user, userLoading, adminLoading, googleSignIn } = MyContext();
 
   const loginHandler = async () => {
     try {

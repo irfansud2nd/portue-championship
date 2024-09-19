@@ -16,10 +16,11 @@ const TabelOfficialAdmin = () => {
   const {
     officials,
     kontingens,
-    refreshOfficials,
     officialsLoading,
     selectedKontingen,
     selectedOfficials,
+    deleteOfficial: deleteOfficialContext,
+    fetchOfficials,
   } = AdminContext();
 
   const tabelHead = [
@@ -47,9 +48,7 @@ const TabelOfficialAdmin = () => {
   const tabelRef = useRef(null);
   const { onDownload } = useDownloadExcel({
     currentTableRef: tabelRef.current,
-    filename: `Tabel Official${
-      selectedKontingen.idKontingen ? selectedKontingen.namaKontingen : null
-    }`,
+    filename: `Tabel Official${selectedKontingen?.namaKontingen ?? ""}`,
     sheet: "Data Official",
   });
 
@@ -74,7 +73,7 @@ const TabelOfficialAdmin = () => {
     try {
       await deleteOfficial(dataToDelete, undefined, toastId);
       cancelDelete();
-      refreshOfficials();
+      deleteOfficialContext(dataToDelete.id);
     } catch (error) {
       throw error;
     }
@@ -94,8 +93,8 @@ const TabelOfficialAdmin = () => {
 
       {/* BUTTONS */}
       <div className="flex gap-1 mb-1 items-center">
-        {!selectedKontingen.idKontingen && (
-          <button className="btn_green btn_full" onClick={refreshOfficials}>
+        {!selectedKontingen && (
+          <button className="btn_green btn_full" onClick={fetchOfficials}>
             Refresh
           </button>
         )}

@@ -15,7 +15,13 @@ const DeleteKontingenButton = ({
 }: {
   kontingen: KontingenState;
 }) => {
-  const { pesertas, officials } = AdminContext();
+  const {
+    pesertas,
+    officials,
+    deleteKontingen: deleteKontingenContext,
+    deletePeserta,
+    deleteOfficial,
+  } = AdminContext();
 
   const [kontingenToDelete, setKontingenToDelete] = useState<KontingenState>(
     dataKontingenInitialValue
@@ -29,6 +35,8 @@ const DeleteKontingenButton = ({
   const deleteHandler = (kontingen: KontingenState) => {
     setRodalVisible(true);
     setKontingenToDelete(kontingen);
+    setPesertasToDelete(getPesertasByKontingen(kontingen.id, pesertas));
+    setOfficialsToDelete(getOfficialsByKontingen(kontingen.id, officials));
   };
 
   const cancelDelete = () => {
@@ -41,7 +49,16 @@ const DeleteKontingenButton = ({
   const toastId = useRef(null);
 
   const deleteData = async () => {
-    await deleteKontingen(kontingenToDelete, pesertas, officials, toastId);
+    await deleteKontingen(
+      kontingenToDelete,
+      pesertasToDelete,
+      officialsToDelete,
+      toastId
+    );
+
+    deleteKontingenContext(kontingenToDelete.id);
+    pesertasToDelete.map((peserta) => deletePeserta(peserta.id));
+    officialsToDelete.map((official) => deleteOfficial(official.id));
     cancelDelete();
   };
   return (

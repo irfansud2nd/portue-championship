@@ -9,16 +9,16 @@ import Verified from "../Verified";
 
 const DashboardAdmin = () => {
   const {
+    fetchAll,
+    fetchKontingens,
+    fetchOfficials,
+    fetchPesertas,
     kontingens,
     pesertas,
     officials,
     kontingensLoading,
     pesertasLoading,
     officialsLoading,
-    refreshKontingens,
-    refreshOfficials,
-    refreshPesertas,
-    refreshAll,
     setMode,
     getUnconfirmedKontingens,
     getConfirmedKontingens,
@@ -135,7 +135,7 @@ const DashboardAdmin = () => {
   return (
     <div className="w-full h-full bg-gray-200 rounded-md p-2">
       <h1 className="text-4xl font-extrabold">Dashboard Admin</h1>
-      <button className="btn_green btn_full" onClick={refreshAll}>
+      <button className="btn_green btn_full" onClick={fetchAll}>
         Refresh All
       </button>
       <button
@@ -155,7 +155,7 @@ const DashboardAdmin = () => {
           </p>
           <div className="flex justify-center gap-2">
             {/* <button onClick={getJumlahKontingen} className="btn_green btn_full"> */}
-            <button onClick={refreshKontingens} className="btn_green btn_full">
+            <button onClick={fetchKontingens} className="btn_green btn_full">
               Refresh
             </button>
             <button
@@ -175,7 +175,7 @@ const DashboardAdmin = () => {
           </p>
           <div className="flex justify-center gap-2">
             {/* <button onClick={getJumlahOfficial} className="btn_green btn_full"> */}
-            <button onClick={refreshOfficials} className="btn_green btn_full">
+            <button onClick={fetchOfficials} className="btn_green btn_full">
               Refresh
             </button>
             <button
@@ -195,7 +195,7 @@ const DashboardAdmin = () => {
           </p>
           <div className="flex justify-center gap-2">
             {/* <button onClick={getJumlahPeserta} className="btn_green btn_full"> */}
-            <button onClick={refreshPesertas} className="btn_green btn_full">
+            <button onClick={fetchPesertas} className="btn_green btn_full">
               Refresh
             </button>
             <button

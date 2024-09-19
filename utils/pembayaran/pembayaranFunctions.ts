@@ -150,32 +150,33 @@ export const confirmPayment = async (
   try {
     controlToast(toastId, "loading", "Mengkonfirmasi pembayaran", true);
 
+    let confirmedPesertas = pesertas.toConfirm;
+    let toUnpaidPesertas = pesertas.toUnpaid;
+
     // CONFIRM PAYMENT ON PESERTAS
     if (pesertas.toConfirm.length) {
       controlToast(toastId, "loading", "Mengkonfirmasi pembayaran peserta");
 
-      const confirmPesertas = pesertas.toConfirm.map(async (peserta) => {
-        let data: PesertaState = { ...peserta };
+      confirmedPesertas = confirmedPesertas.map((peserta) => {
+        let confirmedPeserta: PesertaState = { ...peserta };
 
-        data.confirmedPembayaran = true;
-        data.infoKonfirmasi = {
+        confirmedPeserta.confirmedPembayaran = true;
+        confirmedPeserta.infoKonfirmasi = {
           nama: user.displayName,
           email: user.email,
           waktu: now,
         };
 
-        const { error } = await updateData("pesertas", data);
-
-        if (error) throw error;
+        return confirmedPeserta;
       });
 
-      await Promise.all(confirmPesertas);
+      await updatePesertas(confirmedPesertas);
     }
 
     // DELETE PAYMENT ON PESERTAS
     if (pesertas.toUnpaid.length) {
       controlToast(toastId, "loading", "Membatalkan pembayaran peserta");
-      await unpaidPesertas(pesertas.toUnpaid);
+      toUnpaidPesertas = await unpaidPesertas(toUnpaidPesertas);
     }
 
     // CONFIRM PAYMENT ON KONTINGEN
@@ -207,7 +208,12 @@ export const confirmPayment = async (
     const { error } = await updateData("kontingens", updatedKontingen);
     if (error) throw error;
 
+    // FINISH
     controlToast(toastId, "success", "Pembayaran berhasil diKonfirmasi");
+    return {
+      kontingen: updatedKontingen,
+      pesertas: [...confirmedPesertas, ...toUnpaidPesertas],
+    };
   } catch (error) {
     toastError(toastId, error);
     throw error;
@@ -281,22 +287,23 @@ export const unconfirmPayment = async (
 
 export const unpaidPesertas = async (pesertas: PesertaState[]) => {
   try {
-    const promises = pesertas.map(async (peserta) => {
-      let updatedPeserta: PesertaState = { ...peserta };
+    let toUnpaidPesertas = pesertas.map((peserta) => {
+      let unpaidPeserta: PesertaState = { ...peserta };
 
-      updatedPeserta.idPembayaran = "";
-      updatedPeserta.pembayaran = false;
-      updatedPeserta.infoPembayaran = {
+      unpaidPeserta.idPembayaran = "";
+      unpaidPeserta.pembayaran = false;
+      unpaidPeserta.infoPembayaran = {
         noHp: "",
         waktu: 0,
         buktiUrl: "",
       };
 
-      const { error } = await updateData("pesertas", updatedPeserta);
-      if (error) throw error;
+      return unpaidPeserta;
     });
 
-    await Promise.all(promises);
+    await updatePesertas(toUnpaidPesertas);
+
+    return toUnpaidPesertas;
   } catch (error) {
     throw error;
   }

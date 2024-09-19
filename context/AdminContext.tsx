@@ -7,7 +7,6 @@ import {
   getPesertasByKontingen,
 } from "@/utils/adminFunctions";
 import { KontingenState, OfficialState, PesertaState } from "@/utils/types";
-import { dataKontingenInitialValue, jenisKelamin } from "@/utils/constants";
 import InlineLoading from "@/components/admin/InlineLoading";
 import { getAllKontingens } from "@/utils/kontingen/kontingenActions";
 import { getAllOfficials } from "@/utils/official/officialActions";
@@ -21,7 +20,7 @@ export const AdminContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
   const [kontingens, setKontingens] = useState<KontingenState[]>([]);
   const [unconfirmedKongtingens, setUncofirmedKontingens] = useState<
     KontingenState[]
@@ -39,73 +38,26 @@ export const AdminContextProvider = ({
   const [officialsLoading, setOfficialsLoading] = useState(true);
   const [pesertasLoading, setPesertasLoading] = useState(true);
   const [mode, setMode] = useState("");
-  const [selectedKontingen, setSelectedKontingen] = useState<KontingenState>(
-    dataKontingenInitialValue
-  );
+  const [selectedKontingen, setSelectedKontingen] = useState<
+    KontingenState | undefined
+  >(undefined);
   const [selectedKategori, setSelectedKategori] = useState("");
 
   const { user } = MyContext();
 
   useEffect(() => {
-    refreshKontingens();
-    refreshOfficials();
-    refreshPesertas();
+    fetchAll();
   }, []);
 
-  const refreshAll = () => {
-    refreshKontingens();
-    refreshOfficials();
-    refreshPesertas();
-  };
-
-  // GET KONTINGEN
-  const refreshKontingens = async () => {
-    setSelectedKontingen(dataKontingenInitialValue);
-    setKontingensLoading(true);
-    try {
-      const { result, error } = await getAllKontingens();
-      if (error) throw error;
-
-      setKontingens(result);
-      setKontingensLoading(false);
-    } catch (error) {
-      setError((error as FirebaseError).message);
-    }
-  };
-
-  // GET OFFICIAL
-  const refreshOfficials = async () => {
-    setSelectedKontingen(dataKontingenInitialValue);
-    setOfficialsLoading(true);
-    try {
-      const { result, error } = await getAllOfficials();
-      if (error) throw error;
-
-      setOfficials(result);
-      setOfficialsLoading(false);
-    } catch (error) {
-      setError((error as FirebaseError).message);
-    }
-  };
-
-  // GET PESERTA
-  const refreshPesertas = async () => {
-    setSelectedKontingen(dataKontingenInitialValue);
-    setPesertasLoading(true);
-    try {
-      const { result, error } = await getAllPesertas();
-      if (error) throw error;
-
-      setPesertas(result);
-      setPesertasLoading(false);
-    } catch (error) {
-      setError((error as FirebaseError).message);
-    }
+  const fetchAll = () => {
+    fetchKontingens();
+    fetchOfficials();
+    fetchPesertas();
   };
 
   // GET PESERTAS AND OFFICIALS BASED ON KONTINGEN ID
   useEffect(() => {
-    if (selectedKontingen.id) {
+    if (selectedKontingen) {
       setSelectedKategori("");
       setUncofirmedKontingens([]);
       setCofirmedKontingens([]);
@@ -173,7 +125,6 @@ export const AdminContextProvider = ({
             : kategoriPertandingan.includes("Ganda")
             ? kuotaGanda
             : kuota}
-          {/* <span className="text-gray-500"> / 16</span> */}
         </span>
       );
     }
@@ -198,6 +149,96 @@ export const AdminContextProvider = ({
     setSelectedPesertas(result);
   }, [selectedKategori]);
 
+  const reduceData = (data: any[], key: string = "id") => {
+    const reducedData = Object.values(
+      data.reduce((acc, obj) => {
+        acc[obj[key]] = obj;
+        return acc;
+      }, {} as any)
+    );
+    return reducedData;
+  };
+
+  // KONTINGEN
+  // FECTCH
+  const fetchKontingens = async () => {
+    setSelectedKontingen(undefined);
+    setKontingensLoading(true);
+    try {
+      const { result, error } = await getAllKontingens();
+      if (error) throw error;
+
+      addKontingens(result);
+      setKontingensLoading(false);
+    } catch (error) {
+      setError((error as FirebaseError).message);
+    }
+  };
+
+  // ADD
+  const addKontingens = (newKontingens: KontingenState[]) => {
+    const data = reduceData([
+      ...kontingens,
+      ...newKontingens,
+    ]) as KontingenState[];
+    setKontingens(data);
+  };
+
+  // DELETE
+  const deleteKontingen = (id: string) => {
+    setKontingens(kontingens.filter((item) => item.id != id));
+  };
+
+  // PESERTA
+  // FETCH
+  const fetchPesertas = async () => {
+    setSelectedKontingen(undefined);
+    setPesertasLoading(true);
+    try {
+      const { result, error } = await getAllPesertas();
+      if (error) throw error;
+
+      addPesertas(result);
+      setPesertasLoading(false);
+    } catch (error) {
+      setError((error as FirebaseError).message);
+    }
+  };
+  // ADD
+  const addPesertas = (newPesertas: PesertaState[]) => {
+    const data = reduceData([...pesertas, ...newPesertas]) as PesertaState[];
+    setPesertas(data);
+  };
+  // DELETE
+  const deletePeserta = (id: string) => {
+    setPesertas(pesertas.filter((item) => item.id != id));
+  };
+
+  // OFFICIAL
+  // FETCH
+  const fetchOfficials = async () => {
+    setSelectedKontingen(undefined);
+    setOfficialsLoading(true);
+    try {
+      const { result, error } = await getAllOfficials();
+      if (error) throw error;
+
+      addOfficials(result);
+      setOfficialsLoading(false);
+    } catch (error) {
+      setError((error as FirebaseError).message);
+    }
+  };
+  // ADD
+  const addOfficials = (newOfficials: OfficialState[]) => {
+    const data = reduceData([...officials, ...newOfficials]) as OfficialState[];
+    setOfficials(data);
+  };
+  // DELETE
+  const deleteOfficial = (id: string) => {
+    setOfficials(officials.filter((item) => item.id != id));
+  };
+
   return (
     <Context.Provider
       value={{
@@ -205,16 +246,19 @@ export const AdminContextProvider = ({
         kontingens,
         kontingensLoading,
         setKontingens,
-        refreshKontingens,
+        addKontingens,
+        deleteKontingen,
         pesertas,
         pesertasLoading,
         setPesertas,
-        refreshPesertas,
+        addPesertas,
+        deletePeserta,
         officials,
         officialsLoading,
         setOfficials,
-        refreshOfficials,
-        refreshAll,
+        addOfficials,
+        deleteOfficial,
+        fetchAll,
         mode,
         setMode,
         selectedKontingen,
@@ -240,5 +284,47 @@ export const AdminContextProvider = ({
 };
 
 export const AdminContext = () => {
-  return useContext(Context);
+  return useContext(Context) as {
+    error: string;
+    kontingens: KontingenState[];
+    fetchKontingens: () => void;
+    kontingensLoading: boolean;
+    setKontingens: (kontingens: KontingenState[]) => void;
+    addKontingens: (kontingens: KontingenState[]) => void;
+    deleteKontingen: (id: string) => void;
+    pesertas: PesertaState[];
+    fetchPesertas: () => void;
+    pesertasLoading: boolean;
+    setPesertas: (pesertas: PesertaState[]) => void;
+    addPesertas: (pesertas: PesertaState[]) => void;
+    deletePeserta: (id: string) => void;
+    officials: OfficialState[];
+    fetchOfficials: () => void;
+    officialsLoading: boolean;
+    setOfficials: (officials: OfficialState[]) => void;
+    addOfficials: (officials: OfficialState[]) => void;
+    deleteOfficial: (id: string) => void;
+    fetchAll: () => void;
+    mode: string;
+    setMode: (mode: string) => void;
+    selectedKontingen: KontingenState | undefined;
+    setSelectedKontingen: (kontingen: KontingenState | undefined) => void;
+    cekKuota: (
+      tingkatanPertandingan: string,
+      kategoriPertandingan: string,
+      jenisKelamin: string
+    ) => JSX.Element;
+    selectedKategori: string;
+    setSelectedKategori: (value: string) => void;
+    selectedPesertas: PesertaState[];
+    setSelectedPesertas: (pesertas: PesertaState[]) => void;
+    selectedOfficials: OfficialState[];
+    setSelectedOfficials: (officials: OfficialState[]) => void;
+    getUnconfirmedKontingens: () => void;
+    unconfirmedKongtingens: KontingenState[];
+    setUncofirmedKontingens: (kontingens: KontingenState[]) => void;
+    getConfirmedKontingens: () => void;
+    confirmedKontingens: KontingenState[];
+    setCofirmedKontingens: (kontingens: KontingenState[]) => void;
+  };
 };

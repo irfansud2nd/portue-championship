@@ -26,11 +26,13 @@ const TabelPesertaAdmin = () => {
   const {
     pesertas,
     kontingens,
-    refreshPesertas,
+    fetchPesertas,
     pesertasLoading,
     selectedKontingen,
     selectedKategori,
     selectedPesertas,
+    addPesertas,
+    deletePeserta: deletePesertaContext,
   } = AdminContext();
 
   const tabelHead = [
@@ -111,6 +113,7 @@ const TabelPesertaAdmin = () => {
   const handleDelete = async () => {
     setDeleteRodal(false);
     await deletePeserta(pesertaToDelete, undefined, toastId);
+    deletePesertaContext(pesertaToDelete.id);
   };
 
   const cancelDelete = () => {
@@ -258,6 +261,7 @@ const TabelPesertaAdmin = () => {
     try {
       controlToast(toastId, "loading", "Menyimpan Persyaratan", true);
       await updatePesertas(updatedPesertas);
+      addPesertas(updatedPesertas);
       controlToast(toastId, "success", "Persyaratan berhasil disimpan");
     } catch (error) {
       toastError(toastId, error);
@@ -380,14 +384,14 @@ const TabelPesertaAdmin = () => {
         <button className="btn_green btn_full" onClick={onDownload}>
           Download
         </button>
-        {!selectedKontingen.idKontingen && (
-          <button className="btn_green btn_full" onClick={refreshPesertas}>
+        {!selectedKontingen && (
+          <button className="btn_green btn_full" onClick={fetchPesertas}>
             Refresh
           </button>
         )}
         {pesertasLoading && <InlineLoading />}
       </div>
-      {selectedKontingen.idKontingen && (
+      {selectedKontingen && (
         <div className="flex flex-col w-fit gap-1 mb-1">
           <button
             className="btn_green btn_full"
@@ -408,7 +412,7 @@ const TabelPesertaAdmin = () => {
       )}
       {/* BUTTONS */}
 
-      {selectedKontingen.idKontingen && (
+      {selectedKontingen && (
         <CheckAllPersyaratanButton
           checkAll={checkAllPersyaratan}
           arrays={{
@@ -427,9 +431,7 @@ const TabelPesertaAdmin = () => {
             {tabelHead.map((item, i) => (
               <>
                 <th key={item}>{item}</th>
-                {i == 1 && selectedKontingen.idKontingen ? (
-                  <th>Persyaratan</th>
-                ) : null}
+                {i == 1 && selectedKontingen ? <th>Persyaratan</th> : null}
               </>
             ))}
           </tr>
@@ -447,7 +449,7 @@ const TabelPesertaAdmin = () => {
                     peserta.idKontingen
                   ).toUpperCase()}
                 </td>
-                {selectedKontingen.idKontingen && (
+                {selectedKontingen && (
                   <td className="whitespace-nowrap">
                     <ul>
                       <li>

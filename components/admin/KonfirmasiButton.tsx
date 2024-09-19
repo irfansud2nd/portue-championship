@@ -48,7 +48,7 @@ const KonfirmasiButton = ({
   );
 
   const { user } = MyContext();
-  const { refreshKontingens, pesertas } = AdminContext();
+  const { addKontingens, addPesertas, pesertas } = AdminContext();
 
   const toastId = useRef(null);
 
@@ -75,16 +75,18 @@ const KonfirmasiButton = ({
   };
 
   const konfirmasi = async () => {
-    await confirmPayment(
-      infoPembayaran,
-      kontingen,
-      { toConfirm: pesertasToConfirm, toUnpaid: [] },
-      infoPembayaran.nominal,
-      user,
-      toastId
-    );
+    const { kontingen: updatedKontingen, pesertas: updatedPesertas } =
+      await confirmPayment(
+        infoPembayaran,
+        kontingen,
+        { toConfirm: pesertasToConfirm, toUnpaid: [] },
+        infoPembayaran.nominal,
+        user,
+        toastId
+      );
     setRodalVisible(false);
-    refreshKontingens();
+    addKontingens([updatedKontingen]);
+    addPesertas(updatedPesertas);
   };
 
   const resetKonfirmasi = () => {

@@ -35,7 +35,7 @@ const TabelAdmin = () => {
         Dashboard
       </button>
 
-      {selectedKontingen.idKontingen && (
+      {selectedKontingen && (
         <h1 className="capitalize mb-1 text-3xl font-extrabold p-1 w-fit bg-black text-white">
           Kontingen {selectedKontingen.namaKontingen}
         </h1>
@@ -43,15 +43,9 @@ const TabelAdmin = () => {
 
       {mode == "custom" && <CustomTabel />}
 
-      {(mode == "kontingen" || selectedKontingen.idKontingen) && (
-        <TabelKontingenAdmin />
-      )}
-      {(mode == "peserta" || selectedKontingen.idKontingen) && (
-        <TabelPesertaAdmin />
-      )}
-      {(mode == "official" || selectedKontingen.idKontingen) && (
-        <TabelOfficialAdmin />
-      )}
+      {(mode == "kontingen" || selectedKontingen) && <TabelKontingenAdmin />}
+      {(mode == "peserta" || selectedKontingen) && <TabelPesertaAdmin />}
+      {(mode == "official" || selectedKontingen) && <TabelOfficialAdmin />}
       {mode == "pembayaran" && <TabelPembayaran />}
     </div>
   );
