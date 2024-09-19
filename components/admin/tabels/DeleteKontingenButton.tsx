@@ -56,9 +56,9 @@ const DeleteKontingenButton = ({
       toastId
     );
 
-    deleteKontingenContext(kontingenToDelete.id);
     pesertasToDelete.map((peserta) => deletePeserta(peserta.id));
     officialsToDelete.map((official) => deleteOfficial(official.id));
+    deleteKontingenContext(kontingenToDelete.id);
     cancelDelete();
   };
   return (
