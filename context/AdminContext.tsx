@@ -3,19 +3,16 @@
 import { useState, useEffect, createContext, useContext, useRef } from "react";
 import { MyContext } from "./Context";
 import {
-  getAllKontingen,
-  getAllOfficial,
-  getAllPeserta,
   getOfficialsByKontingen,
   getPesertasByKontingen,
 } from "@/utils/adminFunctions";
-import {
-  DataKontingenState,
-  DataOfficialState,
-  DataPesertaState,
-} from "@/utils/types";
+import { KontingenState, OfficialState, PesertaState } from "@/utils/types";
 import { dataKontingenInitialValue, jenisKelamin } from "@/utils/constants";
 import InlineLoading from "@/components/admin/InlineLoading";
+import { getAllKontingens } from "@/utils/kontingen/kontingenActions";
+import { getAllOfficials } from "@/utils/official/officialActions";
+import { getAllPesertas } from "@/utils/peserta/pesertaActions";
+import { FirebaseError } from "firebase/app";
 
 const Context = createContext<any>(null);
 
@@ -25,27 +22,26 @@ export const AdminContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [error, setError] = useState<string | null>(null);
-  const [kontingens, setKontingens] = useState<DataKontingenState[]>([]);
+  const [kontingens, setKontingens] = useState<KontingenState[]>([]);
   const [unconfirmedKongtingens, setUncofirmedKontingens] = useState<
-    DataKontingenState[]
+    KontingenState[]
   >([]);
   const [confirmedKontingens, setCofirmedKontingens] = useState<
-    DataKontingenState[]
+    KontingenState[]
   >([]);
-  const [pesertas, setPesertas] = useState<DataPesertaState[]>([]);
-  const [selectedPesertas, setSelectedPesertas] = useState<DataPesertaState[]>(
+  const [pesertas, setPesertas] = useState<PesertaState[]>([]);
+  const [selectedPesertas, setSelectedPesertas] = useState<PesertaState[]>([]);
+  const [officials, setOfficials] = useState<OfficialState[]>([]);
+  const [selectedOfficials, setSelectedOfficials] = useState<OfficialState[]>(
     []
   );
-  const [officials, setOfficials] = useState<DataOfficialState[]>([]);
-  const [selectedOfficials, setSelectedOfficials] = useState<
-    DataOfficialState[]
-  >([]);
   const [kontingensLoading, setKontingensLoading] = useState(true);
   const [officialsLoading, setOfficialsLoading] = useState(true);
   const [pesertasLoading, setPesertasLoading] = useState(true);
   const [mode, setMode] = useState("");
-  const [selectedKontingen, setSelectedKontingen] =
-    useState<DataKontingenState>(dataKontingenInitialValue);
+  const [selectedKontingen, setSelectedKontingen] = useState<KontingenState>(
+    dataKontingenInitialValue
+  );
   const [selectedKategori, setSelectedKategori] = useState("");
 
   const { user } = MyContext();
@@ -63,52 +59,61 @@ export const AdminContextProvider = ({
   };
 
   // GET KONTINGEN
-  const refreshKontingens = () => {
+  const refreshKontingens = async () => {
     setSelectedKontingen(dataKontingenInitialValue);
     setKontingensLoading(true);
-    getAllKontingen()
-      .then((res: any) => {
-        setKontingens(res);
-        setKontingensLoading(false);
-      })
-      .catch((error) => setError(error));
+    try {
+      const { result, error } = await getAllKontingens();
+      if (error) throw error;
+
+      setKontingens(result);
+      setKontingensLoading(false);
+    } catch (error) {
+      setError((error as FirebaseError).message);
+    }
   };
 
-  // GET OFFICIALS
-  const refreshOfficials = () => {
+  // GET OFFICIAL
+  const refreshOfficials = async () => {
     setSelectedKontingen(dataKontingenInitialValue);
     setOfficialsLoading(true);
-    getAllOfficial()
-      .then((res: any) => {
-        setOfficials(res);
-        setOfficialsLoading(false);
-      })
-      .catch((error) => setError(error));
+    try {
+      const { result, error } = await getAllOfficials();
+      if (error) throw error;
+
+      setOfficials(result);
+      setOfficialsLoading(false);
+    } catch (error) {
+      setError((error as FirebaseError).message);
+    }
   };
 
   // GET PESERTA
-  const refreshPesertas = () => {
+  const refreshPesertas = async () => {
     setSelectedKontingen(dataKontingenInitialValue);
     setPesertasLoading(true);
-    getAllPeserta()
-      .then((res: any) => {
-        setPesertas(res);
-        setPesertasLoading(false);
-      })
-      .catch((error) => setError(error));
+    try {
+      const { result, error } = await getAllPesertas();
+      if (error) throw error;
+
+      setPesertas(result);
+      setPesertasLoading(false);
+    } catch (error) {
+      setError((error as FirebaseError).message);
+    }
   };
 
   // GET PESERTAS AND OFFICIALS BASED ON KONTINGEN ID
   useEffect(() => {
-    if (selectedKontingen.idKontingen) {
+    if (selectedKontingen.id) {
       setSelectedKategori("");
       setUncofirmedKontingens([]);
       setCofirmedKontingens([]);
       setSelectedOfficials(
-        getOfficialsByKontingen(selectedKontingen.idKontingen, officials)
+        getOfficialsByKontingen(selectedKontingen.id, officials)
       );
       setSelectedPesertas(
-        getPesertasByKontingen(selectedKontingen.idKontingen, pesertas)
+        getPesertasByKontingen(selectedKontingen.id, pesertas)
       );
     } else {
       setSelectedOfficials([]);
@@ -119,7 +124,7 @@ export const AdminContextProvider = ({
   // GET UNCORFIMED KONTINGENS
   const getUnconfirmedKontingens = () => {
     setMode("kontingen");
-    let selected: DataKontingenState[] = [];
+    let selected: KontingenState[] = [];
     kontingens.map((kontingen) => {
       if (kontingen.unconfirmedPembayaran.length) selected.push(kontingen);
     });
@@ -129,7 +134,7 @@ export const AdminContextProvider = ({
   // GET UNCORFIMED KONTINGENS
   const getConfirmedKontingens = () => {
     setMode("kontingen");
-    let selected: DataKontingenState[] = [];
+    let selected: KontingenState[] = [];
     kontingens.map((kontingen) => {
       if (kontingen.confirmedPembayaran.length) selected.push(kontingen);
     });
@@ -177,7 +182,7 @@ export const AdminContextProvider = ({
 
   // GET PESERTAS BASED ON KATEGORI
   useEffect(() => {
-    let result: DataPesertaState[] = [];
+    let result: PesertaState[] = [];
     const tingkatan = selectedKategori.split(",")[0];
     const kategori = selectedKategori.split(",")[1];
     const gender = selectedKategori.split(",")[2];

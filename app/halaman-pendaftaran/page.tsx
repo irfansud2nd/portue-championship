@@ -10,7 +10,8 @@ import Image from "next/image";
 import Link from "next/link";
 import Head from "next/head";
 import "rodal/lib/rodal.css";
-import { getJumlahPeserta } from "@/utils/sharedFunctions";
+import { fetchData } from "@/utils/functions";
+import { countFromCollection } from "@/utils/actions";
 
 const PendaftaranPage = () => {
   const { user, userLoading } = MyContext();
@@ -18,7 +19,13 @@ const PendaftaranPage = () => {
 
   useEffect(() => {
     document.title = "Halaman Pendaftaran - Portue Silat Bandung Championship";
-    getJumlahPeserta().then((res) => setKuota(res));
+
+    const countPeserta = async () => {
+      const result = await fetchData(() => countFromCollection("pesertas"));
+      console.log({ result });
+      setKuota(result);
+    };
+    countPeserta();
   }, []);
 
   return (

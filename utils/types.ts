@@ -1,31 +1,6 @@
-// KATEGORI PENDAFTARAN
-export type KategoriPendaftaranProps = {
-  setKategoriPendaftaran: React.Dispatch<React.SetStateAction<string>>;
-  kategoriPendaftaran: string;
-};
-
-// FORM PENDAFTARAN
-export type FormPendaftaranProps = {
-  kategoriPendaftaran: string;
-};
-
-// TABEL PENDAFTARAN
-export type TabelPendaftaranProps = {
-  kategoriPendaftaran: string;
-  data: any[];
-};
-
-// FOR ALL FORM
-export type FormKontingenProps = {
-  kontingens: DataKontingenState[];
-  setKontingens: React.Dispatch<
-    React.SetStateAction<DataKontingenState[] | any[]>
-  >;
-};
-
 // DATA KONTINGEN
-export type DataKontingenState = {
-  idKontingen: string;
+export type KontingenState = {
+  id: string;
   creatorEmail: string;
   creatorUid: string;
   waktuPendaftaran: number | string;
@@ -40,19 +15,19 @@ export type DataKontingenState = {
     idPembayaran: string;
     nominal: string;
     noHp: string;
-    waktu: string;
+    waktu: number;
     buktiUrl: string;
   }[];
   infoKonfirmasi: {
     idPembayaran: string;
     nama: string;
     email: string;
-    waktu: string;
+    waktu: number;
   }[];
 };
 
 // DATA OFFICIAL
-export type DataOfficialState = {
+export type OfficialState = {
   id: string;
   creatorEmail: string;
   creatorUid: string;
@@ -67,7 +42,7 @@ export type DataOfficialState = {
 };
 
 // DATA PESERTA
-export type DataPesertaState = {
+export type PesertaState = {
   id: string;
   waktuPendaftaran: number | string;
   waktuPerubahan: number | string;
@@ -77,7 +52,7 @@ export type DataPesertaState = {
   NIK: string;
   tempatLahir: string;
   tanggalLahir: string;
-  umur: string;
+  umur: number;
   beratBadan: number;
   tinggiBadan: number;
   alamatLengkap: string;
@@ -99,13 +74,13 @@ export type DataPesertaState = {
   confirmedPembayaran: boolean;
   infoPembayaran: {
     noHp: string;
-    waktu: string;
+    waktu: number;
     buktiUrl: string;
   };
   infoKonfirmasi: {
     nama: string;
     email: string;
-    waktu: string;
+    waktu: number;
   };
 };
 

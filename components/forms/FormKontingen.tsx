@@ -1,38 +1,40 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import {
-  DocumentData,
-  DocumentReference,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  query,
-  setDoc,
-  where,
-} from "firebase/firestore";
-import { firestore } from "@/utils/firebase";
-import {
-  compare,
-  deletePerson,
-  deletePeserta,
-  newToast,
-  updateToast,
-} from "@/utils/sharedFunctions";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MyContext } from "@/context/Context";
-import { DataKontingenState, FormKontingenProps } from "@/utils/types";
+import { KontingenState, OfficialState, PesertaState } from "@/utils/types";
 import { dataKontingenInitialValue } from "@/utils/constants";
 import TabelKontingen from "../tabel/TabelKontingen";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import { BiLoader } from "react-icons/bi";
+import {
+  createKontingen,
+  deleteKontingen,
+  updateKontingen,
+} from "@/utils/kontingen/kontingenFunctions";
+import { toastError } from "@/utils/functions";
 
-const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
-  const [data, setData] = useState<DataKontingenState | DocumentData>(
-    dataKontingenInitialValue
-  );
+type Props = {
+  kontingen: KontingenState | undefined;
+  setKontingen: React.Dispatch<
+    React.SetStateAction<KontingenState | undefined>
+  >;
+  pesertas: PesertaState[];
+  setPesertas: React.Dispatch<React.SetStateAction<PesertaState[]>>;
+  officials: OfficialState[];
+  setOfficials: React.Dispatch<React.SetStateAction<OfficialState[]>>;
+};
+
+const FormKontingen = ({
+  kontingen,
+  setKontingen,
+  pesertas,
+  setPesertas,
+  officials,
+  setOfficials,
+}: Props) => {
+  const [data, setData] = useState<KontingenState>(dataKontingenInitialValue);
   const [updating, setUpdating] = useState(false);
   const [dataToDelete, setDataToDelete] = useState(dataKontingenInitialValue);
   const [modalVisible, setModalVisible] = useState(false);
@@ -51,96 +53,36 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
     });
   }, [user]);
 
-  // GET KONTINGENS ON DID MOUNT
-  useEffect(() => {
-    getKontingens();
-  }, []);
-
-  // GET ALL KONTIGENS
-  const getKontingens = () => {
-    // TABLE LOADING TRUE
-    setTabelLoading(true);
-    const container: any[] = [];
-    const q = query(
-      collection(firestore, "kontingens"),
-      where("creatorUid", "==", user.uid)
-    );
-    getDocs(q)
-      .then((querySnapshot) =>
-        querySnapshot.forEach((doc) => {
-          container.push(doc.data());
-        })
-      )
-      .catch((error) => newToast(toastId, "error", error.code))
-      .finally(() => {
-        setKontingens(container.sort(compare("waktuPendaftaran", "asc")));
-        // TABEL LOADING FALSE
-        setTabelLoading(false);
-      });
-  };
-
   // SUBMIT HANDLER - UPDATE OR NEW DATA
-  const saveKontingen = (e: React.FormEvent) => {
+  const saveKontingen = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (data.namaKontingen !== "") {
+
+    if (!data.namaKontingen.length) {
+      toastError(toastId, "Tolong lengkapi nama kontingen");
+      return;
+    }
+
+    try {
       setDisable(true);
+
+      let result: KontingenState = data;
+
       if (updating) {
-        updateKontingen();
+        result = await updateKontingen(data, toastId);
       } else {
-        sendKontingen();
+        result = await createKontingen(data, toastId);
       }
-    } else {
-      newToast(toastId, "error", "Tolong lengkapi nama kontingen");
+
+      setKontingen(result);
+    } catch (error) {
+      throw error;
+    } finally {
+      resetData();
     }
   };
 
-  // SEND KONTINGEN
-  const sendKontingen = () => {
-    newToast(toastId, "loading", "Mendaftarkan Kontingen");
-    const newDocRef = doc(collection(firestore, "kontingens"));
-    setDoc(newDocRef, {
-      ...data,
-      idKontingen: newDocRef.id,
-      waktuPendaftaran: Date.now(),
-    })
-      .then(() => {
-        updateToast(toastId, "success", "Kontingen berhasil didaftarkan");
-      })
-      .catch((error) =>
-        updateToast(
-          toastId,
-          "error",
-          `Gagal mendaftarkan kontingen. ${error.code}`
-        )
-      )
-      .finally(() => {
-        resetData();
-        getKontingens();
-      });
-  };
-
-  // UPDATE KONTINGEN
-  const updateKontingen = () => {
-    newToast(toastId, "loading", "Mengubah Data Kontingen");
-    setDoc(doc(firestore, "kontingens", data.idKontingen), {
-      ...data,
-      waktuPerubahan: Date.now(),
-    })
-      .then(() => {
-        updateToast(toastId, "success", "Data berhasil dirubah");
-        getKontingens();
-      })
-      .catch((error) =>
-        updateToast(toastId, "error", `Gagal mengubah data. ${error.code}`)
-      )
-      .finally(() => {
-        resetData();
-        getKontingens();
-      });
-  };
-
   // EDIT HANDLER
-  const handleEdit = (data: DataKontingenState) => {
+  const handleEdit = (data: KontingenState) => {
     setUpdating(true);
     setData(data);
   };
@@ -148,16 +90,16 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
   // RESETER
   const resetData = () => {
     setDisable(false);
+    setUpdating(false);
     setData({
       ...dataKontingenInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
     });
-    setUpdating(false);
   };
 
   // DELETE HANDLER
-  const handleDelete = (data: DataKontingenState) => {
+  const handleDelete = (data: KontingenState) => {
     setModalVisible(true);
     setDataToDelete(data);
   };
@@ -169,96 +111,30 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
     setDisable(false);
   };
 
-  // DELETING DATA - START
   // DELETE CONTROLLER
-  const deleteData = () => {
+  const deleteData = async () => {
     setDisable(true);
     setModalVisible(false);
-    deleteOfficials(dataToDelete.officials.length - 1);
-  };
+    if (!kontingen) return;
 
-  // DELETE ALL OFFICIAL
-  const deleteOfficials = (officialIndex: number) => {
-    if (officialIndex >= 0) {
-      const id = dataToDelete.officials[officialIndex];
-      deletePerson(
-        "officials",
-        {
-          namaLengkap: `${dataToDelete.officials.length} official`,
-          idKontingen: dataToDelete.idKontingen,
-          fotoUrl: `officials/${id}-image`,
-          id: id,
-        },
-        kontingens,
-        toastId,
-        () => afterDeleteOfficial(officialIndex)
-      );
-    } else {
-      deletePesertas(dataToDelete.pesertas.length - 1);
+    try {
+      await deleteKontingen(kontingen, pesertas, officials, toastId);
+
+      setKontingen(undefined);
+      setPesertas([]);
+      setOfficials([]);
+    } catch (error) {
+      throw error;
+    } finally {
+      cancelDelete();
     }
   };
-
-  const afterDeleteOfficial = (officialIndex: number) => {
-    if (officialIndex != 0) {
-      deleteOfficials(officialIndex - 1);
-    } else {
-      deletePesertas(dataToDelete.pesertas.length - 1);
-    }
-  };
-
-  //DELETE ALL PESERTA
-  const deletePesertas = (pesertaIndex: number) => {
-    if (pesertaIndex >= 0) {
-      const id = dataToDelete.pesertas[pesertaIndex];
-      deletePeserta(
-        "pesertas",
-        {
-          namaLengkap: `${dataToDelete.pesertas.length} peserta`,
-          idKontingen: dataToDelete.idKontingen,
-          fotoUrl: `pesertas/${id}-image`,
-          id: id,
-        },
-        kontingens,
-        toastId,
-        () => afterDeletePeserta(pesertaIndex)
-      );
-    } else {
-      deleteKontingen();
-    }
-  };
-
-  const afterDeletePeserta = (pesertaIndex: number) => {
-    if (pesertaIndex != 0) {
-      deletePesertas(pesertaIndex - 1);
-    } else {
-      deleteKontingen();
-    }
-  };
-
-  // DELETE KONTINGEN
-  const deleteKontingen = () => {
-    newToast(toastId, "loading", "Menghapus Kontingen");
-    deleteDoc(doc(firestore, "kontingens", dataToDelete.idKontingen))
-      .then(() => updateToast(toastId, "success", "Kontingen berhasil dihapus"))
-      .catch((error) => {
-        updateToast(
-          toastId,
-          "error",
-          `Gagal menghapus kontingen. ${error.code}`
-        );
-      })
-      .finally(() => {
-        getKontingens();
-        cancelDelete();
-      });
-  };
-  // DELETING DATA - END
 
   return (
     <div className="flex flex-col gap-2">
-      {kontingens.length ? (
+      {kontingen ? (
         <TabelKontingen
-          data={kontingens}
+          data={[kontingen]}
           handleDelete={handleDelete}
           handleEdit={handleEdit}
         />
@@ -325,45 +201,45 @@ const FormKontingen = ({ kontingens, setKontingens }: FormKontingenProps) => {
           )}
         </div>
       </Rodal>
-      {/* {updating && ( */}
-      <form onSubmit={(e) => saveKontingen(e)}>
-        <div className="input_container">
-          <label className="input_label">Nama Kontingen</label>
-          <div className="flex flex-wrap gap-y-2 gap-x-5">
-            <input
-              type="text"
-              className="input uppercase"
-              value={data.namaKontingen}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  namaKontingen: e.target.value.toLowerCase(),
-                })
-              }
-            />
+      {(updating || !kontingen) && (
+        <form onSubmit={(e) => saveKontingen(e)}>
+          <div className="input_container">
+            <label className="input_label">Nama Kontingen</label>
+            <div className="flex flex-wrap gap-y-2 gap-x-5">
+              <input
+                type="text"
+                className="input uppercase"
+                value={data.namaKontingen}
+                onChange={(e) =>
+                  setData({
+                    ...data,
+                    namaKontingen: e.target.value.toLowerCase(),
+                  })
+                }
+              />
 
-            <div className="flex gap-3">
-              <button
-                disabled={disable}
-                className="btn_red btn_full"
-                onClick={resetData}
-                type="button"
-              >
-                Batal
-              </button>
-              <button
-                disabled={disable}
-                className="btn_green btn_full"
-                type="submit"
-              >
-                {updating ? "Perbaharui" : "Simpan"}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  disabled={disable}
+                  className="btn_red btn_full"
+                  onClick={resetData}
+                  type="button"
+                >
+                  Batal
+                </button>
+                <button
+                  disabled={disable}
+                  className="btn_green btn_full"
+                  type="submit"
+                >
+                  {updating ? "Perbaharui" : "Simpan"}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex gap-2"></div>
-      </form>
-      {/* )} */}
+          <div className="flex gap-2"></div>
+        </form>
+      )}
     </div>
   );
 };

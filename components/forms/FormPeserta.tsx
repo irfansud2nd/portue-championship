@@ -7,38 +7,14 @@ import {
   jenisPertandingan,
   tingkatanKategori,
 } from "@/utils/constants";
-import { firestore } from "@/utils/firebase";
 import {
   compare,
-  limitImage,
-  getInputErrorPeserta,
-  updatePerson,
-  updatePersonImage,
-  getJumlahPeserta,
-  newToast,
-  submitPeserta,
-  deletePeserta,
-  updatePersonKk,
-  updatePersonKkImage,
-  updateToast,
-  updatePersonKkKtpImage,
-  updatePersonKtpImage,
-  updatePersonKkKtp,
-  updatePersonKtp,
-  getPaidPeserta,
-} from "@/utils/sharedFunctions";
-import {
-  DataKontingenState,
-  DataPesertaState,
-  ErrorPeserta,
-} from "@/utils/types";
-import {
-  DocumentData,
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+  controlToast,
+  fetchData,
+  toastError,
+  validateImage,
+} from "@/utils/functions";
+import { KontingenState, PesertaState, ErrorPeserta } from "@/utils/types";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
@@ -47,33 +23,47 @@ import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import TabelPeserta from "../tabel/TabelPeserta";
 import { BiLoader } from "react-icons/bi";
+import { countFromCollection } from "@/utils/actions";
+import {
+  createPeserta,
+  deletePeserta,
+  getInputErrorPeserta,
+  updatePeserta,
+} from "@/utils/peserta/pesertaFunctions";
+import { countMatch } from "@/utils/peserta/pesertaActions";
+
+type Props = {
+  kontingen: KontingenState | undefined;
+  setKontingen: React.Dispatch<
+    React.SetStateAction<KontingenState | undefined>
+  >;
+  pesertas: PesertaState[];
+  addPesertas: (pesertas: PesertaState[]) => void;
+  deletePeserta: (id: string) => void;
+};
 
 const FormPeserta = ({
-  kontingens,
+  kontingen,
+  setKontingen,
   pesertas,
-  setPesertas,
-}: {
-  kontingens: DataKontingenState[];
-  pesertas: DataPesertaState[];
-  setPesertas: React.Dispatch<React.SetStateAction<DataPesertaState[] | []>>;
-}) => {
-  const [data, setData] = useState<DataPesertaState | DocumentData>(
-    dataPesertaInitialValue
-  );
+  addPesertas,
+  deletePeserta: deletePesertaState,
+}: Props) => {
+  const [data, setData] = useState<PesertaState>(dataPesertaInitialValue);
   const [sendClicked, setSendClicked] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [pasFotoSelected, setPasFotoSelected] = useState<File | null>();
-  const [kkSelected, setKkSelected] = useState<File | null>();
-  const [ktpSelected, setKtpSelected] = useState<File | null>();
+  const [pasFotoSelected, setPasFotoSelected] = useState<File | undefined>();
+  const [kkSelected, setKkSelected] = useState<File | undefined>();
+  const [ktpSelected, setKtpSelected] = useState<File | undefined>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [inputErrorMessages, setInputErrorMessages] = useState<ErrorPeserta>(
     errorPesertaInitialValue
   );
-  const [dataToDelete, setDataToDelete] = useState<DataPesertaState | null>(
-    null
+  const [dataToDelete, setDataToDelete] = useState<PesertaState | undefined>(
+    undefined
   );
-  const [prevData, setPrevData] = useState<DataPesertaState>(
+  const [prevData, setPrevData] = useState<PesertaState>(
     dataPesertaInitialValue
   );
   const [tabelLoading, setTabelLoading] = useState(false);
@@ -90,64 +80,29 @@ const FormPeserta = ({
 
   // SET DATA USER
   useEffect(() => {
-    if (user && kontingens.length == 0) {
+    if (user && kontingen) {
       setData({
         ...data,
         creatorEmail: user.email,
         creatorUid: user.uid,
+        idKontingen: kontingen.id,
       });
     }
-    if (user && kontingens.length !== 0) {
-      setData({
-        ...data,
-        creatorEmail: user.email,
-        creatorUid: user.uid,
-        idKontingen: kontingens[0].idKontingen,
-      });
-    }
-  }, [user, kontingens]);
-
-  // GET ALL PESERTA - TRIGGER
-  useEffect(() => {
-    if (user) getPesertas();
-  }, [user]);
-
-  // GET ALL PESERTA - GETTER
-  const getPesertas = () => {
-    // TABLE LOADING TRUE
-    setTabelLoading(true);
-    const container: any[] = [];
-    const q = query(
-      collection(firestore, "pesertas"),
-      where("creatorUid", "==", user.uid)
-    );
-    getDocs(q)
-      .then((querySnapshot) =>
-        querySnapshot.forEach((doc) => {
-          container.push(doc.data());
-        })
-      )
-      .catch((error) => newToast(toastId, "error", error.code))
-      .finally(() => {
-        setPesertas(container.sort(compare("namaLenkap", "asc")));
-        // TABEL LOADING FALSE
-        setTabelLoading(false);
-      });
-  };
+  }, [user, kontingen]);
 
   // VALIDATE PAS FOTO
   const pasFotoimageChangeHandler = (file: File) => {
-    if (limitImage(file, toastId)) {
+    if (validateImage(file, toastId)) {
       setPasFotoSelected(file);
       setImagePreviewSrc(URL.createObjectURL(file));
     } else {
-      clearInputImage();
+      if (pasFotoRef.current) pasFotoRef.current.value = "";
     }
   };
 
   // VALIDATE KK
   const kkChangeHandler = (file: File) => {
-    if (limitImage(file, toastId, true)) {
+    if (validateImage(file, toastId)) {
       setKkSelected(file);
     } else {
       if (kkRef.current) kkRef.current.value = "";
@@ -156,7 +111,7 @@ const FormPeserta = ({
 
   // VALIDATE KTP
   const ktpChangeHandler = (file: File) => {
-    if (limitImage(file, toastId, true)) {
+    if (validateImage(file, toastId)) {
       setKtpSelected(file);
     } else {
       if (ktpRef.current) ktpRef.current.value = "";
@@ -190,7 +145,11 @@ const FormPeserta = ({
     watchKategori();
   }, [pesertas]);
 
-  const watchKategori = (dataToUpdate?: DataPesertaState) => {
+  useEffect(() => {
+    console.log("DATA", data);
+  }, [data]);
+
+  const watchKategori = (dataToUpdate?: PesertaState) => {
     let kategoris: string[] = [];
     let kategori = "";
     let countGandaPutra = 0;
@@ -265,56 +224,55 @@ const FormPeserta = ({
     const birthDate = new Date(date);
     const currentDate = new Date();
     currentDate.getTime();
-    let age: string | Date = new Date(
+    let age: string | Date | number = new Date(
       currentDate.getTime() - birthDate.getTime()
     );
-    age = `${age.getFullYear() - 1970}`;
-    setData({ ...data, tanggalLahir: date, umur: age });
+    setData({ ...data, tanggalLahir: date, umur: age.getFullYear() - 1970 });
   };
 
   // SUBMIT HANDLER - UPDATE OR NEW DATA
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
     setSendClicked(true);
+
     if (
-      data.tingkatanPertandingan == "SMA" ||
-      data.tingkatanPertandingan == "Dewasa"
+      data.tingkatanPertandingan != "SMA" &&
+      data.tingkatanPertandingan != "Dewasa"
     ) {
-      // CEK KUOTA FIRST
-      newToast(toastId, "loading", "Cek Kuota Kategori");
-      cekKuota().then((res) => {
-        if (res) {
-          updateToast(toastId, "success", "Kuota Tersedia");
-          sendPeserta();
-        } else {
-          updateToast(
-            toastId,
-            "error",
-            `Kuota Kategori yang dipilih sudah habis (Maks. 16 Nomor)`
-          );
-        }
-      });
-    } else {
-      // SEND
       sendPeserta();
+      return;
+    }
+
+    try {
+      controlToast(toastId, "loading", "Cek Kuota Kategori", true);
+      const result = await cekKuota();
+
+      if (!result)
+        throw new Error("Kuota kategori yang dipilih tidak tersedia");
+
+      controlToast(toastId, "success", "Kuota tersedia");
+      sendPeserta();
+    } catch (error) {
+      toastError(toastId, error);
     }
   };
 
-  const sendPeserta = () => {
+  const sendPeserta = async () => {
     if (
       kelasTaken.indexOf(
         `${data.jenisPertandingan}-${data.tingkatanPertandingan}-${data.kategoriPertandingan}-${data.jenisKelamin}`
       ) >= 0
     ) {
-      newToast(
+      toastError(
         toastId,
-        "error",
         "1 Kontingen hanya dapat mengirimkan 1 Orang / 1 Nomor per Kategori di tingkat SMA dan Dewasa"
       );
+
       return;
     }
+
     if (
-      getInputErrorPeserta(
+      !getInputErrorPeserta(
         data,
         imagePreviewSrc,
         kkRef.current?.value,
@@ -323,38 +281,58 @@ const FormPeserta = ({
         setInputErrorMessages,
         updating,
         updating
-      ) &&
-      kuotaKelas !== 0
-    ) {
+      ) ||
+      kuotaKelas <= 0 ||
+      !kontingen
+    )
+      return;
+
+    try {
+      setDisable(true);
+
       if (updating) {
-        setDisable(true);
-        updateDataHandler();
+        const updatedPeserta = await updatePeserta(
+          data,
+          pasFotoSelected,
+          kkSelected,
+          ktpSelected,
+          toastId
+        );
+
+        addPesertas([updatedPeserta]);
+        resetEdit();
       } else {
-        if (pasFotoSelected && kkSelected && ktpSelected) {
-          // SEND PERSON
-          getJumlahPeserta().then((res) => {
-            if (res < Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
-              setDisable(true);
-              submitPeserta(
-                "peserta",
-                data,
-                pasFotoSelected,
-                kkSelected,
-                ktpSelected,
-                kontingens,
-                toastId,
-                afterSendPerson
-              );
-            } else {
-              newToast(
-                toastId,
-                "error",
-                "Maaf jumlah peserta yang terdaftar sudah mencapai batas maksimum"
-              );
-            }
-          });
+        if (!pasFotoSelected || !kkSelected || !ktpSelected) return;
+        const jumlahPeserta = await fetchData(() =>
+          countFromCollection("pesertas")
+        );
+
+        if (jumlahPeserta >= Number(process.env.NEXT_PUBLIC_KUOTA_MAKSIMUM)) {
+          toastError(
+            toastId,
+            "Maaf jumlah peserta yang terdaftar telah mencapai batas maksimum"
+          );
+          return;
         }
+
+        const { peserta: newPeserta, kontingen: updatedKontingen } =
+          await createPeserta(
+            data,
+            pasFotoSelected,
+            kkSelected,
+            ktpSelected,
+            kontingen,
+            toastId
+          );
+
+        addPesertas([newPeserta]);
+        setKontingen(updatedKontingen);
+        resetData();
       }
+    } catch (error) {
+      throw error;
+    } finally {
+      setDisable(false);
     }
   };
 
@@ -378,71 +356,64 @@ const FormPeserta = ({
     ktpRef.current?.value,
   ]);
 
-  // SEND PERSON CALLBACK
-  const afterSendPerson = () => {
-    getPesertas();
-    resetData();
-    setDisable(false);
-  };
-
   // RESET DATA
   const resetData = () => {
     setData({
       ...dataPesertaInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
-      idKontingen: kontingens[0].idKontingen,
+      idKontingen: kontingen ? kontingen.id : "",
     });
     setUpdating(false);
     setSendClicked(false);
     setInputErrorMessages(errorPesertaInitialValue);
     clearInputImage();
-    setPasFotoSelected(null);
-    setKkSelected(null);
-    setKtpSelected(null);
+    setPasFotoSelected(undefined);
+    setKkSelected(undefined);
+    setKtpSelected(undefined);
     watchKategori();
   };
 
   // DELETE - STEP 1 - DELETE BUTTON
-  const handleDelete = (data: DataPesertaState) => {
+  const handleDelete = (data: PesertaState) => {
     setModalVisible(true);
     setDataToDelete(data);
   };
 
   // DELETE - STEP 2 - DELETE PERSON
-  const deleteData = () => {
+  const deleteData = async () => {
     setModalVisible(false);
-    if (dataToDelete) {
+    if (!dataToDelete) return;
+    try {
       setDisable(true);
-      deletePeserta(
-        "pesertas",
-        dataToDelete,
-        kontingens,
-        toastId,
-        afterDeletePerson
-      );
-    }
-  };
 
-  // DELETE - STEP 3 - CALLBACK
-  const afterDeletePerson = () => {
-    cancelDelete();
-    getPesertas();
+      const updatedKontingen = await deletePeserta(
+        dataToDelete,
+        kontingen,
+        toastId
+      );
+
+      setKontingen(updatedKontingen);
+      deletePesertaState(dataToDelete.id);
+    } catch (error) {
+      throw error;
+    } finally {
+      cancelDelete();
+    }
   };
 
   // DELETE CANCELER
   const cancelDelete = () => {
     setDisable(false);
     setModalVisible(false);
-    setDataToDelete(null);
+    setDataToDelete(undefined);
   };
 
   // EDIT - STEP 1 - EDIT BUTTON
-  const handleEdit = (data: DataPesertaState) => {
+  const handleEdit = (data: PesertaState) => {
     setUpdating(true);
     setData(data);
     setPrevData(data);
-    // WATCH KATEGORI
     watchKategori(data);
   };
 
@@ -451,108 +422,10 @@ const FormPeserta = ({
     if (prevData.downloadFotoUrl) setImagePreviewSrc(prevData.downloadFotoUrl);
   }, [prevData.downloadFotoUrl]);
 
-  // EDIT - STEP 3 - UPDATE CONTROLLER
-  const updateDataHandler = () => {
-    if (updating) {
-      // if (
-      //   imagePreviewSrc !== prevData.downloadFotoUrl &&
-      //   data.idKontingen !== prevData.idKontingen &&
-      //   pasFotoSelected
-      // ) {
-      //   updatePersonImageKontingen(
-      //     "peserta",
-      //     data,
-      //     prevData,
-      //     kontingens,
-      //     toastId,
-      //     pasFotoSelected,
-      //     resetEdit
-      //   );
-      // } else
-      if (
-        imagePreviewSrc !== prevData.downloadFotoUrl &&
-        pasFotoSelected &&
-        kkSelected &&
-        ktpSelected
-      ) {
-        updatePersonKkKtpImage(
-          "peserta",
-          data,
-          toastId,
-          pasFotoSelected,
-          kkSelected,
-          ktpSelected,
-          resetEdit
-        );
-      } else if (
-        imagePreviewSrc !== prevData.downloadFotoUrl &&
-        pasFotoSelected &&
-        kkSelected
-      ) {
-        updatePersonKkImage(
-          "peserta",
-          data,
-          toastId,
-          pasFotoSelected,
-          kkSelected,
-          resetEdit
-        );
-      } else if (
-        imagePreviewSrc !== prevData.downloadFotoUrl &&
-        pasFotoSelected &&
-        ktpSelected
-      ) {
-        updatePersonKtpImage(
-          "peserta",
-          data,
-          toastId,
-          pasFotoSelected,
-          ktpSelected,
-          resetEdit
-        );
-      } else if (kkSelected && ktpSelected) {
-        updatePersonKkKtp(
-          "peserta",
-          data,
-          toastId,
-          kkSelected,
-          ktpSelected,
-          resetEdit
-        );
-      } else if (
-        imagePreviewSrc !== prevData.downloadFotoUrl &&
-        pasFotoSelected
-      ) {
-        updatePersonImage("peserta", data, toastId, pasFotoSelected, resetEdit);
-      }
-      // else if (data.idKontingen !== prevData.idKontingen) {
-      //   updatePersonKontingen(
-      //     "peserta",
-      //     data,
-      //     prevData,
-      //     kontingens,
-      //     toastId,
-      //     resetEdit
-      //   );
-      // }
-      else if (ktpSelected) {
-        updatePersonKtp("peserta", data, toastId, ktpSelected, resetEdit);
-      } else if (kkSelected) {
-        updatePersonKk("peserta", data, toastId, kkSelected, resetEdit);
-      } else if (
-        imagePreviewSrc == prevData.downloadFotoUrl &&
-        data.idKontingen == prevData.idKontingen
-      ) {
-        updatePerson("peserta", data, toastId, resetEdit);
-      }
-    }
-  };
-
   // RESET EDIT
   const resetEdit = () => {
     setDisable(false);
     resetData();
-    getPesertas();
     setPrevData(dataPesertaInitialValue);
     clearInputImage();
     setUpdating(false);
@@ -581,56 +454,57 @@ const FormPeserta = ({
     let kuotaGanda = kuota * 2;
     let kuotaRegu = kuota * 3;
     setKuotaLoading(true);
-    const q = query(
-      collection(firestore, "pesertas"),
-      where("tingkatanPertandingan", "==", data.tingkatanPertandingan),
-      where("kategoriPertandingan", "==", data.kategoriPertandingan),
-      where("jenisKelamin", "==", data.jenisKelamin)
-    );
-    return getDocs(q)
-      .then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          if (data.kategoriPertandingan.includes("Regu")) {
-            kuotaRegu -= 1;
-          } else if (data.kategoriPertandingan.includes("Ganda")) {
-            kuotaGanda -= 1;
-          } else {
-            kuota -= 1;
-          }
-        });
-        if (
-          updating &&
-          prevData.kategoriPertandingan == data.kategoriPertandingan &&
-          prevData.jenisKelamin == data.jenisKelamin &&
-          prevData.jenisPertandingan == data.jenisPertandingan
-        ) {
-          if (data.kategoriPertandingan.includes("Regu")) {
-            kuotaRegu += 1;
-          } else if (data.kategoriPertandingan.includes("Ganda")) {
-            kuotaGanda += 1;
-          } else {
-            kuota += 1;
-          }
-        }
+
+    try {
+      const { result: count, error } = await countMatch(
+        data.tingkatanPertandingan,
+        data.kategoriPertandingan,
+        data.jenisKelamin
+      );
+      if (error) throw error;
+
+      if (data.kategoriPertandingan.includes("Regu")) {
+        kuotaRegu -= count;
+      } else if (data.kategoriPertandingan.includes("Ganda")) {
+        kuotaGanda -= count;
+      } else {
+        kuota -= count;
+      }
+
+      if (
+        updating &&
+        prevData.kategoriPertandingan == data.kategoriPertandingan &&
+        prevData.jenisKelamin == data.jenisKelamin &&
+        prevData.jenisPertandingan == data.jenisPertandingan
+      ) {
         if (data.kategoriPertandingan.includes("Regu")) {
-          return kuotaRegu;
+          kuotaRegu += 1;
         } else if (data.kategoriPertandingan.includes("Ganda")) {
-          return kuotaGanda;
+          kuotaGanda += 1;
         } else {
-          return kuota;
+          kuota += 1;
         }
-      })
-      .finally(() => {
-        if (data.kategoriPertandingan.includes("Regu")) {
-          setKuotaKelas(kuotaRegu);
-        } else if (data.kategoriPertandingan.includes("Ganda")) {
-          setKuotaKelas(kuotaGanda);
-        } else {
-          setKuotaKelas(kuota);
-        }
-        // setKuotaKelas(kuota);
-        setKuotaLoading(false);
-      });
+      }
+      if (data.kategoriPertandingan.includes("Regu")) {
+        return kuotaRegu;
+      } else if (data.kategoriPertandingan.includes("Ganda")) {
+        return kuotaGanda;
+      } else {
+        return kuota;
+      }
+    } catch (error) {
+      toastError(toastId, error);
+      return;
+    } finally {
+      if (data.kategoriPertandingan.includes("Regu")) {
+        setKuotaKelas(kuotaRegu);
+      } else if (data.kategoriPertandingan.includes("Ganda")) {
+        setKuotaKelas(kuotaGanda);
+      } else {
+        setKuotaKelas(kuota);
+      }
+      setKuotaLoading(false);
+    }
   };
 
   // DATA LISTENER TO CHANGE DEFAULT KATEGORI
@@ -686,7 +560,7 @@ const FormPeserta = ({
       <TabelPeserta
         loading={tabelLoading}
         data={pesertas.sort(compare("waktuPendaftaran", "asc"))}
-        kontingens={kontingens}
+        kontingen={kontingen}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
@@ -923,7 +797,7 @@ const FormPeserta = ({
                 <div className="input_container">
                   <label className="input_label">
                     Email{" "}
-                    {data.umur >= 17 || data.umur == "" ? (
+                    {data.umur >= 17 || data.umur == 0 ? (
                       "Peserta"
                     ) : (
                       <span className="bg-yellow-400 rounded-md px-0.5">
@@ -958,7 +832,7 @@ const FormPeserta = ({
                 <div className="input_container">
                   <label className="input_label">
                     Nomor HP{" "}
-                    {data.umur >= 17 || data.umur == "" ? (
+                    {data.umur >= 17 || data.umur == 0 ? (
                       "Peserta"
                     ) : (
                       <span className="bg-yellow-400 rounded-md px-0.5">
@@ -993,7 +867,7 @@ const FormPeserta = ({
                 <div className="input_container">
                   <label className="input_label">
                     KTP{" "}
-                    {data.umur >= 17 || data.umur == "" ? (
+                    {data.umur >= 17 || data.umur == 0 ? (
                       "Peserta"
                     ) : (
                       <span className="bg-yellow-400 rounded-md px-0.5">
@@ -1066,7 +940,7 @@ const FormPeserta = ({
                     onChange={(e) =>
                       setData({
                         ...data,
-                        tinggiBadan: sanitizeNumber(e.target.value),
+                        tinggiBadan: Number(sanitizeNumber(e.target.value)),
                       })
                     }
                     className={`
@@ -1095,7 +969,7 @@ const FormPeserta = ({
                     onChange={(e) =>
                       setData({
                         ...data,
-                        beratBadan: sanitizeNumber(e.target.value),
+                        beratBadan: Number(sanitizeNumber(e.target.value)),
                       })
                     }
                     className={`
@@ -1127,16 +1001,9 @@ const FormPeserta = ({
                   ${inputErrorMessages.idKontingen ? "input_error" : "input"}
                   `}
                   >
-                    {kontingens.length &&
-                      kontingens.map((kontingen) => (
-                        <option
-                          className="uppercase"
-                          value={kontingen.idKontingen}
-                          key={kontingen.idKontingen}
-                        >
-                          {kontingen.namaKontingen}
-                        </option>
-                      ))}
+                    <option className="uppercase" value={kontingen?.id}>
+                      {kontingen?.namaKontingen || ""}
+                    </option>
                   </select>
                   <p className="text-red-500">
                     {inputErrorMessages.idKontingen}

@@ -1,12 +1,15 @@
 import { MyContext } from "@/context/Context";
 import { kategoriPendaftaranArray } from "@/utils/constants";
-import { KategoriPendaftaranProps } from "@/utils/types";
-import { BsArrowRightCircleFill } from "react-icons/bs";
+
+type Props = {
+  setKategoriPendaftaran: React.Dispatch<React.SetStateAction<string>>;
+  kategoriPendaftaran: string;
+};
 
 const KategoriPendaftaran = ({
   setKategoriPendaftaran,
   kategoriPendaftaran,
-}: KategoriPendaftaranProps) => {
+}: Props) => {
   const { disable } = MyContext();
   return (
     <div className={`grid grid-rows-4 items-center text-white`}>

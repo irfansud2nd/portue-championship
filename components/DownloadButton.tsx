@@ -1,32 +1,28 @@
 "use client";
-import { storage } from "@/utils/firebase";
-import { newToast } from "@/utils/sharedFunctions";
+import { getProposalLink } from "@/utils/actions";
 import FileSaver from "file-saver";
-import { getDownloadURL, ref } from "firebase/storage";
-import Link from "next/link";
 import { useRef, useState, useEffect } from "react";
 import { BsFillCloudDownloadFill } from "react-icons/bs";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 const DownloadButton = () => {
   const [downloadLink, setDownloadLink] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const toastId = useRef(null);
   useEffect(() => {
     getLink();
   }, []);
-  const getLink = () => {
-    getDownloadURL(
-      ref(storage, "admin/PROPOSAL PORTUE SILAT BANDUNG CHAMPIONSHIP 2023.pdf")
-    )
-      .then((url) => {
-        setDownloadLink(url);
-      })
-      .catch((error) => {
-        setErrorMessage("Download Proposal tidak tersedia");
-      });
+
+  const getLink = async () => {
+    try {
+      const { result, error } = await getProposalLink();
+      if (error) throw error;
+
+      setDownloadLink(result);
+    } catch (error) {
+      setErrorMessage("Download proposal tidak tersedia");
+    }
   };
+
   return (
     <button
       className="w-full rounded-full text-lg font-semibold btn_navy_gold"

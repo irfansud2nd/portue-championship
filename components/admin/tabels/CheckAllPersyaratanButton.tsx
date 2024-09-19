@@ -1,4 +1,4 @@
-import { DataPesertaState } from "@/utils/types";
+import { PesertaState } from "@/utils/types";
 import { useEffect, useState } from "react";
 
 const CheckAllPersyaratanButton = ({
@@ -13,7 +13,7 @@ const CheckAllPersyaratanButton = ({
     rapot: string[];
     kartuKeluarga: string[];
   };
-  pesertas: DataPesertaState[];
+  pesertas: PesertaState[];
 }) => {
   const [sd, setSd] = useState<{
     keteranganSehat: string[];

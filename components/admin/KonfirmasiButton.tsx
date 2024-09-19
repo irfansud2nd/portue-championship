@@ -1,44 +1,31 @@
 "use client";
 import { MyContext } from "@/context/Context";
-import { firestore, storage } from "@/utils/firebase";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
-import {
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import Image from "next/image";
-import { useState, useRef } from "react";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AdminContext } from "@/context/AdminContext";
-import { DataKontingenState, DataPesertaState } from "@/utils/types";
+import { KontingenState, PesertaState } from "@/utils/types";
 import Link from "next/link";
 import InlineLoading from "./InlineLoading";
+import { useRef, useState } from "react";
+import { fetchData } from "@/utils/functions";
+import { getPesertasByIdPembayaran } from "@/utils/peserta/pesertaActions";
+import {
+  confirmPayment,
+  deletePayment,
+  unconfirmPayment,
+} from "@/utils/pembayaran/pembayaranFunctions";
 
-const KonfirmasiButton = ({
-  idPembayaran,
-  infoPembayaran,
-  data,
-  paid,
-  infoKonfirmasi,
-}: {
+type Props = {
   idPembayaran: string;
   infoPembayaran: {
     idPembayaran: string;
     nominal: string;
     noHp: string;
-    waktu: string;
+    waktu: number;
     buktiUrl: string;
   };
-  data: DataKontingenState;
+  kontingen: KontingenState;
   paid: boolean;
   infoKonfirmasi: {
     idPembayaran: string;
@@ -46,9 +33,19 @@ const KonfirmasiButton = ({
     email: string;
     waktu: string;
   };
-}) => {
+};
+
+const KonfirmasiButton = ({
+  idPembayaran,
+  infoPembayaran,
+  kontingen,
+  paid,
+  infoKonfirmasi,
+}: Props) => {
   const [rodalVisible, setRodalVisible] = useState(false);
-  const [pesertasToConfirm, setPesertasToConfirm] = useState<string[]>([]);
+  const [pesertasToConfirm, setPesertasToConfirm] = useState<PesertaState[]>(
+    []
+  );
 
   const { user } = MyContext();
   const { refreshKontingens, pesertas } = AdminContext();
@@ -57,7 +54,7 @@ const KonfirmasiButton = ({
 
   const getConfirmedPesertas = () => {
     let length = 0;
-    pesertas.map((peserta: DataPesertaState) => {
+    pesertas.map((peserta: PesertaState) => {
       if (peserta.idPembayaran == idPembayaran && peserta.confirmedPembayaran) {
         length += 1;
       }
@@ -70,70 +67,24 @@ const KonfirmasiButton = ({
     getPesertasToConfirm();
   };
 
-  const getPesertasToConfirm = () => {
-    let container: any[] = [];
-    getDocs(
-      query(
-        collection(firestore, "pesertas"),
-        where("idPembayaran", "==", idPembayaran)
-      )
-    )
-      .then((res) =>
-        res.forEach((doc) => {
-          container.push(doc.data().id);
-        })
-      )
-      .finally(() => {
-        setPesertasToConfirm(container);
-      });
+  const getPesertasToConfirm = async () => {
+    const result = await fetchData(() =>
+      getPesertasByIdPembayaran(idPembayaran)
+    );
+    setPesertasToConfirm(result);
   };
 
-  const konfirmasi = () => {
-    const time = Date.now();
-    newToast(toastId, "loading", "Mengkonfirmasi Pembayaran");
-    konfirmasiPeserta(pesertasToConfirm.length - 1, time);
-  };
-
-  const konfirmasiPeserta = (index: number, time: number) => {
-    updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
-      confirmedPembayaran: true,
-      infoKonfirmasi: {
-        nama: user.displayName,
-        email: user.email,
-        waktu: time,
-      },
-    })
-      .then(() =>
-        index > 0
-          ? konfirmasiPeserta(index - 1, time)
-          : konfirmasiKontingen(time)
-      )
-      .catch((error) => alert(error));
-  };
-
-  const konfirmasiKontingen = (time: number) => {
-    updateDoc(doc(firestore, "kontingens", data.idKontingen), {
-      pembayaran: arrayRemove(idPembayaran),
-    })
-      .then(() => {
-        updateDoc(doc(firestore, "kontingens", data.idKontingen), {
-          unconfirmedPembayaran: arrayRemove(idPembayaran),
-          confirmedPembayaran: arrayUnion(idPembayaran),
-          infoKonfirmasi: arrayUnion({
-            idPembayaran: idPembayaran,
-            nama: user.displayName,
-            email: user.email,
-            waktu: time,
-          }),
-        })
-          .then(() => {
-            setRodalVisible(false);
-            refreshKontingens();
-            updateToast(toastId, "success", "Konfirmasi berhasil");
-          })
-          .catch((error) => alert(error));
-      })
-      .catch((error) => alert(error));
+  const konfirmasi = async () => {
+    await confirmPayment(
+      infoPembayaran,
+      kontingen,
+      { toConfirm: pesertasToConfirm, toUnpaid: [] },
+      infoPembayaran.nominal,
+      user,
+      toastId
+    );
+    setRodalVisible(false);
+    refreshKontingens();
   };
 
   const resetKonfirmasi = () => {
@@ -141,90 +92,12 @@ const KonfirmasiButton = ({
     setPesertasToConfirm([]);
   };
 
-  const cancelPayment = () => {
-    newToast(toastId, "loading", "Membatalkan Pembayaran");
-    deletePaymentPeserta(pesertasToConfirm.length - 1);
+  const cancelPayment = async () => {
+    await deletePayment(kontingen, pesertasToConfirm, idPembayaran, toastId);
   };
 
-  const deletePaymentPeserta = (index: number) => {
-    if (index < 0) {
-      deletePaymentKontingen();
-    } else {
-      updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
-        idPembayaran: "",
-        pembayaran: false,
-        infoPembayaran: {
-          noHp: "",
-          waktu: "",
-          buktiUrl: "",
-        },
-      })
-        .then(() => deletePaymentPeserta(index - 1))
-        .catch((error) => alert(error));
-    }
-  };
-
-  const deletePaymentKontingen = () => {
-    updateDoc(doc(firestore, "kontingens", data.idKontingen), {
-      idPembayaran: arrayRemove(idPembayaran),
-      unconfirmedPembayaran: arrayRemove(idPembayaran),
-      infoPembayaran: arrayRemove({
-        idPembayaran: idPembayaran,
-        nominal: infoPembayaran.nominal,
-        noHp: infoPembayaran.noHp,
-        waktu: infoPembayaran.waktu,
-        buktiUrl: infoPembayaran.buktiUrl,
-      }),
-    })
-      .then(() =>
-        updateToast(toastId, "success", "Pembayaran Berhasil dibatalkan")
-      )
-      .catch((error) => alert(error));
-  };
-
-  const cancelKonfirmasi = () => {
-    newToast(toastId, "loading", "Membatalkan Konfirmasi");
-    deleteKonfirmasiPeserta(pesertasToConfirm.length - 1);
-  };
-
-  const deleteKonfirmasiPeserta = (index: number) => {
-    if (index < 0) {
-      deleteKonfirmasiKontingen();
-    } else {
-      updateDoc(doc(firestore, "pesertas", pesertasToConfirm[index]), {
-        confirmedPembayaran: false,
-        infoKonfirmasi: {
-          nama: "",
-          email: "",
-          waktu: "",
-        },
-      })
-        .then(() => deleteKonfirmasiPeserta(index - 1))
-        .catch((error) => alert(error));
-    }
-  };
-
-  const deleteKonfirmasiKontingen = () => {
-    const infoKonfirmasi =
-      data.infoKonfirmasi[
-        data.infoKonfirmasi.findIndex(
-          (item) => item.idPembayaran == idPembayaran
-        )
-      ];
-    updateDoc(doc(firestore, "kontingens", data.idKontingen), {
-      confirmedPembayaran: arrayRemove(idPembayaran),
-      unconfirmedPembayaran: arrayUnion(idPembayaran),
-      infoKonfirmasi: arrayRemove({
-        idPembayaran: idPembayaran,
-        nama: infoKonfirmasi.nama,
-        email: infoKonfirmasi.email,
-        waktu: infoKonfirmasi.waktu,
-      }),
-    })
-      .then(() =>
-        updateToast(toastId, "success", "Konfirmasi Berhasil dibatalkan")
-      )
-      .catch((error) => alert(error));
+  const cancelKonfirmasi = async () => {
+    await unconfirmPayment(kontingen, pesertasToConfirm, idPembayaran, toastId);
   };
 
   return (

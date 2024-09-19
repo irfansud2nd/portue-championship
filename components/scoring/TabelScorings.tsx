@@ -1,6 +1,6 @@
 import { ScoringContext } from "@/context/ScoringContext";
-import { KontingenScore } from "@/utils/scoringFunctions";
-import { compare } from "@/utils/sharedFunctions";
+import { KontingenScore } from "@/utils/scoring/scoringFunctions";
+import { compare } from "@/utils/functions";
 import { useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { BsPlusLg } from "react-icons/bs";

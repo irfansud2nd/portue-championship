@@ -1,8 +1,8 @@
 "use client";
 
 import { ScoringContext } from "@/context/ScoringContext";
-import { KontingenScore } from "@/utils/scoringFunctions";
-import { compare } from "@/utils/sharedFunctions";
+import { KontingenScore } from "@/utils/scoring/scoringFunctions";
+import { compare } from "@/utils/functions";
 import { useRef } from "react";
 import { BsPlusLg } from "react-icons/bs";
 import { HiMiniMinus } from "react-icons/hi2";

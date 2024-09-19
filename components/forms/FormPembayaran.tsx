@@ -1,196 +1,58 @@
 "use client";
-import {
-  DataKontingenState,
-  DataOfficialState,
-  DataPesertaState,
-} from "@/utils/types";
+import { KontingenState, OfficialState, PesertaState } from "@/utils/types";
 import { useEffect, useState, useRef } from "react";
-import {
-  arrayUnion,
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { MyContext } from "@/context/Context";
-import { firestore, storage } from "@/utils/firebase";
-import {
-  compare,
-  limitImage,
-  newToast,
-  updateToast,
-} from "@/utils/sharedFunctions";
+import { validateImage } from "@/utils/functions";
 import Link from "next/link";
 import { BsWhatsapp } from "react-icons/bs";
 import { FiCopy } from "react-icons/fi";
 import { PiWarningCircleBold } from "react-icons/pi";
 import Image from "next/image";
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { v4 } from "uuid";
 import TabelOfficial from "../tabel/TabelOfficial";
 import TabelPeserta from "../tabel/TabelPeserta";
 
 import logo_bjb from "@/public/images/logo-bjb.png";
+import { createPembayaran } from "@/utils/pembayaran/pembayaranFunctions";
+
+type Props = {
+  kontingen: KontingenState | undefined;
+  setKontingen: React.Dispatch<
+    React.SetStateAction<KontingenState | undefined>
+  >;
+  officials: OfficialState[];
+  pesertas: PesertaState[];
+  addPesertas: (pesertas: PesertaState[]) => void;
+};
 
 const FormPembayaran = ({
-  kontingens,
+  kontingen,
+  setKontingen,
   officials,
   pesertas,
-}: {
-  kontingens: DataKontingenState[];
-  officials: DataOfficialState[];
-  pesertas: DataPesertaState[];
-}) => {
-  const [fetchedOfficials, setFetchedOfficials] = useState<DataOfficialState[]>(
-    []
-  );
-  const [fetchedPesertas, setFetchedPesertas] = useState<DataPesertaState[]>(
-    []
-  );
-  const [fetched, setFetched] = useState({
-    officials: false,
-    pesertas: false,
-  });
-  const [tabelOfficialLoading, setTabelOfficialLoading] = useState(false);
-  const [tabelPesertaLoading, setTabelPesertaLoading] = useState(false);
+  addPesertas,
+}: Props) => {
   const [noHp, setnoHp] = useState("");
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
-  const [imageSelected, setImageSelected] = useState<File | null>();
-  const [selectedPesertas, setSelectedPesertas] = useState<DataPesertaState[]>(
-    []
-  );
+  const [imageSelected, setImageSelected] = useState<File | undefined>();
+  const [unpaidPesertas, setUnpaidPesertas] = useState<PesertaState[]>([]);
   const inputErrorInitialValue = { foto: null, noHp: null };
   const [inputErrorMessages, setInputErrorMessages] = useState<{
     foto: string | null;
     noHp: string | null;
   }>(inputErrorInitialValue);
 
-  const { user, disable, setDisable } = MyContext();
-
-  // FETCH OFFICIALS IF OFFICIALS EMPTY
-  useEffect(() => {
-    if (
-      !fetched.officials &&
-      !fetchedOfficials.length &&
-      !officials.length &&
-      user
-    ) {
-      setTabelOfficialLoading(true);
-      const container: any[] = [];
-      const q = query(
-        collection(firestore, "officials"),
-        where("creatorUid", "==", user.uid)
-      );
-      getDocs(q)
-        .then((querySnapshot) =>
-          querySnapshot.forEach((doc) => {
-            container.push(doc.data());
-          })
-        )
-        .catch((error) => newToast(toastId, "error", error.code))
-        .finally(() => {
-          setFetchedOfficials(container.sort(compare("namaLengkap", "asc")));
-          setTabelOfficialLoading(false);
-          setFetched({ ...fetched, officials: true });
-        });
-    }
-  }, [fetchedOfficials, officials, fetched.officials, user]);
-
-  // FETCH PESERTAS IF PESERTAS EMPTY
-  useEffect(() => {
-    if (
-      !fetched.pesertas &&
-      !fetchedPesertas.length &&
-      !pesertas.length &&
-      user
-    ) {
-      fetchPesertas();
-    }
-  }, [fetchedPesertas, pesertas, fetched.pesertas, user]);
-
-  // SET SELECTED PESERTAS
-  useEffect(() => {
-    selectPesertas();
-  }, [pesertas, fetchedPesertas]);
-
-  // FETSCH PESETAS
-  const fetchPesertas = async () => {
-    setTabelPesertaLoading(true);
-    const container: any[] = [];
-    const q = query(
-      collection(firestore, "pesertas"),
-      where("creatorUid", "==", user.uid)
-    );
-    return getDocs(q)
-      .then((querySnapshot) =>
-        querySnapshot.forEach((doc) => {
-          container.push(doc.data());
-        })
-      )
-      .catch((error) => newToast(toastId, "error", error.code))
-      .finally(() => {
-        setFetchedPesertas(container.sort(compare("namaLengkap", "asc")));
-        setTabelPesertaLoading(false);
-        setFetched({ ...fetched, pesertas: true });
-      });
-  };
-
-  // GROUPING OFFICIALS
-  const selectOfficials = (idKontingen: string) => {
-    const selectedOfficials: DataOfficialState[] = [];
-    if (officials.length >= fetchedOfficials.length) {
-      officials.map((official, i) => {
-        if (official.idKontingen == idKontingen) {
-          selectedOfficials.push(officials[i]);
-        }
-      });
-    } else {
-      fetchedOfficials.map((official, i) => {
-        if (official.idKontingen == idKontingen) {
-          selectedOfficials.push(fetchedOfficials[i]);
-        }
-      });
-    }
-    return selectedOfficials;
-  };
-
-  // GROUPING PESERTAS
-  const selectPesertas = (override?: boolean) => {
-    const container: DataPesertaState[] = [];
-    if (pesertas.length >= fetchedPesertas.length && !override) {
-      pesertas.map((peserta, i) => {
-        if (peserta.idKontingen == kontingens[0].idKontingen)
-          container.push(pesertas[i]);
-      });
-    } else {
-      fetchedPesertas.map((peserta, i) => {
-        if (peserta.idKontingen == kontingens[0].idKontingen)
-          container.push(fetchedPesertas[i]);
-      });
-    }
-    setSelectedPesertas(container);
-  };
+  const { disable, setDisable } = MyContext();
 
   // GENERATE TAGIHAN
   const generateTagihan = () => {
     let tagihan = 0;
-    if (pesertas.length >= fetchedPesertas.length) {
-      pesertas.map((data, i) => {
-        if (!data.pembayaran) {
-          tagihan += 300000;
-        }
-      });
-    } else {
-      fetchedPesertas.map((data, i) => {
-        if (!data.pembayaran) {
-          tagihan += 300000;
-        }
-      });
-    }
+    unpaidPesertas.map((data, i) => {
+      if (!data.pembayaran) {
+        tagihan += 300000;
+      }
+    });
+
     return tagihan;
   };
 
@@ -206,7 +68,7 @@ const FormPembayaran = ({
 
   // VALIDATE IMAGE
   const imageChangeHandler = (file: File) => {
-    if (limitImage(file, toastId)) {
+    if (validateImage(file, toastId)) {
       setImageSelected(file);
     } else {
       clearInputImage();
@@ -227,169 +89,50 @@ const FormPembayaran = ({
   const toastId = useRef(null);
 
   // SEND PEMBAYARAN
-  const sendPembayaran = (e: React.FormEvent) => {
+  const sendPembayaran = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (getUnpaidPeserta().length) {
-      if (noHp != "" && imageSelected) {
-        newToast(toastId, "loading", "sending image");
-        setDisable(true);
-        const time = Date.now();
-        const idPembayaran = `${kontingens[0].idKontingen}-${time}`;
-        const url = `buktiPembayarans/${idPembayaran}.${
-          imageSelected.type.split("/")[1]
-        }`;
-        uploadBytes(ref(storage, url), imageSelected).then((snapshot) =>
-          getDownloadURL(snapshot.ref).then((downloadUrl) => {
-            updateToast(toastId, "loading", "sending url to pesertas");
-            sendUrlToPesertas(
-              downloadUrl,
-              pesertas.length
-                ? pesertas.length - 1
-                : fetchedPesertas.length - 1,
-              time,
-              idPembayaran
-            );
-          })
+    if (
+      !unpaidPesertas.length ||
+      !imageSelected ||
+      !noHp.length ||
+      !kontingen
+    ) {
+      getInputError();
+      return;
+    }
+
+    try {
+      const { pesertas: updatedPesertas, kontingen: updatedKontingen } =
+        await createPembayaran(
+          kontingen,
+          pesertas,
+          imageSelected,
+          noHp,
+          generateTagihan(),
+          toastId
         );
-      } else {
-        getInputError();
-      }
-    } else {
-      newToast(toastId, "error", "Tidak ada peserta yang belum dibayar");
-    }
-  };
-
-  // SEND URL TO ALL PESERTA
-  const sendUrlToPesertas = (
-    url: string,
-    pesertasIndex: number,
-    time: number,
-    idPembayaran: string
-  ) => {
-    const id =
-      pesertas.length >= fetchedPesertas.length
-        ? pesertas[pesertasIndex].id
-        : fetchedPesertas[pesertasIndex].id;
-    const paid =
-      pesertas.length >= fetchedPesertas.length
-        ? pesertas[pesertasIndex].pembayaran
-        : fetchedPesertas[pesertasIndex].pembayaran;
-    if (pesertasIndex >= 0) {
-      if (!paid) {
-        if (id) {
-          updateDoc(doc(firestore, "pesertas", id), {
-            pembayaran: true,
-            idPembayaran: idPembayaran,
-            infoPembayaran: {
-              noHp: noHp,
-              waktu: time,
-              buktiUrl: url,
-            },
-          })
-            .then(() => {
-              sendUrlToPesertasRepeater(
-                url,
-                pesertasIndex - 1,
-                time,
-                idPembayaran
-              );
-            })
-            .catch((error) =>
-              updateToast(
-                toastId,
-                "error",
-                `Gagal menyimpan data pembayaran ke peserta. ${error.code}`
-              )
-            );
-        } else {
-          alert("id undefined");
-        }
-      } else {
-        sendUrlToPesertasRepeater(url, pesertasIndex - 1, time, idPembayaran);
-      }
-    } else {
-      updateToast(toastId, "loading", "sending url to kontingen");
-      sendUrlToKontingen(url, kontingens.length - 1, time, idPembayaran);
-    }
-  };
-
-  const sendUrlToPesertasRepeater = (
-    url: string,
-    pesertasIndex: number,
-    time: number,
-    idPembayaran: string
-  ) => {
-    if (pesertasIndex < 0) {
-      updateToast(toastId, "loading", "sending url to kontingen");
-      sendUrlToKontingen(url, kontingens.length - 1, time, idPembayaran);
-    } else {
-      sendUrlToPesertas(url, pesertasIndex, time, idPembayaran);
-    }
-  };
-
-  // SEND URL TO ALL KONTINGEN
-  const sendUrlToKontingen = (
-    url: string,
-    kontingenIndex: number,
-    time: number,
-    idPembayaran: string
-  ) => {
-    const id = kontingens[kontingenIndex].idKontingen;
-    if (kontingenIndex >= 0) {
-      if (id) {
-        updateDoc(doc(firestore, "kontingens", id), {
-          idPembayaran: arrayUnion(idPembayaran),
-          unconfirmedPembayaran: arrayUnion(idPembayaran),
-          infoPembayaran: arrayUnion({
-            idPembayaran: idPembayaran,
-            nominal: `Rp. ${generateNominal(noHp)}`,
-            noHp: noHp,
-            waktu: time,
-            buktiUrl: url,
-          }),
-        })
-          .then(() => {
-            if (kontingenIndex != 0) {
-              sendUrlToKontingen(url, kontingenIndex - 1, time, idPembayaran);
-            } else {
-              updateToast(
-                toastId,
-                "success",
-                "Berhasil menyimpan bukti pembayaran"
-              );
-              resetData();
-            }
-          })
-          .catch((error) =>
-            updateToast(
-              toastId,
-              "error",
-              `Gagal menyimpan data pembayaran ke kontingen ${error.code}`
-            )
-          );
-      } else {
-        newToast(toastId, "error", "id undefined");
-      }
+      setKontingen(updatedKontingen);
+      addPesertas(updatedPesertas);
+    } catch (error) {
+      throw error;
+    } finally {
+      resetData();
     }
   };
 
   // GENERATE UNPAID PESERTA
-  const getUnpaidPeserta = (override?: boolean) => {
-    let unpaidPeserta: string[] = [];
-    selectedPesertas.map((peserta) => {
-      if (!peserta.pembayaran) unpaidPeserta.push(peserta.id);
+  const getUnpaidPesertas = () => {
+    let result: PesertaState[] = [];
+    pesertas.map((peserta) => {
+      if (!peserta.pembayaran) result.push(peserta);
     });
-    return unpaidPeserta;
+    setUnpaidPesertas(result);
   };
 
   // RESET DATA
   const resetData = () => {
-    fetchPesertas().then(() => {
-      selectPesertas(true);
-      getUnpaidPeserta(true);
-    });
     setnoHp("");
-    setImageSelected(null);
+    setImageSelected(undefined);
     setImagePreviewSrc("");
     setInputErrorMessages(inputErrorInitialValue);
     setDisable(false);
@@ -418,6 +161,10 @@ const FormPembayaran = ({
     if (inputImageRef.current) inputImageRef.current.disabled = disable;
   }, [disable]);
 
+  useEffect(() => {
+    getUnpaidPesertas();
+  }, [pesertas]);
+
   return (
     <div>
       {/* DATA SUMMARY */}
@@ -425,37 +172,29 @@ const FormPembayaran = ({
         <h1 className="text-2xl sm:text-3xl font-bold border-b-2 border-b-gray-700 pb-2 mb-2 w-fit">
           Ringkasan data Yang terdaftar
         </h1>
-        {kontingens.map((kontingen) => (
-          <div
-            className="border-b-2 border-b-gray-700 pb-2 mb-2"
-            key={kontingen.idKontingen}
-          >
-            <h2 className="text-2xl font-bold">{kontingen.namaKontingen}</h2>
-            <div className="flex flex-wrap gap-1 items-baseline text-xl">
-              <h3 className="font-semibold">Daftar Official</h3>
-              <p className="whitespace-nowrap text-gray-700">
-                (Total Official :{" "}
-                {selectOfficials(kontingen.idKontingen).length} orang)
-              </p>
-            </div>
-            <TabelOfficial
-              loading={tabelOfficialLoading}
-              kontingens={kontingens}
-              data={selectOfficials(kontingen.idKontingen)}
-            />
-            <div className="flex flex-wrap gap-1 items-baseline text-xl mt-1">
-              <h3 className="font-semibold">Daftar Peserta</h3>
-              <p className="whitespace-nowrap text-gray-700">
-                (Total Peserta : {selectedPesertas.length} orang)
-              </p>
-            </div>
-            <TabelPeserta
-              loading={tabelPesertaLoading}
-              kontingens={kontingens}
-              data={selectedPesertas}
-            />
+        <div className="border-b-2 border-b-gray-700 pb-2 mb-2">
+          <h2 className="text-2xl font-bold">
+            {kontingen?.namaKontingen || "-"}
+          </h2>
+          <div className="flex flex-wrap gap-1 items-baseline text-xl">
+            <h3 className="font-semibold">Daftar Official</h3>
+            <p className="whitespace-nowrap text-gray-700">
+              (Total Official : {officials.length} orang)
+            </p>
           </div>
-        ))}
+          <TabelOfficial
+            loading={false}
+            kontingen={kontingen}
+            data={officials}
+          />
+          <div className="flex flex-wrap gap-1 items-baseline text-xl mt-1">
+            <h3 className="font-semibold">Daftar Peserta</h3>
+            <p className="whitespace-nowrap text-gray-700">
+              (Total Peserta : {pesertas.length} orang)
+            </p>
+          </div>
+          <TabelPeserta loading={false} kontingen={kontingen} data={pesertas} />
+        </div>
       </div>
       {/* DATA SUMMARY */}
 
@@ -502,7 +241,7 @@ const FormPembayaran = ({
                 </tr>
                 <tr>
                   <th>Jumlah Peserta</th>
-                  <td className="text-end">{getUnpaidPeserta().length}</td>
+                  <td className="text-end">{unpaidPesertas.length}</td>
                 </tr>
                 <tr className="font-bold">
                   <th>Total Biaya</th>
@@ -682,7 +421,7 @@ const FormPembayaran = ({
               <button
                 className="btn_green btn_full w-fit text-sm font-bold"
                 type="submit"
-                disabled={disable}
+                disabled={unpaidPesertas.length < 1}
               >
                 Simpan
               </button>

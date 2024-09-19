@@ -1,4 +1,4 @@
-import { DataKontingenState } from "@/utils/types";
+import { KontingenState } from "@/utils/types";
 import TabelActionButtons from "./TabelActionButtons";
 
 const TabelKontingen = ({
@@ -6,9 +6,9 @@ const TabelKontingen = ({
   handleDelete,
   handleEdit,
 }: {
-  data: DataKontingenState[];
-  handleDelete: (data: DataKontingenState) => void;
-  handleEdit: (data: DataKontingenState) => void;
+  data: KontingenState[];
+  handleDelete: (data: KontingenState) => void;
+  handleEdit: (data: KontingenState) => void;
 }) => {
   const tableHead = ["No", "Nama Kontingen", "Official", "Peserta", "Aksi"];
   return (
@@ -25,7 +25,7 @@ const TabelKontingen = ({
         </thead>
         <tbody>
           {data.map((item, i) => (
-            <tr key={item.idKontingen}>
+            <tr key={item.id}>
               <td>{i + 1}</td>
               <td className="uppercase">{item.namaKontingen}</td>
               <td>{item.officials.length}</td>

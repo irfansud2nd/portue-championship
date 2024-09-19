@@ -1,9 +1,9 @@
 import { AdminContext } from "@/context/AdminContext";
 import { jenisKelamin } from "@/utils/constants";
-import { DataPesertaState } from "@/utils/types";
+import { PesertaState } from "@/utils/types";
 
 const TabelTingkatan = () => {
-  const { pesertas }: { pesertas: DataPesertaState[] } = AdminContext();
+  const { pesertas }: { pesertas: PesertaState[] } = AdminContext();
 
   const groupPeserta = () => {
     let sdIPutri = 0;
@@ -59,6 +59,20 @@ const TabelTingkatan = () => {
       dewasaPutra,
     };
   };
+
+  const {
+    sdIPutra,
+    sdIPutri,
+    sdIIPutra,
+    sdIIPutri,
+    smpPutra,
+    smpPutri,
+    smaPutra,
+    smaPutri,
+    dewasaPutra,
+    dewasaPutri,
+  } = groupPeserta();
+
   return (
     <div className="flex flex-col gap-2 bg-black p-2 text-center text-white rounded-md w-fit min-w-[500px] mt-2">
       <p className="font-semibold text-lg">Peserta Per Tingkatan</p>
@@ -79,61 +93,61 @@ const TabelTingkatan = () => {
           SD I
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().sdIPutra}
+          {sdIPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().sdIPutri}
+          {sdIPutri}
         </p>
         <p className=" border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().sdIPutri + groupPeserta().sdIPutra}
+          {sdIPutri + sdIPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
           SD II
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().sdIIPutra}
+          {sdIIPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().sdIIPutri}
+          {sdIIPutri}
         </p>
         <p className=" border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().sdIIPutri + groupPeserta().sdIIPutra}
+          {sdIIPutri + sdIIPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
           SMP
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().smpPutra}
+          {smpPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().smpPutri}
+          {smpPutri}
         </p>
         <p className=" border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().smpPutri + groupPeserta().smpPutra}
+          {smpPutri + smpPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
           SMA
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().smaPutra}
+          {smaPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().smaPutri}
+          {smaPutri}
         </p>
         <p className=" border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().smaPutri + groupPeserta().smaPutra}
+          {smaPutri + smaPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
           Dewasa
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().dewasaPutra}
+          {dewasaPutra}
         </p>
         <p className="border-r-2 border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().dewasaPutri}
+          {dewasaPutri}
         </p>
         <p className=" border-white border-b-2 border-b-yellow-500">
-          {groupPeserta().dewasaPutri + groupPeserta().dewasaPutra}
+          {dewasaPutri + dewasaPutra}
         </p>
       </div>
     </div>

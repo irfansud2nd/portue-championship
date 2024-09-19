@@ -7,13 +7,13 @@ import {
 } from "@/utils/adminFunctions";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import { useEffect, useRef, useState } from "react";
-import { DataKontingenState, DataPesertaState } from "@/utils/types";
+import { KontingenState, PesertaState } from "@/utils/types";
 import InlineLoading from "../InlineLoading";
 import KonfirmasiButton from "../KonfirmasiButton";
 import DeleteKontingenButton from "./DeleteKontingenButton";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { compare, newToast, updateToast } from "@/utils/sharedFunctions";
+import { compare } from "@/utils/functions";
 
 const TabelKontingenAdmin = () => {
   const {
@@ -48,13 +48,11 @@ const TabelKontingenAdmin = () => {
     "Waktu Perubahan",
   ];
 
-  const [kontingensToMap, setKontingensToMap] = useState<DataKontingenState[]>(
-    []
-  );
+  const [kontingensToMap, setKontingensToMap] = useState<KontingenState[]>([]);
 
   const getPesertasLength = (idKontingen: string) => {
     let length = 0;
-    pesertas.map((peserta: DataPesertaState) => {
+    pesertas.map((peserta: PesertaState) => {
       if (peserta.idKontingen == idKontingen) {
         length += 1;
       }
@@ -83,38 +81,9 @@ const TabelKontingenAdmin = () => {
     }
   }, [selectedKontingen, unconfirmedKongtingens, confirmedKontingens]);
 
-  const toastId = useRef(null);
-
-  const toastSuccess = (msg: string) => {
-    updateToast(toastId, "success", msg);
-  };
-  const toastError = (msg: string) => {
-    updateToast(toastId, "error", msg);
-  };
-  const toastLoading = (msg: string) => {
-    updateToast(toastId, "loading", msg);
-  };
-  const toastBaru = (msg: string) => {
-    newToast(toastId, "loading", msg);
-  };
-
-  const isVerified = (idKontingen: string) => {
-    const pesertaToCheck = getPesertasByKontingen(idKontingen, pesertas);
-    let checked = false;
-    let result = false;
-    pesertaToCheck.map((peserta: any) => {
-      if (peserta.suratKesehatan) {
-        result = true;
-      } else {
-        result = false;
-      }
-    });
-    return result;
-  };
-
   const getVerified = () => {
     let pesertaVerified: any = [];
-    let unVerifyKontingen: any = [];
+    let unverifiedKontingen: any = [];
     let verifiedKontingen: any = [];
 
     pesertas.map((peserta: any) => {
@@ -124,13 +93,13 @@ const TabelKontingenAdmin = () => {
           verifiedKontingen.push(peserta.idKontingen);
         }
       } else {
-        if (!unVerifyKontingen.includes(peserta.idKontingen)) {
-          unVerifyKontingen.push(peserta.idKontingen);
+        if (!unverifiedKontingen.includes(peserta.idKontingen)) {
+          unverifiedKontingen.push(peserta.idKontingen);
         }
       }
     });
 
-    return { pesertaVerified, unVerifyKontingen, verifiedKontingen };
+    return { pesertaVerified, unverifiedKontingen, verifiedKontingen };
   };
 
   const groupingPeserta = (idKontingen: string) => {
@@ -147,6 +116,8 @@ const TabelKontingenAdmin = () => {
     });
     return { sd, smp, sma, dewasa };
   };
+
+  const { unverifiedKontingen, verifiedKontingen } = getVerified();
 
   return (
     <div>
@@ -179,16 +150,15 @@ const TabelKontingenAdmin = () => {
         <tbody>
           {kontingensToMap
             .sort(compare("namaKontingen", "asc"))
-            .map((kontingen: DataKontingenState, i: number) => (
+            .map((kontingen: KontingenState, i: number) => (
               <tr
-                key={kontingen.idKontingen}
+                key={kontingen.id}
                 className={`border_td ${
-                  getPesertasLength(kontingen.idKontingen) == 0 &&
-                  "text-red-400"
+                  getPesertasLength(kontingen.id) == 0 && "text-red-400"
                 }`}
               >
                 <td>{i + 1}</td>
-                <td>{kontingen.idKontingen}</td>
+                <td>{kontingen.id}</td>
                 <td
                   className="hover:text-green-500 hover:underline transition cursor-pointer uppercase"
                   onClick={() => setSelectedKontingen(kontingen)}
@@ -196,12 +166,8 @@ const TabelKontingenAdmin = () => {
                   {kontingen.namaKontingen}
                 </td>
                 <td>
-                  {getVerified().unVerifyKontingen.includes(
-                    kontingen.idKontingen
-                  ) ? (
-                    getVerified().verifiedKontingen.includes(
-                      kontingen.idKontingen
-                    ) ? (
+                  {unverifiedKontingen.includes(kontingen.id) ? (
+                    verifiedKontingen.includes(kontingen.id) ? (
                       <span className="font-bold text-yellow-500">
                         Not Fully Verified
                       </span>
@@ -214,19 +180,13 @@ const TabelKontingenAdmin = () => {
                     </span>
                   )}
                 </td>
+                <td>{getPesertasLength(kontingen.id)}</td>
+                <td>{groupingPeserta(kontingen.id).sd}</td>
+                <td>{groupingPeserta(kontingen.id).smp}</td>
+                <td>{groupingPeserta(kontingen.id).sma}</td>
+                <td>{groupingPeserta(kontingen.id).dewasa}</td>
                 <td>
-                  {/* {kontingen.pesertas.length} */}
-                  {getPesertasLength(kontingen.idKontingen)}
-                </td>
-                <td>{groupingPeserta(kontingen.idKontingen).sd}</td>
-                <td>{groupingPeserta(kontingen.idKontingen).smp}</td>
-                <td>{groupingPeserta(kontingen.idKontingen).sma}</td>
-                <td>{groupingPeserta(kontingen.idKontingen).dewasa}</td>
-                <td>
-                  {
-                    getOfficialsByKontingen(kontingen.idKontingen, officials)
-                      .length
-                  }
+                  {getOfficialsByKontingen(kontingen.id, officials).length}
                 </td>
                 <td>
                   <ul>
@@ -274,21 +234,15 @@ const TabelKontingenAdmin = () => {
                               <KonfirmasiButton
                                 idPembayaran={idPembayaran}
                                 infoPembayaran={
-                                  kontingen.infoPembayaran[
-                                    kontingen.infoPembayaran.findIndex(
-                                      (info) =>
-                                        info.idPembayaran == idPembayaran
-                                    )
-                                  ]
+                                  kontingen.infoPembayaran.find(
+                                    (item) => item.idPembayaran == idPembayaran
+                                  ) as any
                                 }
-                                data={kontingen}
+                                kontingen={kontingen}
                                 infoKonfirmasi={
-                                  kontingen.infoKonfirmasi[
-                                    kontingen.infoKonfirmasi.findIndex(
-                                      (info) =>
-                                        info.idPembayaran == idPembayaran
-                                    )
-                                  ]
+                                  kontingen.infoKonfirmasi.find(
+                                    (item) => item.idPembayaran == idPembayaran
+                                  ) as any
                                 }
                                 paid={
                                   kontingen.confirmedPembayaran.indexOf(
@@ -320,13 +274,7 @@ const TabelKontingenAdmin = () => {
                 <td>
                   {kontingen.idPembayaran.length > 0 ? null : (
                     <span>
-                      <DeleteKontingenButton
-                        kontingen={kontingen}
-                        toastSuccess={toastSuccess}
-                        toastError={toastError}
-                        toastLoading={toastLoading}
-                        toastBaru={toastBaru}
-                      />
+                      <DeleteKontingenButton kontingen={kontingen} />
                     </span>
                   )}
                 </td>

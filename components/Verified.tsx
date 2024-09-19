@@ -1,13 +1,12 @@
 import InlineLoading from "@/components/admin/InlineLoading";
-import { firestore } from "@/utils/firebase";
-import {
-  collection,
-  getCountFromServer,
-  query,
-  where,
-} from "firebase/firestore";
 import { useEffect, useState } from "react";
 import VerifiedDetail from "./VerifiedDetail";
+import { fetchData } from "@/utils/functions";
+import {
+  getAllVerifedDocCount,
+  getVerifiedCountByDocType,
+  getVerifiedCountByTingkatan,
+} from "@/utils/verify/verifyActions";
 const Verified = ({ detail }: { detail?: boolean }) => {
   const [keteranganSehat, setKeteranganSehat] = useState<JSX.Element | number>(
     <InlineLoading />
@@ -63,219 +62,53 @@ const Verified = ({ detail }: { detail?: boolean }) => {
     kartuKeluarga: <InlineLoading />,
   });
 
-  const getKeteranganSehatCount = () => {
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("keteranganSehat", "==", true)
-      )
-    ).then((res) => setKeteranganSehat(res.data().count));
-  };
-  const getRekomendasiCount = () => {
-    getCountFromServer(
-      query(collection(firestore, "pesertas"), where("rekomendasi", "==", true))
-    ).then((res) => setRekomendasi(res.data().count));
-  };
-  const getRapotCount = () => {
-    getCountFromServer(
-      query(collection(firestore, "pesertas"), where("rapot", "==", true))
-    ).then((res) => setRapot(res.data().count));
-  };
-  const getKartuKeluargaCount = () => {
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("kartuKeluarga", "==", true)
-      )
-    ).then((res) => setKartuKeluarga(res.data().count));
+  const getAllDocCount = async () => {
+    try {
+      const { keteranganSehat, rekomendasi, rapot, kartuKeluarga } =
+        await fetchData(() => getAllVerifedDocCount());
+
+      setKeteranganSehat(keteranganSehat);
+      setRekomendasi(rekomendasi);
+      setRapot(rapot);
+      setKartuKeluarga(kartuKeluarga);
+    } catch (error) {
+      alert(error);
+    }
   };
 
-  const getVerifiedSd = () => {
-    let keteranganSehat = 0;
-    let rekomendasi = 0;
-    let total = 0;
+  const getVerifiedSd = async () => {
+    const { keteranganSehat, rekomendasi } = await fetchData(() =>
+      getVerifiedCountByTingkatan("SD")
+    );
 
-    // KETERANGAN SEHAT
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("keteranganSehat", "==", true),
-        where("tingkatanPertandingan", "==", "SD I")
-      )
-    ).then((res) => {
-      keteranganSehat += res.data().count;
-      getCountFromServer(
-        query(
-          collection(firestore, "pesertas"),
-          where("keteranganSehat", "==", true),
-          where("tingkatanPertandingan", "==", "SD II")
-        )
-      ).then((res) => {
-        keteranganSehat += res.data().count;
-        // REKOMENDASI
-        getCountFromServer(
-          query(
-            collection(firestore, "pesertas"),
-            where("rekomendasi", "==", true),
-            where("tingkatanPertandingan", "==", "SD I")
-          )
-        ).then((res) => {
-          rekomendasi += res.data().count;
-          getCountFromServer(
-            query(
-              collection(firestore, "pesertas"),
-              where("rekomendasi", "==", true),
-              where("tingkatanPertandingan", "==", "SD II")
-            )
-          ).then((res) => {
-            rekomendasi += res.data().count;
-            setSd({ keteranganSehat, rekomendasi, total });
-          });
-        });
-      });
-    });
+    setSd({ keteranganSehat, rekomendasi, total: 0 });
   };
 
-  const getVerifiedSmp = () => {
-    let keteranganSehat = 0;
-    let rekomendasi = 0;
-    let total = 0;
+  const getVerifiedSmp = async () => {
+    const { keteranganSehat, rekomendasi } = await fetchData(() =>
+      getVerifiedCountByTingkatan("SMP")
+    );
 
-    // KETERANGAN SEHAT
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("keteranganSehat", "==", true),
-        where("tingkatanPertandingan", "==", "SMP")
-      )
-    ).then((res) => {
-      keteranganSehat += res.data().count;
-
-      // REKOMENDASI
-      getCountFromServer(
-        query(
-          collection(firestore, "pesertas"),
-          where("rekomendasi", "==", true),
-          where("tingkatanPertandingan", "==", "SMP")
-        )
-      ).then((res) => {
-        rekomendasi += res.data().count;
-
-        setSmp({
-          keteranganSehat,
-          rekomendasi,
-          total,
-        });
-      });
-    });
+    setSmp({ keteranganSehat, rekomendasi, total: 0 });
   };
 
-  const getVerifiedSma = () => {
-    let keteranganSehat = 0;
-    let rekomendasi = 0;
-    let rapot = 0;
-    let kartuKeluarga = 0;
-    let total = 0;
+  const getVerifiedSma = async () => {
+    const { keteranganSehat, rekomendasi, rapot, kartuKeluarga } =
+      await fetchData(() => getVerifiedCountByTingkatan("SMA"));
 
-    // KETERANGAN SEHAT
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("keteranganSehat", "==", true),
-        where("tingkatanPertandingan", "==", "SMA")
-      )
-    ).then((res) => {
-      keteranganSehat += res.data().count;
-
-      // REKOMENDASI
-      getCountFromServer(
-        query(
-          collection(firestore, "pesertas"),
-          where("rekomendasi", "==", true),
-          where("tingkatanPertandingan", "==", "SMA")
-        )
-      ).then((res) => {
-        rekomendasi += res.data().count;
-
-        // RAPOT
-        getCountFromServer(
-          query(
-            collection(firestore, "pesertas"),
-            where("rapot", "==", true),
-            where("tingkatanPertandingan", "==", "SMA")
-          )
-        ).then((res) => {
-          rapot += res.data().count;
-
-          // KARTU KELUARGA
-          getCountFromServer(
-            query(
-              collection(firestore, "pesertas"),
-              where("kartuKeluarga", "==", true),
-              where("tingkatanPertandingan", "==", "SMA")
-            )
-          ).then((res) => {
-            kartuKeluarga += res.data().count;
-            setSma({
-              keteranganSehat,
-              rekomendasi,
-              rapot,
-              kartuKeluarga,
-              total,
-            });
-          });
-        });
-      });
-    });
+    setSma({ keteranganSehat, rekomendasi, rapot, kartuKeluarga, total: 0 });
   };
 
-  const getVerifiedDewasa = () => {
-    let keteranganSehat = 0;
-    let rekomendasi = 0;
-    let kartuKeluarga = 0;
-    let total = 0;
+  const getVerifiedDewasa = async () => {
+    const { keteranganSehat, rekomendasi, kartuKeluarga } = await fetchData(
+      () => getVerifiedCountByTingkatan("Dewasa")
+    );
 
-    // KETERANGAN SEHAT
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("keteranganSehat", "==", true),
-        where("tingkatanPertandingan", "==", "Dewasa")
-      )
-    ).then((res) => {
-      keteranganSehat += res.data().count;
-
-      // REKOMENDASI
-      getCountFromServer(
-        query(
-          collection(firestore, "pesertas"),
-          where("rekomendasi", "==", true),
-          where("tingkatanPertandingan", "==", "Dewasa")
-        )
-      ).then((res) => {
-        rekomendasi += res.data().count;
-
-        // KARTU KELUARGA
-        getCountFromServer(
-          query(
-            collection(firestore, "pesertas"),
-            where("kartuKeluarga", "==", true),
-            where("tingkatanPertandingan", "==", "Dewasa")
-          )
-        ).then((res) => {
-          kartuKeluarga += res.data().count;
-
-          setDewasa({ keteranganSehat, rekomendasi, kartuKeluarga, total });
-        });
-      });
-    });
+    setDewasa({ keteranganSehat, rekomendasi, kartuKeluarga, total: 0 });
   };
 
   const refreshCount = () => {
-    getKeteranganSehatCount();
-    getRekomendasiCount();
-    getRapotCount();
-    getKartuKeluargaCount();
+    getAllDocCount();
     getVerifiedSd();
     getVerifiedSmp();
     getVerifiedSma();

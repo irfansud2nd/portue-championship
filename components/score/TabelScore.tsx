@@ -1,4 +1,4 @@
-import { compare } from "@/utils/sharedFunctions";
+import { compare } from "@/utils/functions";
 
 type Props = {
   label: "SD" | "SMP" | "SMA" | "Dewasa";

@@ -1,34 +1,36 @@
-import { firestore } from "@/utils/firebase";
-import { newToast, updateToast } from "@/utils/sharedFunctions";
-import { doc, updateDoc } from "firebase/firestore";
+import { updateData } from "@/utils/actions";
+import { controlToast, toastError } from "@/utils/functions";
 import { useRef, useState } from "react";
-import { Id, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const JadwalChanger = () => {
   const [gelanggang, setGelanggang] = useState<string>();
   const [partai, setPartai] = useState<string>();
-  const changePartai = () => {
+
+  const toastId = useRef(null);
+
+  const changePartai = async () => {
     if (!gelanggang || !partai || partai == "0") {
-      newToast(toastId, "error", "Tolong Pilih Gelanggang dan Lengkapi Partai");
-    } else {
-      newToast(toastId, "loading", "Menyimpan perubahan partai");
-      updateDoc(doc(firestore, "gelanggangs", `gelanggang-${gelanggang}`), {
-        partai: partai,
-      })
-        .then(() =>
-          updateToast(toastId, "success", "Perubahan partai berhasil disipan")
-        )
-        .catch((error) =>
-          updateToast(
-            toastId,
-            "error",
-            `Perubahan partai gagal disipan. ${error.code}`
-          )
-        );
+      toastError(toastId, "Tolong Pilih Gelanggang dan Lengkapi Partai", true);
+      return;
+    }
+
+    try {
+      controlToast(toastId, "loading", "Menyimpan perubahan partai", true);
+
+      const { result, error } = await updateData("gelanggangs", {
+        id: `gelanggang-${gelanggang}`,
+        partai,
+      });
+
+      if (error) throw error;
+
+      controlToast(toastId, "success", "Perubahan partai berhasil disimpan");
+    } catch (error) {
+      toastError(toastId, error);
     }
   };
-  const toastId = useRef(null);
+
   return (
     <div className="bg-white rounded-md p-1 flex gap-1 items-center w-fit">
       <select

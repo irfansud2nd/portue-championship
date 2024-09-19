@@ -1,26 +1,26 @@
 import { AdminContext } from "@/context/AdminContext";
 import {
   compare,
+  controlToast,
   findNamaKontingen,
   formatTanggal,
-  newToast,
-  updateToast,
-} from "@/utils/sharedFunctions";
-import { DataPesertaState } from "@/utils/types";
+  toastError,
+} from "@/utils/functions";
+import { PesertaState } from "@/utils/types";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import InlineLoading from "../InlineLoading";
-import { dataPesertaInitialValue, tingkatanKategori } from "@/utils/constants";
-import { deleteObject, ref } from "firebase/storage";
-import { firestore, storage } from "@/utils/firebase";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { ToastContainer } from "react-toastify";
+import { dataPesertaInitialValue } from "@/utils/constants";
 import "react-toastify/dist/ReactToastify.css";
 import PersyaratanButton from "./PersyaratanButton";
 import CheckAllPersyaratanButton from "./CheckAllPersyaratanButton";
+import {
+  deletePeserta,
+  updatePesertas,
+} from "@/utils/peserta/pesertaFunctions";
 
 const TabelPesertaAdmin = () => {
   const {
@@ -68,11 +68,10 @@ const TabelPesertaAdmin = () => {
 
   const [showRodal, setShowRodal] = useState(false);
   const [deleteRodal, setDeleteRodal] = useState(false);
-  const [pesertaToDelete, setPesertaToDelete] = useState<DataPesertaState>(
+  const [pesertaToDelete, setPesertaToDelete] = useState<PesertaState>(
     dataPesertaInitialValue
   );
-  const [pesertaToMap, setPesertaToMap] =
-    useState<DataPesertaState[]>(pesertas);
+  const [pesertaToMap, setPesertaToMap] = useState<PesertaState[]>(pesertas);
 
   const [kkUrl, setKkUrl] = useState("");
   const [ktpUrl, setKtpUrl] = useState("");
@@ -104,101 +103,14 @@ const TabelPesertaAdmin = () => {
 
   const toastId = useRef(null);
 
-  const deleteHandler = (peserta: DataPesertaState) => {
+  const deleteHandler = (peserta: PesertaState) => {
     setPesertaToDelete(peserta);
     setDeleteRodal(true);
   };
 
-  const deletePeserta = () => {
+  const handleDelete = async () => {
     setDeleteRodal(false);
-    newToast(toastId, "loading", `Menghapus ${pesertaToDelete.namaLengkap}`);
-    const stepController = (step: number) => {
-      switch (step) {
-        case 1:
-          if (pesertaToDelete.ktpUrl) {
-            // DELETE KTP
-            updateToast(
-              toastId,
-              "loading",
-              `Menghapus KTP ${pesertaToDelete.namaLengkap}`
-            );
-            deleteObject(ref(storage, pesertaToDelete.ktpUrl))
-              .then(() => stepController(2))
-              .catch((error) =>
-                updateToast(
-                  toastId,
-                  "error",
-                  `Gagal Menghapus KTP ${pesertaToDelete.namaLengkap}. ${error.code}`
-                )
-              );
-          } else {
-            stepController(2);
-          }
-          break;
-        case 2:
-          if (pesertaToDelete.kkUrl) {
-            // DELETE KK
-            updateToast(
-              toastId,
-              "loading",
-              `Menghapus KK ${pesertaToDelete.namaLengkap}`
-            );
-            deleteObject(ref(storage, pesertaToDelete.kkUrl))
-              .then(() => stepController(3))
-              .catch((error) =>
-                updateToast(
-                  toastId,
-                  "error",
-                  `Gagal Menghapus KK ${pesertaToDelete.namaLengkap}. ${error.code}`
-                )
-              );
-          } else {
-            stepController(3);
-          }
-          break;
-        case 3:
-          // DELETE FOTO
-          updateToast(
-            toastId,
-            "loading",
-            `Menghapus Foto ${pesertaToDelete.namaLengkap}`
-          );
-          deleteObject(ref(storage, pesertaToDelete.fotoUrl))
-            .then(() => stepController(4))
-            .catch((error) =>
-              updateToast(
-                toastId,
-                "error",
-                `Gagal Menghapus KTP ${pesertaToDelete.namaLengkap}. ${error.code}`
-              )
-            );
-          break;
-        case 4:
-          // DELETE DATA
-          updateToast(
-            toastId,
-            "loading",
-            `Menghapus Data ${pesertaToDelete.namaLengkap}`
-          );
-          deleteDoc(doc(firestore, "pesertas", pesertaToDelete.id))
-            .then(() => {
-              updateToast(
-                toastId,
-                "success",
-                `Data ${pesertaToDelete.namaLengkap} Berhasil dihapus`
-              );
-            })
-            .catch((error) =>
-              updateToast(
-                toastId,
-                "error",
-                `Gagal Menghapus Data ${pesertaToDelete.namaLengkap}. ${error.code}`
-              )
-            );
-          break;
-      }
-    };
-    stepController(1);
+    await deletePeserta(pesertaToDelete, undefined, toastId);
   };
 
   const cancelDelete = () => {
@@ -210,8 +122,7 @@ const TabelPesertaAdmin = () => {
     if (add) {
       setKeteranganSehats((prev) => [...prev, id]);
     } else {
-      let arr = [...keteranganSehats];
-      arr.splice(arr.indexOf(id), 1);
+      let arr = keteranganSehats.filter((item) => item != id);
       setKeteranganSehats(arr);
     }
   };
@@ -219,8 +130,7 @@ const TabelPesertaAdmin = () => {
     if (add) {
       setRekomendasis((prev) => [...prev, id]);
     } else {
-      let arr = [...rekomendasis];
-      arr.splice(arr.indexOf(id), 1);
+      let arr = rekomendasis.filter((item) => item != id);
       setRekomendasis(arr);
     }
   };
@@ -228,8 +138,7 @@ const TabelPesertaAdmin = () => {
     if (add) {
       setRapots((prev) => [...prev, id]);
     } else {
-      let arr = [...rapots];
-      arr.splice(arr.indexOf(id), 1);
+      let arr = rapots.filter((item) => item != id);
       setRapots(arr);
     }
   };
@@ -237,8 +146,7 @@ const TabelPesertaAdmin = () => {
     if (add) {
       setKartuKeluargas((prev) => [...prev, id]);
     } else {
-      let arr = [...kartuKeluargas];
-      arr.splice(arr.indexOf(id), 1);
+      let arr = kartuKeluargas.filter((item) => item != id);
       setKartuKeluargas(arr);
     }
   };
@@ -320,47 +228,40 @@ const TabelPesertaAdmin = () => {
     }
   };
 
-  const savePersyaratan = (tipe: "sdsmp" | "smadewasa") => {
-    let pesertaToUpdate: string[] = [];
+  const savePersyaratan = async (tipe: "sdsmp" | "smadewasa") => {
+    let pesertaToUpdate: PesertaState[] = [];
     pesertaToMap.map((peserta) => {
       if (
         (peserta.tingkatanPertandingan.includes("SD") ||
           peserta.tingkatanPertandingan.includes("SMP")) &&
         tipe == "sdsmp"
       ) {
-        pesertaToUpdate.push(peserta.id);
+        pesertaToUpdate.push(peserta);
       }
       if (
         (peserta.tingkatanPertandingan.includes("SMA") ||
           peserta.tingkatanPertandingan.includes("Dewasa")) &&
         tipe == "smadewasa"
       ) {
-        pesertaToUpdate.push(peserta.id);
+        pesertaToUpdate.push(peserta);
       }
     });
-    newToast(toastId, "loading", "Menyimpan Persyaratan");
-    const repeater = (index: number) => {
-      if (index < 0) {
-        updateToast(toastId, "success", "Persyaratan berhasil disimpan");
-      } else {
-        const id = pesertaToUpdate[index];
-        updateDoc(doc(firestore, "pesertas", id), {
-          keteranganSehat: keteranganSehats.includes(id),
-          rekomendasi: rekomendasis.includes(id),
-          rapot: rapots.includes(id),
-          kartuKeluarga: kartuKeluargas.includes(id),
-        })
-          .then(() => repeater(index - 1))
-          .catch((error) =>
-            updateToast(
-              toastId,
-              "error",
-              `Peryaratan gagal disimpan. ${error.code}`
-            )
-          );
-      }
-    };
-    repeater(pesertaToUpdate.length - 1);
+
+    let updatedPesertas = pesertaToUpdate.map((peserta) => ({
+      ...peserta,
+      keteranganSehat: keteranganSehats.includes(peserta.id),
+      rekomendasi: rekomendasis.includes(peserta.id),
+      rapot: rapots.includes(peserta.id),
+      kartuKeluarga: kartuKeluargas.includes(peserta.id),
+    }));
+
+    try {
+      controlToast(toastId, "loading", "Menyimpan Persyaratan", true);
+      await updatePesertas(updatedPesertas);
+      controlToast(toastId, "success", "Persyaratan berhasil disimpan");
+    } catch (error) {
+      toastError(toastId, error);
+    }
   };
 
   return (
@@ -390,7 +291,7 @@ const TabelPesertaAdmin = () => {
           </p>
 
           <div className="flex gap-2">
-            <button className="btn_red btn_full" onClick={deletePeserta}>
+            <button className="btn_red btn_full" onClick={handleDelete}>
               Delete
             </button>
             <button className="btn_green btn_full" onClick={cancelDelete}>
@@ -536,7 +437,7 @@ const TabelPesertaAdmin = () => {
         <tbody>
           {pesertaToMap
             .sort(compare("waktuPendaftaran", "asc"))
-            .map((peserta: DataPesertaState, i: number) => (
+            .map((peserta: PesertaState, i: number) => (
               <tr key={peserta.id}>
                 <td>{i + 1}</td>
                 <td>{peserta.namaLengkap.toUpperCase()}</td>

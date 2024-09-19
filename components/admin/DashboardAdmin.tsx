@@ -1,54 +1,13 @@
 import { AdminContext } from "@/context/AdminContext";
 import { getKontingenUnpaid } from "@/utils/adminFunctions";
-import { DataKontingenState, DataPesertaState } from "@/utils/types";
+import { KontingenState, PesertaState } from "@/utils/types";
 import InlineLoading from "./InlineLoading";
 import TabelKuota from "./tabels/TabelKuota";
 import TabelTingkatan from "./TabelTingkatan";
-import {
-  collection,
-  getCountFromServer,
-  query,
-  where,
-} from "firebase/firestore";
-import { firestore } from "@/utils/firebase";
-import { useEffect, useState } from "react";
-import Link from "next/link";
+
 import Verified from "../Verified";
 
 const DashboardAdmin = () => {
-  const [pesertaTerdaftar, setPesertaTerdaftar] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [officialTerdaftar, setOfficialTerdaftar] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [kontingenTerdaftar, setKontingenTerdaftar] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [pesertaUnconfimed, setPesertaUnconfimed] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [pesertaConfirmed, setPesertaConfirmed] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [pesertaPaid, setPesertaPaid] = useState<JSX.Element | number>(
-    <InlineLoading />
-  );
-  const [pesertaUnpaid, setPesertaUnpaid] = useState<JSX.Element | number>(
-    <InlineLoading />
-  );
-  const [kontingenUnconfimed, setKontingenUnconfimed] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [kontingenConfirmed, setKontingenConfirmed] = useState<
-    JSX.Element | number
-  >(<InlineLoading />);
-  const [kontingenPaid, setKontingenPaid] = useState<JSX.Element | number>(
-    <InlineLoading />
-  );
-  const [kontingenUnpaid, setKontingenUnpaid] = useState<JSX.Element | number>(
-    <InlineLoading />
-  );
   const {
     kontingens,
     pesertas,
@@ -65,7 +24,7 @@ const DashboardAdmin = () => {
     getConfirmedKontingens,
   } = AdminContext();
 
-  const getPesertasPayment = (pesertas: DataPesertaState[]) => {
+  const getPesertasPayment = (pesertas: PesertaState[]) => {
     let unpaid = 0;
     let unconfirmed = 0;
     let confirmed = 0;
@@ -86,9 +45,9 @@ const DashboardAdmin = () => {
   const getKontingensPayment = () => {
     let unpaid = 0;
     let unconfirmed = 0;
-    let unconfirmedData: DataKontingenState[] = [];
+    let unconfirmedData: KontingenState[] = [];
     let confirmed = 0;
-    kontingens.map((kontingen: DataKontingenState) => {
+    kontingens.map((kontingen: KontingenState) => {
       if (getKontingenUnpaid(kontingen, pesertas) > 0) unpaid += 1;
       if (kontingen.unconfirmedPembayaran.length) {
         unconfirmed += 1;
@@ -101,128 +60,9 @@ const DashboardAdmin = () => {
     return { unpaid, unconfirmed, confirmed };
   };
 
-  const getJumlahKontingen = () => {
-    setKontingenTerdaftar(<InlineLoading />);
-    getCountFromServer(collection(firestore, "kontingens")).then((snapshot) =>
-      setKontingenTerdaftar(snapshot.data().count)
-    );
-  };
-
-  const getJumlahOfficial = () => {
-    setOfficialTerdaftar(<InlineLoading />);
-    getCountFromServer(collection(firestore, "officials")).then((snapshot) =>
-      setOfficialTerdaftar(snapshot.data().count)
-    );
-  };
-
-  const getJumlahPeserta = () => {
-    setPesertaTerdaftar(<InlineLoading />);
-    getCountFromServer(collection(firestore, "pesertas")).then((snapshot) =>
-      setPesertaTerdaftar(snapshot.data().count)
-    );
-  };
-
-  const getPesertaConfirmed = () => {
-    setPesertaConfirmed(<InlineLoading />);
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("confirmedPembayaran", "==", true)
-      )
-    ).then((snapshot) => setPesertaConfirmed(snapshot.data().count));
-  };
-
-  const getPesertaUnconfirmed = () => {
-    setPesertaUnconfimed(<InlineLoading />);
-    getCountFromServer(
-      query(
-        collection(firestore, "pesertas"),
-        where("confirmedPembayaran", "==", false),
-        where("pembayaran", "==", true)
-      )
-    ).then((snapshot) => setPesertaUnconfimed(snapshot.data().count));
-  };
-
-  const getPesertaPaid = () => {
-    setPesertaPaid(<InlineLoading />);
-    getCountFromServer(
-      query(collection(firestore, "pesertas"), where("pembayaran", "==", true))
-    ).then((snapshot) => setPesertaPaid(snapshot.data().count));
-  };
-
-  const getPesertaUnpaid = () => {
-    setPesertaUnpaid(<InlineLoading />);
-    getCountFromServer(
-      query(collection(firestore, "pesertas"), where("pembayaran", "==", false))
-    ).then((snapshot) => setPesertaUnpaid(snapshot.data().count));
-  };
-
-  const getKontingenConfirmed = () => {
-    setPesertaConfirmed(<InlineLoading />);
-    getCountFromServer(
-      query(
-        collection(firestore, "kontingens"),
-        where("confirmedPembayaran", "!=", "[]")
-      )
-    ).then((snapshot) => setKontingenUnconfimed(snapshot.data().count));
-  };
-
-  const getKontingenUnconfirmed = () => {
-    setPesertaUnconfimed(<InlineLoading />);
-    getCountFromServer(
-      query(
-        collection(firestore, "kontingens"),
-        where("unconfirmedPembayaran", "!=", "[]"),
-        where("pembayaran", "==", true)
-      )
-    ).then((snapshot) => setPesertaUnconfimed(snapshot.data().count));
-  };
-
-  const getKontingenPaid = () => {
-    setPesertaPaid(<InlineLoading />);
-    getCountFromServer(
-      query(
-        collection(firestore, "kontingens"),
-        where("idPembayaran", "!=", "[]")
-      )
-    ).then((snapshot) => setPesertaPaid(snapshot.data().count));
-  };
-
-  const getKontingenUnpaidd = () => {
-    setPesertaUnpaid(<InlineLoading />);
-    getCountFromServer(
-      query(
-        collection(firestore, "kontingens"),
-        where("idPembayaran", "==", [])
-      )
-    ).then((snapshot) => setPesertaUnpaid(snapshot.data().count));
-  };
-
-  const getAllJumlah = () => {
-    getJumlahKontingen();
-    getJumlahOfficial();
-    getJumlahPeserta();
-  };
-
-  const getAllPayment = () => {
-    getPesertaUnconfirmed();
-    getPesertaConfirmed();
-    getPesertaPaid();
-    getPesertaUnpaid();
-    // getKontingenConfirmed();
-    // getKontingenUnconfirmed();
-    // getKontingenUnpaidd();
-    // getKontingenPaid();
-  };
-
-  useEffect(() => {
-    getAllJumlah();
-    getAllPayment();
-  }, []);
-
   const getNominalConfirmed = () => {
     let nominal = 0;
-    kontingens.map((kontingen: DataKontingenState) => {
+    kontingens.map((kontingen: KontingenState) => {
       if (kontingen.confirmedPembayaran.length) {
         kontingen.confirmedPembayaran.map((idPembayaran) => {
           let arr = [];
@@ -245,7 +85,7 @@ const DashboardAdmin = () => {
 
   const getVerified = () => {
     let pesertaVerified: any = [];
-    let unVerifyKontingen: any = [];
+    let unverifiedKontingen: any = [];
     let verifiedKontingen: any = [];
 
     pesertas.map((peserta: any) => {
@@ -255,23 +95,42 @@ const DashboardAdmin = () => {
           verifiedKontingen.push(peserta.idKontingen);
         }
       } else {
-        if (!unVerifyKontingen.includes(peserta.idKontingen)) {
-          unVerifyKontingen.push(peserta.idKontingen);
+        if (!unverifiedKontingen.includes(peserta.idKontingen)) {
+          unverifiedKontingen.push(peserta.idKontingen);
         }
       }
     });
 
     const halfVerifiedKontingen = verifiedKontingen.filter((item: any) =>
-      unVerifyKontingen.includes(item)
+      unverifiedKontingen.includes(item)
     );
 
     return {
       pesertaVerified,
-      unVerifyKontingen,
+      unverifiedKontingen,
       verifiedKontingen,
       halfVerifiedKontingen,
     };
   };
+
+  const {
+    confirmed: confirmedPeserta,
+    unconfirmed: unconfirmedPeserta,
+    unpaid: unpaidPeserta,
+  } = getPesertasPayment(pesertas);
+
+  const {
+    confirmed: confirmedKontingen,
+    unconfirmed: unconfirmedKontingen,
+    unpaid: unpaidKontingen,
+  } = getKontingensPayment();
+
+  const {
+    pesertaVerified,
+    verifiedKontingen,
+    halfVerifiedKontingen,
+    unverifiedKontingen,
+  } = getVerified();
 
   return (
     <div className="w-full h-full bg-gray-200 rounded-md p-2">
@@ -378,44 +237,28 @@ const DashboardAdmin = () => {
             Confirmed
           </p>
           <p className="text-2xl font-extrabold text-green-500 border-r-2 border-r-white">
-            {pesertasLoading ? (
-              <InlineLoading />
-            ) : (
-              getPesertasPayment(pesertas).confirmed
-            )}{" "}
+            {pesertasLoading ? <InlineLoading /> : confirmedPeserta}{" "}
             {/* | {pesertaConfirmed} */}
           </p>
           <button
             className="text-2xl font-extrabold text-green-500"
             onClick={getConfirmedKontingens}
           >
-            {kontingensLoading ? (
-              <InlineLoading />
-            ) : (
-              getKontingensPayment().confirmed
-            )}
+            {kontingensLoading ? <InlineLoading /> : confirmedKontingen}
             {/* |{kontingenConfirmed} */}
           </button>
           <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white px-2">
             Unconfirmed
           </p>
           <p className="text-2xl font-extrabold text-yellow-500  border-r-2 border-r-white">
-            {pesertasLoading ? (
-              <InlineLoading />
-            ) : (
-              getPesertasPayment(pesertas).unconfirmed
-            )}{" "}
+            {pesertasLoading ? <InlineLoading /> : unconfirmedPeserta}{" "}
             {/* | {pesertaUnconfimed} */}
           </p>
           <button
             className="text-2xl font-extrabold text-yellow-500 hover:underline"
             onClick={getUnconfirmedKontingens}
           >
-            {kontingensLoading ? (
-              <InlineLoading />
-            ) : (
-              getKontingensPayment().unconfirmed
-            )}
+            {kontingensLoading ? <InlineLoading /> : unconfirmedKontingen}
             {/* |{kontingenConfirmed} */}
           </button>
           <p className="text-2xl font-extrabold text-blue-500  border-r-2 border-r-white">
@@ -425,8 +268,7 @@ const DashboardAdmin = () => {
             {pesertasLoading ? (
               <InlineLoading />
             ) : (
-              getPesertasPayment(pesertas).confirmed +
-              getPesertasPayment(pesertas).unconfirmed
+              confirmedPeserta + unconfirmedPeserta
             )}{" "}
             {/* | {pesertaPaid} */}
           </p>
@@ -434,8 +276,7 @@ const DashboardAdmin = () => {
             {kontingensLoading ? (
               <InlineLoading />
             ) : (
-              getKontingensPayment().unconfirmed +
-              getKontingensPayment().confirmed
+              unconfirmedKontingen + confirmedKontingen
             )}
             {/* |{kontingenPaid} */}
           </p>
@@ -443,38 +284,25 @@ const DashboardAdmin = () => {
             Unpaid
           </p>
           <p className="text-2xl font-extrabold text-red-500  border-r-2 border-r-white">
-            {pesertasLoading ? (
-              <InlineLoading />
-            ) : (
-              getPesertasPayment(pesertas).unpaid
-            )}{" "}
+            {pesertasLoading ? <InlineLoading /> : unpaidPeserta}{" "}
             {/* | {pesertaUnpaid} */}
           </p>
           <p className="text-2xl font-extrabold text-red-500">
-            {kontingensLoading ? (
-              <InlineLoading />
-            ) : (
-              getKontingensPayment().unpaid
-            )}
+            {kontingensLoading ? <InlineLoading /> : unpaidKontingen}
             {/* |{kontingenUnpaid} */}
           </p>
           <p className="text-2xl font-extrabold text-green-500  border-r-2 border-r-white">
             Verified
           </p>
           <p className="text-2xl font-extrabold text-green-500  border-r-2 border-r-white">
-            {pesertasLoading ? (
-              <InlineLoading />
-            ) : (
-              getVerified().pesertaVerified.length
-            )}{" "}
+            {pesertasLoading ? <InlineLoading /> : pesertaVerified.length}{" "}
             {/* | {pesertaUnpaid} */}
           </p>
           <p className="text-2xl font-extrabold text-green-500">
             {kontingensLoading ? (
               <InlineLoading />
             ) : (
-              getVerified().verifiedKontingen.length -
-              getVerified().halfVerifiedKontingen.length
+              verifiedKontingen.length - halfVerifiedKontingen.length
             )}
             {/* |{kontingenUnpaid} */}
           </p>
@@ -489,7 +317,7 @@ const DashboardAdmin = () => {
             {kontingensLoading ? (
               <InlineLoading />
             ) : (
-              getVerified().halfVerifiedKontingen.length
+              halfVerifiedKontingen.length
             )}
             {/* |{kontingenUnpaid} */}
           </p>
@@ -500,7 +328,7 @@ const DashboardAdmin = () => {
             {pesertasLoading ? (
               <InlineLoading />
             ) : (
-              pesertas.length - getVerified().pesertaVerified.length
+              pesertas.length - pesertaVerified.length
             )}{" "}
             {/* | {pesertaUnpaid} */}
           </p>
@@ -508,8 +336,7 @@ const DashboardAdmin = () => {
             {kontingensLoading ? (
               <InlineLoading />
             ) : (
-              getVerified().unVerifyKontingen.length -
-              getVerified().halfVerifiedKontingen.length
+              unverifiedKontingen.length - halfVerifiedKontingen.length
             )}
             {/* |{kontingenUnpaid} */}
           </p>

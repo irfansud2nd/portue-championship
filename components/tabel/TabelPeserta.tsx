@@ -1,21 +1,23 @@
-import { findNamaKontingen } from "@/utils/sharedFunctions";
-import { DataKontingenState, DataPesertaState } from "@/utils/types";
+import { findNamaKontingen } from "@/utils/functions";
+import { KontingenState, PesertaState } from "@/utils/types";
 import TabelActionButtons from "./TabelActionButtons";
 import { BiLoader } from "react-icons/bi";
+
+type Props = {
+  loading: boolean;
+  data: PesertaState[];
+  kontingen: KontingenState | undefined;
+  handleDelete?: (data: PesertaState) => void;
+  handleEdit?: (data: PesertaState) => void;
+};
 
 const TabelPeserta = ({
   loading,
   data,
-  kontingens,
+  kontingen,
   handleDelete,
   handleEdit,
-}: {
-  loading: boolean;
-  data: DataPesertaState[];
-  kontingens: DataKontingenState[];
-  handleDelete?: (data: DataPesertaState) => void;
-  handleEdit?: (data: DataPesertaState) => void;
-}) => {
+}: Props) => {
   const tableHead = [
     "No",
     "Nama Lengkap",
@@ -56,9 +58,7 @@ const TabelPeserta = ({
                 <td>{i + 1}</td>
                 <td className="capitalize">{item.namaLengkap}</td>
                 <td>{item.jenisKelamin}</td>
-                <td className="uppercase">
-                  {findNamaKontingen(kontingens, item.idKontingen)}
-                </td>
+                <td className="uppercase">{kontingen?.namaKontingen || "-"}</td>
                 <td>{item.tingkatanPertandingan}</td>
                 <td>{item.jenisPertandingan}</td>
                 <td className="whitespace-nowrap">

@@ -1,21 +1,23 @@
-import { DataKontingenState, DataOfficialState } from "@/utils/types";
+import { KontingenState, OfficialState } from "@/utils/types";
 import TabelActionButtons from "./TabelActionButtons";
-import { findNamaKontingen } from "@/utils/sharedFunctions";
+import { findNamaKontingen } from "@/utils/functions";
 import { BiLoader } from "react-icons/bi";
+
+type Props = {
+  loading: boolean;
+  data: OfficialState[];
+  kontingen: KontingenState | undefined;
+  handleDelete?: (data: OfficialState) => void;
+  handleEdit?: (data: OfficialState) => void;
+};
 
 const TabelOfficial = ({
   loading,
   data,
-  kontingens,
+  kontingen,
   handleDelete,
   handleEdit,
-}: {
-  loading: boolean;
-  data: DataOfficialState[];
-  kontingens: DataKontingenState[];
-  handleDelete?: (data: DataOfficialState) => void;
-  handleEdit?: (data: DataOfficialState) => void;
-}) => {
+}: Props) => {
   const tableHead = [
     "No",
     "Nama Lengkap",
@@ -59,7 +61,7 @@ const TabelOfficial = ({
                   <td>{item.jenisKelamin}</td>
                   <td className="capitalize">{item.jabatan}</td>
                   <td className="uppercase">
-                    {findNamaKontingen(kontingens, item.idKontingen)}
+                    {kontingen ? kontingen.namaKontingen : "-"}
                   </td>
                   {handleDelete && handleEdit && (
                     <td>

@@ -1,12 +1,12 @@
 import { AdminContext } from "@/context/AdminContext";
-import { compare } from "@/utils/sharedFunctions";
-import { DataKontingenState } from "@/utils/types";
+import { compare } from "@/utils/functions";
+import { KontingenState } from "@/utils/types";
 import { Result } from "postcss";
 import { useEffect, useRef, useState } from "react";
 import { useDownloadExcel } from "react-export-table-to-excel";
 
 const TabelPembayaran = () => {
-  const { kontingens }: { kontingens: DataKontingenState[] } = AdminContext();
+  const { kontingens }: { kontingens: KontingenState[] } = AdminContext();
   const [paidKontingens, setPaidKontingens] = useState<
     {
       namaKontingen: string;
@@ -18,7 +18,7 @@ const TabelPembayaran = () => {
     getPaidKontingens();
   }, []);
 
-  const getTotalBayar = (kontingen: DataKontingenState) => {
+  const getTotalBayar = (kontingen: KontingenState) => {
     let totalBayar = 0;
     kontingen.infoPembayaran.map((item) => {
       if (

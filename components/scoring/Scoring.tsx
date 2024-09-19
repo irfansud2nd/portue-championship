@@ -1,6 +1,6 @@
 import { ScoringContext } from "@/context/ScoringContext";
 import InlineLoading from "../admin/InlineLoading";
-import { KontingenScore } from "@/utils/scoringFunctions";
+import { KontingenScore } from "@/utils/scoring/scoringFunctions";
 import JadwalChanger from "../admin/JadwalChanger";
 import TabelScorings from "./TabelScorings";
 

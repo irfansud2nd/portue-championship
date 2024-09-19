@@ -7,65 +7,48 @@ import {
   jabatanOfficials,
   jenisKelamin,
 } from "@/utils/constants";
-import { firestore, storage } from "@/utils/firebase";
-import {
-  compare,
-  deletePerson,
-  getInputErrorOfficial,
-  limitImage,
-  newToast,
-  sendPerson,
-  updatePerson,
-  updatePersonImage,
-  updatePersonImageKontingen,
-  updatePersonKontingen,
-} from "@/utils/sharedFunctions";
-import {
-  DataKontingenState,
-  DataOfficialState,
-  ErrorOfficial,
-} from "@/utils/types";
-import {
-  DocumentData,
-  collection,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { KontingenState, OfficialState, ErrorOfficial } from "@/utils/types";
 import { useEffect, useRef, useState } from "react";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import TabelOfficial from "../tabel/TabelOfficial";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
-import Image from "next/image";
+import { compare, validateImage } from "@/utils/functions";
+import {
+  createOfficial,
+  deleteOfficial,
+  getInputErrorOfficial,
+  updateOfficial,
+} from "@/utils/official/officialFunctions";
+
+type Props = {
+  kontingen: KontingenState | undefined;
+  setKontingen: React.Dispatch<
+    React.SetStateAction<KontingenState | undefined>
+  >;
+  officials: OfficialState[];
+  addOfficials: (officials: OfficialState[]) => void;
+  deleteOfficial: (id: string) => void;
+};
 
 const FormOfficial = ({
-  kontingens,
+  kontingen,
+  setKontingen,
   officials,
-  setOfficials,
-}: {
-  kontingens: DataKontingenState[];
-  officials: DataOfficialState[];
-  setOfficials: React.Dispatch<React.SetStateAction<DataOfficialState[] | []>>;
-}) => {
-  const [data, setData] = useState<DataOfficialState | DocumentData>(
-    dataOfficialInitialValue
-  );
+  addOfficials,
+  deleteOfficial: deleteOfficialState,
+}: Props) => {
+  const [data, setData] = useState<OfficialState>(dataOfficialInitialValue);
   const [sendClicked, setSendClicked] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
-  const [imageSelected, setImageSelected] = useState<File | null>();
+  const [imageSelected, setImageSelected] = useState<File | undefined>();
   const [imagePreviewSrc, setImagePreviewSrc] = useState("");
   const [inputErrorMessages, setInputErrorMessages] = useState<ErrorOfficial>(
     errorOfficialInitialValue
   );
-  const [dataToDelete, setDataToDelete] = useState<DataOfficialState | null>(
-    null
-  );
-  const [prevData, setPrevData] = useState<DataOfficialState>(
-    dataOfficialInitialValue
-  );
+  const [dataToDelete, setDataToDelete] = useState<OfficialState | undefined>();
+  const [prevData, setPrevData] = useState<OfficialState | undefined>();
   const [tabelLoading, setTabelLoading] = useState(false);
 
   const toastId = useRef(null);
@@ -75,54 +58,19 @@ const FormOfficial = ({
 
   // SET DATA USER
   useEffect(() => {
-    if (user && kontingens.length == 0) {
+    if (user && kontingen) {
       setData({
         ...data,
         creatorEmail: user.email,
         creatorUid: user.uid,
+        idKontingen: kontingen.id,
       });
     }
-    if (user && kontingens.length !== 0) {
-      setData({
-        ...data,
-        creatorEmail: user.email,
-        creatorUid: user.uid,
-        idKontingen: kontingens[0].idKontingen,
-      });
-    }
-  }, [user, kontingens]);
-
-  // GET ALL OFFICIAL - TRIGGER
-  useEffect(() => {
-    if (user) getOfficials();
-  }, [user]);
-
-  // GET ALL OFFICIAL - GETTER
-  const getOfficials = () => {
-    // TABLE LOADING TRUE
-    setTabelLoading(true);
-    const container: any[] = [];
-    const q = query(
-      collection(firestore, "officials"),
-      where("creatorUid", "==", user.uid)
-    );
-    getDocs(q)
-      .then((querySnapshot) =>
-        querySnapshot.forEach((doc) => {
-          container.push(doc.data());
-        })
-      )
-      .catch((error) => newToast(toastId, "error", error.code))
-      .finally(() => {
-        setOfficials(container.sort(compare("waktuPendaftaran", "asc")));
-        // TABEL LOADING FALSE
-        setTabelLoading(false);
-      });
-  };
+  }, [user, kontingen]);
 
   // VALIDATE IMAGE
   const imageChangeHandler = (file: File) => {
-    if (limitImage(file, toastId)) {
+    if (validateImage(file, toastId)) {
       setImageSelected(file);
       setImagePreviewSrc(URL.createObjectURL(file));
     } else {
@@ -131,39 +79,50 @@ const FormOfficial = ({
   };
 
   // RESET IMAGE INPUT
-  const clearInputImage = () => {
+  const clearInputImage = async () => {
     if (inputImageRef.current) inputImageRef.current.value = "";
     setImagePreviewSrc("");
   };
 
   // SUBMIT HANDLER - UPDATE OR NEW DATA
-  const saveOfficial = (e: React.FormEvent) => {
+  const saveOfficial = async (e: React.FormEvent) => {
     e.preventDefault();
     setSendClicked(true);
     if (
-      getInputErrorOfficial(
+      !getInputErrorOfficial(
         data,
         imagePreviewSrc,
         inputErrorMessages,
         setInputErrorMessages
-      )
-    ) {
-      setDisable(true);
+      ) ||
+      !kontingen
+    )
+      return;
+
+    setDisable(true);
+    let result = data;
+
+    try {
       if (updating) {
-        updateDataHandler();
+        result = await updateOfficial(data, imageSelected, toastId);
       } else {
-        if (imageSelected) {
-          // SEND PERSON
-          sendPerson(
-            "official",
-            data,
-            imageSelected,
-            kontingens,
-            toastId,
-            afterSendPerson
-          );
-        }
+        if (!imageSelected) return;
+
+        const { official, kontingen: newKontingen } = await createOfficial(
+          data,
+          imageSelected,
+          kontingen,
+          toastId
+        );
+
+        setKontingen(newKontingen);
+        result = official;
       }
+      addOfficials([result]);
+    } catch (error) {
+      throw error;
+    } finally {
+      resetData();
     }
   };
 
@@ -179,28 +138,23 @@ const FormOfficial = ({
     }
   }, [data, sendClicked, imageSelected]);
 
-  // SEND PERSON CALLBACK
-  const afterSendPerson = () => {
-    getOfficials();
-    resetData();
-    setDisable(false);
-  };
-
   // RESET DATA
   const resetData = () => {
     setData({
       ...dataOfficialInitialValue,
       creatorEmail: user.email,
       creatorUid: user.uid,
-      idKontingen: kontingens[0].idKontingen,
+      idKontingen: kontingen ? kontingen.id : "",
     });
+    setPrevData(undefined);
     setUpdating(false);
-    clearInputImage();
+    setDisable(false);
     setSendClicked(false);
+    clearInputImage();
   };
 
   // EDIT - STEP 1 - EDIT BUTTON
-  const handleEdit = (data: DataOfficialState) => {
+  const handleEdit = (data: OfficialState) => {
     setUpdating(true);
     setData(data);
     setPrevData(data);
@@ -208,90 +162,44 @@ const FormOfficial = ({
 
   // EDIT - STEP 2 - SET IMAGE PREVIEW
   useEffect(() => {
-    if (prevData.downloadFotoUrl) setImagePreviewSrc(prevData.downloadFotoUrl);
-  }, [prevData.downloadFotoUrl]);
-
-  // EDIT - STEP 3 - UPDATE CONTROLLER
-  const updateDataHandler = () => {
-    if (updating) {
-      if (
-        imagePreviewSrc !== prevData.downloadFotoUrl &&
-        data.idKontingen !== prevData.idKontingen &&
-        imageSelected
-      ) {
-        updatePersonImageKontingen(
-          "official",
-          data,
-          prevData,
-          kontingens,
-          toastId,
-          imageSelected,
-          resetEdit
-        );
-      } else if (
-        imagePreviewSrc !== prevData.downloadFotoUrl &&
-        imageSelected
-      ) {
-        updatePersonImage("official", data, toastId, imageSelected, resetEdit);
-      } else if (data.idKontingen !== prevData.idKontingen) {
-        updatePersonKontingen(
-          "official",
-          data,
-          prevData,
-          kontingens,
-          toastId,
-          resetEdit
-        );
-      } else if (
-        imagePreviewSrc == prevData.downloadFotoUrl &&
-        data.idKontingen == prevData.idKontingen
-      ) {
-        updatePerson("official", data, toastId, resetEdit);
-      }
-    }
-  };
-
-  // RESET EDIT
-  const resetEdit = () => {
-    getOfficials();
-    setPrevData(dataOfficialInitialValue);
-    clearInputImage();
-    setDisable(false);
-    setUpdating(false);
-  };
+    if (prevData?.downloadFotoUrl) setImagePreviewSrc(prevData.downloadFotoUrl);
+  }, [prevData]);
 
   // DELETE - STEP 1 - DELETE BUTTON
-  const handleDelete = (data: DataOfficialState) => {
+  const handleDelete = (data: OfficialState) => {
     setModalVisible(true);
     setDataToDelete(data);
   };
 
   // DELETE - STEP 2 - DELETE PERSON
-  const deleteData = () => {
+  const deleteData = async () => {
     setModalVisible(false);
     if (dataToDelete) {
       setDisable(true);
-      deletePerson(
-        "officials",
-        dataToDelete,
-        kontingens,
-        toastId,
-        afterDeletePerson
-      );
-    }
-  };
 
-  // DELETE - STEP 3 - CALLBACK
-  const afterDeletePerson = () => {
-    cancelDelete();
-    getOfficials();
+      try {
+        const newKontingen = await deleteOfficial(
+          dataToDelete,
+          kontingen,
+          toastId
+        );
+
+        if (newKontingen) setKontingen(newKontingen);
+        deleteOfficialState(dataToDelete.id);
+      } catch (error) {
+        throw error;
+      } finally {
+        cancelDelete();
+        resetData();
+      }
+    }
   };
 
   // DELETE CANCELER
   const cancelDelete = () => {
     setDisable(false);
     setModalVisible(false);
-    setDataToDelete(null);
+    setDataToDelete(undefined);
   };
 
   // INPUT FILE DISABLER
@@ -303,8 +211,8 @@ const FormOfficial = ({
     <div className="flex flex-col gap-2">
       <TabelOfficial
         loading={tabelLoading}
-        data={officials.sort(compare("waktuPendaftaran", "asc"))}
-        kontingens={kontingens}
+        data={officials}
+        kontingen={kontingen}
         handleDelete={handleDelete}
         handleEdit={handleEdit}
       />
@@ -466,16 +374,9 @@ const FormOfficial = ({
                   uppercase
                     `}
               >
-                {kontingens.length &&
-                  kontingens.map((kontingen) => (
-                    <option
-                      value={kontingen.idKontingen}
-                      key={kontingen.idKontingen}
-                      className="uppercase"
-                    >
-                      {kontingen.namaKontingen}
-                    </option>
-                  ))}
+                <option value={kontingen?.id} className="uppercase">
+                  {kontingen?.namaKontingen}
+                </option>
               </select>
               <p className="text-red-500">{inputErrorMessages.idKontingen}</p>
             </div>

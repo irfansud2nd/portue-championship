@@ -1,6 +1,6 @@
 import { AdminContext } from "@/context/AdminContext";
 import { findNamaKontingen, formatTanggal } from "@/utils/adminFunctions";
-import { DataOfficialState } from "@/utils/types";
+import { OfficialState } from "@/utils/types";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -8,9 +8,9 @@ import { useDownloadExcel } from "react-export-table-to-excel";
 import Rodal from "rodal";
 import "rodal/lib/rodal.css";
 import InlineLoading from "../InlineLoading";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { compare, deletePerson } from "@/utils/sharedFunctions";
+import { compare } from "@/utils/functions";
+import { deleteOfficial } from "@/utils/official/officialFunctions";
 
 const TabelOfficialAdmin = () => {
   const {
@@ -36,11 +36,11 @@ const TabelOfficialAdmin = () => {
     "Delete",
   ];
 
-  const [officialsToMap, setOfficialsToMap] = useState<DataOfficialState[]>([]);
+  const [officialsToMap, setOfficialsToMap] = useState<OfficialState[]>([]);
   const [showRodal, setShowRodal] = useState(false);
   const [deleteRodal, setDeleteRodal] = useState(false);
-  const [dataToDelete, setDataToDelete] = useState<DataOfficialState | null>(
-    null
+  const [dataToDelete, setDataToDelete] = useState<OfficialState | undefined>(
+    undefined
   );
   const [fotoUrl, setFotoUrl] = useState("");
 
@@ -63,36 +63,27 @@ const TabelOfficialAdmin = () => {
 
   const toastId = useRef(null);
 
-  // DELETE - STEP 1 - DELETE BUTTON
-  const handleDelete = (data: DataOfficialState) => {
+  const handleDelete = (data: OfficialState) => {
     setDeleteRodal(true);
     setDataToDelete(data);
   };
 
-  // DELETE - STEP 2 - DELETE PERSON
-  const deleteData = () => {
+  const deleteData = async () => {
     setDeleteRodal(false);
-    if (dataToDelete) {
-      deletePerson(
-        "officials",
-        dataToDelete,
-        kontingens,
-        toastId,
-        afterDeletePerson
-      );
+    if (!dataToDelete) return;
+    try {
+      await deleteOfficial(dataToDelete, undefined, toastId);
+      cancelDelete();
+      refreshOfficials();
+    } catch (error) {
+      throw error;
     }
-  };
-
-  // DELETE - STEP 3 - CALLBACK
-  const afterDeletePerson = () => {
-    cancelDelete();
-    refreshOfficials();
   };
 
   // DELETE CANCELER
   const cancelDelete = () => {
     setDeleteRodal(false);
-    setDataToDelete(null);
+    setDataToDelete(undefined);
   };
 
   return (
@@ -177,7 +168,7 @@ const TabelOfficialAdmin = () => {
         <tbody>
           {officialsToMap
             .sort(compare("namaLengkap", "asc"))
-            .map((official: DataOfficialState, i: number) => (
+            .map((official: OfficialState, i: number) => (
               <tr key={official.id} className="border_td">
                 <td>{i + 1}</td>
                 <td>{official.id}</td>

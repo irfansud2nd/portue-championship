@@ -3,10 +3,9 @@
 import InlineLoading from "@/components/admin/InlineLoading";
 import TabelScore from "@/components/score/TabelScore";
 import PartaiCard from "@/components/scoring/PartaiCard";
-import { firestore } from "@/utils/firebase";
-import { KontingenScore } from "@/utils/scoringFunctions";
-import { compare } from "@/utils/sharedFunctions";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { fetchData, toastError } from "@/utils/functions";
+import { getKontingenScores, getPartai } from "@/utils/scoring/scoringActions";
+import { KontingenScore } from "@/utils/scoring/scoringFunctions";
 import { useEffect, useState } from "react";
 
 const ScorePage = () => {
@@ -34,22 +33,6 @@ const ScorePage = () => {
     }[]
   >([]);
   const [loading, setLoading] = useState(false);
-
-  const getScores = () => {
-    setLoading(true);
-
-    let result: any = [];
-    getDocs(
-      query(
-        collection(firestore, "kontingenScores"),
-        where("visible", "==", true)
-      )
-    )
-      .then((res) => res.forEach((doc) => result.push(doc.data())))
-      .finally(() => {
-        processScore(result);
-      });
-  };
 
   const processScore = (results: KontingenScore[]) => {
     let resultScores: Item[] = [];
@@ -127,24 +110,27 @@ const ScorePage = () => {
 
     const mergedArr: Item[] = Object.values(result);
 
-    let arr: any = [];
-
     setKontingenScores(mergedArr);
     setLoading(false);
   };
 
-  const getPartai = () => {
-    let result: any = [];
-    getDocs(collection(firestore, "gelanggangs"))
-      .then((res) => res.forEach((doc) => result.push(doc.data())))
-      .finally(() => {
-        setPartai(result);
-      });
+  const getData = async () => {
+    setLoading(true);
+    try {
+      const score = await fetchData(() => getKontingenScores());
+      processScore(score);
+
+      const partai = await fetchData(() => getPartai());
+      setPartai(partai);
+    } catch (error) {
+      alert(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    getScores();
-    getPartai();
+    getData();
   }, []);
   const day5 = [
     "https://firebasestorage.googleapis.com/v0/b/portue-silat-bandung.appspot.com/o/tabelPartai%2Fday5%2FGelanggang%201.pdf?alt=media&token=bf85375e-abce-4ece-aea7-0e3d400276b2&_gl=1*18357cm*_ga*NjY5MDI5NTA4LjE2OTI3MDI0NjA.*_ga_CW55HF8NVT*MTY5ODM3NDYzNS4yMTUuMS4xNjk4Mzc0NzYwLjYwLjAuMA..",
@@ -159,8 +145,7 @@ const ScorePage = () => {
         <button
           className="bg-custom-navy hover:bg-custom-yellow text-custom-yellow hover:text-custom-navy border-2 border-custom-navy transition-all px-2 rounded-full font-semibold mb-1"
           onClick={() => {
-            getScores();
-            getPartai();
+            getData();
           }}
         >
           Refresh
